@@ -17,6 +17,7 @@
 #include <string.h>
 
 #ifdef ARDUINO
+    #include <Arduino.h>
 #else
     static inline void randomSeed(uint32_t s) { srand(s); }
     static inline int32_t random(int32_t min, int32_t max)
