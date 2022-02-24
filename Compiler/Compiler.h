@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include "Interpreter.h"
 #include "Opcodes.h"
 #include "Scanner.h"
 #include <cstdint>
@@ -74,13 +75,14 @@ public:
     enum class Language { Arly, Clover };
     
     bool compile(std::istream*, Language, std::vector<uint8_t>& executable,
+                 const std::vector<NativeModule*>&,
                  std::vector<std::pair<int32_t, std::string>>* annotations = nullptr);
 
     Error error() const { return _error; }
     Token expectedToken() const { return _expectedToken; }
     const std::string& expectedString() const { return _expectedString; }
     uint32_t lineno() const { return _lineno; }
-    uint32_t charno() const { return _charno; }
+    uint32_t charno() const { return _charno; }        
 
 private:
     Error _error = Error::None;

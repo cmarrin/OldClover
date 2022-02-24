@@ -9,6 +9,7 @@
 
 #include "ArlyCompileEngine.h"
 #include "CloverCompileEngine.h"
+#include "NativeCore.h"
 
 #include <map>
 #include <vector>
@@ -16,6 +17,7 @@
 using namespace arly;
 
 bool Compiler::compile(std::istream* istream, Language lang, std::vector<uint8_t>& executable,
+                       const std::vector<NativeModule*>& modules,
                        std::vector<std::pair<int32_t, std::string>>* annotations)
 {
     CompileEngine* engine = nullptr;
@@ -32,6 +34,14 @@ bool Compiler::compile(std::istream* istream, Language lang, std::vector<uint8_t
     if (!engine) {
         _error = Error::UnrecognizedLanguage;
         return false;
+    }
+    
+    // Install the modules in the engine
+    // First add the core
+    NativeCore().addFunctions(engine);
+    
+    for (const auto& it : modules) {
+        it->addFunctions(engine);
     }
     
     engine->program();

@@ -66,6 +66,29 @@ static inline uint32_t floatToInt(float f)
     return i;
 }
 
+
+//
+// Core Native Functions
+//
+
+class Interpreter;
+
+class CompileEngine;
+
+class NativeModule
+{
+public:
+    virtual ~NativeModule() { }
+    
+    virtual bool hasId(uint8_t id) const = 0;
+    virtual uint8_t numParams(uint8_t id) const = 0;
+    virtual int32_t call(Interpreter*, uint8_t id) = 0;
+    
+#ifndef ARDUINO
+    virtual void addFunctions(CompileEngine*) = 0;
+#endif
+};
+
 class Interpreter
 {
 public:
@@ -86,26 +109,9 @@ public:
         StackUnderrun,
         StackOutOfRange,
     };
-    
-    enum class NativeFunction {
-        None            = 0,
-        Animate         = 1,
-        Param           = 2,
-        Float           = 3,
-        Int             = 4,
-        LogInt          = 5,
-        LogFloat        = 6,
-        LogHex          = 7,
-        RandomInt       = 8,
-        RandomFloat     = 9,
-        InitArray       = 10,
-        MinInt          = 11,
-        MinFloat        = 12,
-        MaxInt          = 13,
-        MaxFloat        = 14,
-    };
-    
-    Interpreter() { }
+
+    Interpreter(NativeModule** mod, uint32_t modSize);
+    ~Interpreter();
     
     bool init(uint8_t cmd, const uint8_t* buf, uint8_t size);
     int32_t loop();
@@ -129,16 +135,22 @@ public:
 		int32_t r = ::random(min, max);
 		return r;
 	}
-	
-protected:
+ 
+     uint32_t stackLocal(uint16_t addr) { return _stack.local(addr); }
+     void stackPush(uint32_t v) { _stack.push(v); }
+
+    int32_t animate(uint32_t index);
+    uint8_t param(uint32_t i) const { return (i >= ParamsSize) ? 0 : _params[i]; }
+    int16_t pc() const { return _pc; }
+    void setError(Error error) { _error = error; }
+    void initArray(uint32_t addr, uint32_t value, uint32_t count);
+
     virtual uint8_t rom(uint16_t i) const = 0;
-    virtual void setLight(uint8_t i, uint32_t rgb) = 0;
-    virtual uint8_t numPixels() const = 0;
     virtual void logInt(uint16_t addr, int8_t i, int32_t v) const = 0;
     virtual void logFloat(uint16_t addr, int8_t i, float v) const = 0;
     virtual void logHex(uint16_t addr, int8_t i, uint32_t v) const = 0;
 
-private:    
+private:
     class Stack
     {
     public:
@@ -337,10 +349,6 @@ private:
         _stack.local(addr) = v;
     }
     
-    void setAllLights(uint8_t c);
-
-    int32_t animate(uint32_t index);
-    
     Error _error = Error::None;
     int16_t _errorAddr = -1;
     
@@ -352,6 +360,9 @@ private:
     
     int16_t _pc = 0;
     Stack _stack;
+    
+    NativeModule** _nativeModules = nullptr;
+    uint8_t _nativeModulesSize = 0;
     
     uint16_t _constOffset = 0; // In bytes
     uint8_t _numParams = 0;

@@ -258,7 +258,7 @@ ArlyCompileEngine::handleConst()
         Function fun;
         expect(findFunction(id, fun), Compiler::Error::UndefinedIdentifier);
         expect(fun.isNative(), Compiler::Error::ExpectedDef);
-        i = uint8_t(fun.native());
+        i = uint8_t(fun.nativeId());
     } else {
         expect(integerValue(i), Compiler::Error::ExpectedInt);
     }

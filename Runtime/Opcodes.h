@@ -121,6 +121,26 @@ will add the number of locals to sp. then it will push the saved return pc and
 the current bp. Finally it will set bp to sp - params - locals - 2. That 
 makes it point at the first passed param.
 
+Native Functions
+
+CallNative is used to call a native function. Native functions are in NativeModule
+subclasses and add functionality to the engine. They are called just like 
+Clover functions, with params on the stack. There are 256 ids possible. Each
+module has 16 possible ids, from 0x?0 to 0x?f. So there are 16 modules possible.
+The first two modules (0x0? and 0x1?) are reserved for core functions.
+
+There is no attempt to manage the module ids. If you add more than one you need
+to make sure their ids don't clash. Each module has a compile time part 
+(addFunctions) which adds native function info to the CompileEngine. The runtime
+part adds the functions themselves, along with a methods to return whether or not
+a given id is in this module and the number of params for a given id.
+
+Each module can be compiled to have only the runtime part or both the compile
+time and runtime parts. A module included in the compile time part is used to
+compile a Clover file. The resulting executable must be used in a runtime 
+compiled with the same NativeModules. Currently there is no check to ensure
+this. Maybe someday.
+
 Engine
 
 There are 4 color registers which contain 3 float (h, s, v) and 4 registers of
@@ -190,7 +210,7 @@ Opcodes:
     Loop sz                 - Jump back size bytes
     
     Call target             - Call function [target], params on stack
-    CallNative Const        - Call native function [enum NativeFunction] (0..255)
+    CallNative Const        - Call native function (0..255)
     Return                  - Return from function
     SetFrame p l            - Set the local frame with number of formal
                               params (p) and locals (l). This must be

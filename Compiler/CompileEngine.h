@@ -20,6 +20,53 @@ namespace arly {
 class CompileEngine
 {
 public:
+    // Built-in types are 0x00-0x7f, custom types are 0x80-0xff
+    enum class Type : uint8_t { None = 0, Float = 1, Int = 2, UInt8 = 3, Ptr = 5 };
+
+    class Symbol
+    {
+    public:
+        enum class Storage { None, Const, Global, Local };
+        
+        Symbol() { }
+        
+        Symbol(const std::string& name, uint8_t addr, Type type, Storage storage, bool ptr = false, uint8_t size = 1)
+            : _name(name)
+            , _addr(addr)
+            , _type(type)
+            , _ptr(ptr)
+            , _storage(storage)
+            , _size(size)
+        { }
+        
+        // Used to add locals to function
+        Symbol(const char* name, uint8_t addr, Type type, bool ptr = false)
+            : _name(name)
+            , _addr(addr)
+            , _type(type)
+            , _ptr(ptr)
+            , _storage(Storage::Local)
+            , _size(1)
+        { }
+
+        const std::string& name() const { return _name; }
+        uint8_t addr() const;
+        Type type() const { return _type; }
+        bool isPointer() const { return _ptr; }
+        Storage storage() const { return _storage; }
+        uint8_t size() const { return _size; }
+        
+    private:
+        std::string _name;
+        uint8_t _addr = 0;
+        Type _type = Type::None;
+        bool _ptr = false;
+        Storage _storage = Storage::None;
+        uint8_t _size = 0;
+    };
+    
+    using SymbolList = std::vector<Symbol>;
+    
     CompileEngine(std::istream* stream, std::vector<std::pair<int32_t, std::string>>* annotations);
     
     virtual ~CompileEngine() { }
@@ -35,6 +82,11 @@ public:
     uint32_t charno() const { return _scanner.charno(); }
     
     static bool opDataFromOp(const Op op, OpData& data);
+
+    void addNative(const char* name, uint8_t nativeId, Type type, const SymbolList& locals)
+    {
+        _functions.emplace_back(name, nativeId, type, locals);
+    }
 
 protected:
     enum class Reserved {
@@ -58,9 +110,6 @@ protected:
         C0, C1, C2, C3,
     };
     
-    // Built-in types are 0x00-0x7f, custom types are 0x80-0xff
-    enum class Type : uint8_t { None = 0, Float = 1, Int = 2, UInt8 = 3, Ptr = 5 };
-
     virtual bool statement() = 0;
     virtual bool function() = 0;
     virtual bool table() = 0;
@@ -151,50 +200,6 @@ protected:
         uint8_t _value;
     };
     
-    class Symbol
-    {
-    public:
-        enum class Storage { None, Const, Global, Local };
-        
-        Symbol() { }
-        
-        Symbol(const std::string& name, uint8_t addr, Type type, Storage storage, bool ptr = false, uint8_t size = 1)
-            : _name(name)
-            , _addr(addr)
-            , _type(type)
-            , _ptr(ptr)
-            , _storage(storage)
-            , _size(size)
-        { }
-        
-        // Used to add locals to function
-        Symbol(const char* name, uint8_t addr, Type type, bool ptr = false)
-            : _name(name)
-            , _addr(addr)
-            , _type(type)
-            , _ptr(ptr)
-            , _storage(Storage::Local)
-            , _size(1)
-        { }
-
-        const std::string& name() const { return _name; }
-        uint8_t addr() const;
-        Type type() const { return _type; }
-        bool isPointer() const { return _ptr; }
-        Storage storage() const { return _storage; }
-        uint8_t size() const { return _size; }
-        
-    private:
-        std::string _name;
-        uint8_t _addr = 0;
-        Type _type = Type::None;
-        bool _ptr = false;
-        Storage _storage = Storage::None;
-        uint8_t _size = 0;
-    };
-    
-    using SymbolList = std::vector<Symbol>;
-    
     class Function
     {
     public:
@@ -204,35 +209,37 @@ protected:
             : _name(name)
             , _addr(addr)
             , _type(type)
+            , _native(false)
         { }
 
         // Used to create built-in native functions
-        Function(const char* name, Interpreter::NativeFunction native, Type type, const SymbolList& locals)
+        Function(const char* name, uint8_t nativeId, Type type, const SymbolList& locals)
             : _name(name)
-            , _native(native)
+            , _addr(int16_t(nativeId))
             , _locals(locals)
             , _args(locals.size())
             , _type(type)
+            , _native(true)
         { }
 
         const std::string& name() const { return _name; }
-        uint16_t addr() const { return _addr; }
-        Interpreter::NativeFunction native() const { return _native; }
+        int16_t addr() const { return _addr; }
         std::vector<Symbol>& locals() { return _locals; }
         const std::vector<Symbol>& locals() const { return _locals; }
         uint8_t& args() { return _args; }
         const uint8_t& args() const { return _args; }
         Type type() const { return _type; }
         
-        bool isNative() const { return _native != Interpreter::NativeFunction::None; }
+        bool isNative() const { return _native; }
+        int16_t nativeId() const { return _addr; }
         
     private:
         std::string _name;
-        uint16_t _addr = 0;
-        Interpreter::NativeFunction _native = Interpreter::NativeFunction::None;
+        int16_t _addr = 0;
         std::vector<Symbol> _locals;
         uint8_t _args = 0;
         Type _type;
+        bool _native = false;
     };
     
     struct Effect
@@ -265,6 +272,8 @@ protected:
             _scanner.setAnnotation(int32_t(_rom8.size()));
         }
     }
+    
+    uint8_t allocNativeId() { return _nextNativeId++; }
         
     std::vector<Symbol>& currentLocals() { return currentFunction().locals(); }
 
@@ -293,6 +302,7 @@ protected:
     uint16_t _localHighWaterMark = 0;
     uint16_t _globalSize = 0;
     bool inFunction = false;
+    uint8_t _nextNativeId = 0;
 };
 
 }

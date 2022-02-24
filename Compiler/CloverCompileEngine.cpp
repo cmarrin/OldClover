@@ -618,7 +618,7 @@ CloverCompileEngine::postfixExpression()
             _exprStack.push_back(ExprEntry::Value(fun.type()));
             
             if (fun.isNative()) {
-                addOpId(Op::CallNative, uint8_t(fun.native()));
+                addOpId(Op::CallNative, uint8_t(fun.nativeId()));
             } else { 
                 addOpTarg(Op::Call, fun.addr());
             }

@@ -7,7 +7,45 @@
 
 #include "Interpreter.h"
 
+#include "NativeCore.h"
+
 using namespace arly;
+
+Interpreter::Interpreter(NativeModule** mod, uint32_t modSize)
+{
+    _nativeModules = new NativeModule*[modSize + 1];
+    _nativeModulesSize = modSize + 1;
+    
+    _nativeModules[0] = new NativeCore();
+    for (int i = 0; i < modSize; ++i) {
+        _nativeModules[i + 1] = mod[i];
+    }
+}
+
+Interpreter::~Interpreter()
+{
+    // We own the NativeCore, which is the first module
+    if (!_nativeModules) {
+        delete _nativeModules[0];
+    }
+    delete [ ] _nativeModules;
+}
+
+void
+Interpreter::initArray(uint32_t addr, uint32_t value, uint32_t count)
+{
+    // Only global or local
+    if (addr < GlobalStart) {
+        _error = Error::OnlyMemAddressesAllowed;
+        return;
+    }
+
+    if (addr < LocalStart) {
+        memset(_global + (addr - GlobalStart), value, count * sizeof(uint32_t));
+    } else {
+        memset(&_stack.local(addr - LocalStart), value, count * sizeof(uint32_t));
+    }
+}
 
 bool
 Interpreter::init(uint8_t cmd, const uint8_t* buf, uint8_t size)
@@ -225,121 +263,31 @@ Interpreter::execute(uint16_t addr)
                 break;
             case Op::CallNative: {
                 id = getConst();
-
-                // Save the _pc just to make setFrame work
-                _stack.push(_pc);
                 
-                uint8_t numParams = 0;
-                
-                switch(NativeFunction(id)) {
-                    case NativeFunction::None:
-                        _error = Error::InvalidNativeFunction;
-                        return -1;
-                    case NativeFunction::Animate: numParams = 1; break;
-                    case NativeFunction::Param: numParams = 1; break;
-                    case NativeFunction::Float: numParams = 1; break;
-                    case NativeFunction::Int: numParams = 1; break;
-                    case NativeFunction::LogInt: numParams = 1; break;
-                    case NativeFunction::LogFloat: numParams = 1; break;
-                    case NativeFunction::LogHex: numParams = 2; break;
-                    case NativeFunction::RandomInt: numParams = 2; break;
-                    case NativeFunction::RandomFloat: numParams = 2; break;
-                    case NativeFunction::InitArray: numParams = 3; break;
-                    case NativeFunction::MinInt: numParams = 2; break;
-                    case NativeFunction::MinFloat: numParams = 2; break;
-                    case NativeFunction::MaxInt: numParams = 2; break;
-                    case NativeFunction::MaxFloat: numParams = 2; break;
-                }
-
-                if (!_stack.setFrame(numParams, 0)) {
-                    return -1;
-                }
-                
-                int32_t returnVal = 0;
-
-                switch(NativeFunction(id)) {
-                    case NativeFunction::None:
-                        _error = Error::InvalidNativeFunction;
-                        return -1;
-                    case NativeFunction::Animate: {
-                        uint32_t i = _stack.local(0);
-                        returnVal = animate(i);
-                        break;
-                    }
-                    case NativeFunction::Param: {
-                        uint32_t i = _stack.local(0);
-                        returnVal = uint32_t(_params[i]);
-                        break;
-                    }
-                    case NativeFunction::Float: {
-                        uint32_t v = _stack.local(0);
-                        returnVal = floatToInt(float(v));
-                        break;
-                    }
-                    case NativeFunction::Int: {
-                        float v = intToFloat(_stack.local(0));
-                        returnVal = uint32_t(int32_t(v));
-                        break;
-                    }
-                    case NativeFunction::LogInt: {
-                        logInt(_pc - 1, -1, int32_t(_stack.local(0)));
-                        break;
-                    }
-                    case NativeFunction::LogFloat: {
-                        logFloat(_pc - 1, -1, intToFloat(_stack.local(0)));
-                        break;
-                    }
-                    case NativeFunction::LogHex: {
-                        uint32_t i = _stack.local(0);
-                        uint32_t v = _stack.local(0);
-                        logHex(_pc - 1, i, v);
-                        break;
-                    }
-                    case NativeFunction::RandomInt: {
-                        int32_t min = _stack.local(0);
-                        int32_t max = _stack.local(1);
-                        returnVal = uint32_t(random(min, max));
-                        break;
-                    }
-                    case NativeFunction::RandomFloat: {
-                        float min = intToFloat(_stack.local(0));
-                        float max = intToFloat(_stack.local(1));
-                        returnVal = floatToInt(random(min, max));
-                        break;
-                    }
-                    case NativeFunction::InitArray: {
-                        uint32_t i = _stack.local(0);
-                        uint32_t v = _stack.local(1);
-                        uint32_t n = _stack.local(2);
-
-                        // Only global or local
-                        if (i < GlobalStart) {
-                            _error = Error::OnlyMemAddressesAllowed;
+                // Find the function
+                bool found = false;
+                for (int i = 0; i < _nativeModulesSize; ++i) {
+                    if (_nativeModules[i]->hasId(id)) {
+                        found = true;
+                        
+                        // Save the _pc just to make setFrame work
+                        _stack.push(_pc);
+                        
+                        if (!_stack.setFrame(_nativeModules[i]->numParams(id), 0)) {
                             return -1;
                         }
-                
-                        if (i < LocalStart) {
-                            memset(_global + (i - GlobalStart), v, n * sizeof(uint32_t));
-                        } else {
-                            memset(&_stack.local(i - LocalStart), v, n * sizeof(uint32_t));
-                        }
+
+                        int32_t returnVal = _nativeModules[i]->call(this, id);
+ 
+                        _pc = _stack.restoreFrame(returnVal);
                         break;
                     }
-                    case NativeFunction::MinInt:
-                        _stack.push(min(int32_t(_stack.local(0)), int32_t(_stack.local(1))));
-                        break;
-                    case NativeFunction::MinFloat:
-                        _stack.push(floatToInt(min(intToFloat(_stack.local(0)), intToFloat(_stack.local(1)))));
-                        break;
-                    case NativeFunction::MaxInt:
-                        _stack.push(max(int32_t(_stack.local(0)), int32_t(_stack.local(1))));
-                        break;
-                    case NativeFunction::MaxFloat:
-                        _stack.push(floatToInt(max(intToFloat(_stack.local(0)), intToFloat(_stack.local(1)))));
-                        break;
                 }
                 
-                _pc = _stack.restoreFrame(returnVal);
+                if (!found) {
+                    _error = Error::InvalidNativeFunction;
+                    return -1;
+                }
                 break;
             }
             case Op::Return: {
