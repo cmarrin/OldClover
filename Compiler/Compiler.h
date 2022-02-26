@@ -68,6 +68,7 @@ public:
         StackTooBig,
         MismatchedType,
         WrongNumberOfArgs,
+        OnlyAllowedInLoop,
     };
     
     Compiler() { }

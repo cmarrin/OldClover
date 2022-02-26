@@ -284,7 +284,10 @@ CloverCompileEngine::statement()
     if (compoundStatement()) return true;
     if (ifStatement()) return true;
     if (forStatement()) return true;
+    if (whileStatement()) return true;
+    if (loopStatement()) return true;
     if (returnStatement()) return true;
+    if (jumpStatement()) return true;
     if (expressionStatement()) return true;
     return false;
 }
@@ -418,6 +421,78 @@ CloverCompileEngine::forStatement()
 }
 
 bool
+CloverCompileEngine::whileStatement()
+{
+    if (!match(Reserved::While)) {
+        return false;
+    }
+
+    enterJumpContext();
+
+    expect(Token::OpenParen);
+
+    // Loop starts with an if test of expr
+    uint16_t startAddr = _rom8.size();
+
+    arithmeticExpression();
+    expect(bakeExpr(ExprAction::Right) == Type::Int, Compiler::Error::ExpectedInt);
+
+    // Invert the result so we can break if the result is false
+    addOp(Op::LNot);
+    addOpInt(Op::If, 2);
+
+    addJumpEntry(JumpEntry::Type::Break);
+
+    addOp(Op::EndIf);
+    
+    expect(Token::CloseParen);
+    
+    statement();
+
+    uint16_t loopAddr = _rom8.size();
+    
+    // Loop back to the beginning
+    addOp(Op::Loop);
+
+    uint16_t offset = uint16_t(_rom8.size()) - startAddr + 1;
+    expect(offset < 256, Compiler::Error::JumpTooBig);
+    addInt(uint8_t(offset));
+    
+    // Now resolve all the jumps
+    exitJumpContext(loopAddr);
+
+    return true;
+}
+
+bool
+CloverCompileEngine::loopStatement()
+{
+    if (!match(Reserved::Loop)) {
+        return false;
+    }
+
+    enterJumpContext();
+
+    uint16_t startAddr = _rom8.size();
+
+    statement();
+
+    uint16_t loopAddr = _rom8.size();
+    
+    // Loop back to the beginning
+    addOp(Op::Loop);
+
+    uint16_t offset = uint16_t(_rom8.size()) - startAddr + 1;
+    expect(offset < 256, Compiler::Error::JumpTooBig);
+    addInt(uint8_t(offset));
+    
+    // Now resolve all the jumps
+    exitJumpContext(loopAddr);
+
+    return true;
+}
+
+bool
 CloverCompileEngine::returnStatement()
 {
     if (!match(Reserved::Return)) {
@@ -436,6 +511,28 @@ CloverCompileEngine::returnStatement()
     }
     
     addOp(Op::Return);
+    expect(Token::Semicolon);
+    return true;
+}
+
+bool
+CloverCompileEngine::jumpStatement()
+{
+    JumpEntry::Type type;
+    
+    if (match(Reserved::Break)) {
+        type = JumpEntry::Type::Break;
+    } else if (match(Reserved::Continue)) {
+        type = JumpEntry::Type::Continue;
+    } else {
+        return false;
+    }
+    
+    // Make sure we're in a loop
+    expect(_jumpList.empty(), Compiler::Error::OnlyAllowedInLoop);
+    
+    addJumpEntry(type);
+
     expect(Token::Semicolon);
     return true;
 }
@@ -754,6 +851,10 @@ CloverCompileEngine::isReserved(Token token, const std::string str, Reserved& r)
     static std::map<std::string, Reserved> reserved = {
         { "struct",        Reserved::Struct },
         { "return",        Reserved::Return },
+        { "break",         Reserved::Return },
+        { "continue",      Reserved::Return },
+        { "while",         Reserved::Return },
+        { "loop",          Reserved::Return },
     };
 
     if (CompileEngine::isReserved(token, str, r)) {

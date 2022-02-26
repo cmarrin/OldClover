@@ -74,7 +74,10 @@ statement:
       compoundStatement
     | ifStatement
     | forStatement
+    | whileStatement
+    | loopStatement
     | returnStatement
+    | jumpStatement
     | expressionStatement
     ;
   
@@ -87,9 +90,20 @@ ifStatement:
 forStatement:
     'foreach' '(' identifier ':' arithmeticExpression ')' statement ;
     
+whileStatement:
+    'while' '(' arithmeticExpression ')' statement ;
+
+loopStatement:
+    'loop' statement ;
+
 returnStatement:
       'return' [ arithmeticExpression ] ';' ;
       
+jumpStatement:
+      'break' ';'
+    | 'continue' ';'
+    ;
+
 expressionStatement:
     arithmeticExpression ';' ;
     
@@ -217,7 +231,10 @@ private:
     bool compoundStatement();
     bool ifStatement();
     bool forStatement();
+    bool whileStatement();
+    bool loopStatement();
     bool returnStatement();
+    bool jumpStatement();
     bool expressionStatement();
     
     enum class ArithType { Assign, Op };
