@@ -153,10 +153,7 @@ public:
     void initArray(uint32_t addr, uint32_t value, uint32_t count);
 
     virtual uint8_t rom(uint16_t i) const = 0;
-    virtual void logInt(uint16_t addr, int8_t i, int32_t v) const = 0;
-    virtual void logFloat(uint16_t addr, int8_t i, float v) const = 0;
-    virtual void logHex(uint16_t addr, int8_t i, uint32_t v) const = 0;
-    virtual void logString(const char* s) const = 0;
+    virtual void log(const char* s) const = 0;
 
 private:
     class Stack

@@ -30,19 +30,6 @@ NativeCore::addFunctions(CompileEngine* comp)
                             CompileEngine::SymbolList {
                                 { "v", 0, CompileEngine::Type::Float },
                             });
-    comp->addNative("LogInt", uint8_t(Id::LogInt), CompileEngine::Type::None,
-                            CompileEngine::SymbolList {
-                                { "i", 0, CompileEngine::Type::Int },
-                            });
-    comp->addNative("LogFloat", uint8_t(Id::LogFloat), CompileEngine::Type::None,
-                            CompileEngine::SymbolList {
-                                { "i", 0, CompileEngine::Type::Float },
-                            });
-    comp->addNative("LogHex", uint8_t(Id::LogHex), CompileEngine::Type::None,
-                            CompileEngine::SymbolList {
-                                { "i", 0, CompileEngine::Type::Int },
-                                { "v", 1, CompileEngine::Type::Int },
-                            });
     comp->addNative("RandomInt", uint8_t(Id::RandomInt), CompileEngine::Type::Int,
                             CompileEngine::SymbolList {
                                 { "min", 0, CompileEngine::Type::Int },
@@ -92,9 +79,6 @@ NativeCore::hasId(uint8_t id) const
         case Id::Param        :
         case Id::Float        :
         case Id::Int          :
-        case Id::LogInt       :
-        case Id::LogFloat     :
-        case Id::LogHex       :
         case Id::RandomInt    :
         case Id::RandomFloat  :
         case Id::InitArray    :
@@ -115,9 +99,6 @@ NativeCore::numParams(uint8_t id) const
         case Id::Param          : return 1;
         case Id::Float          : return 1;
         case Id::Int            : return 1;
-        case Id::LogInt         : return 1;
-        case Id::LogFloat       : return 1;
-        case Id::LogHex         : return 2;
         case Id::RandomInt      : return 2;
         case Id::RandomFloat    : return 2;
         case Id::InitArray      : return 3;
@@ -149,20 +130,6 @@ NativeCore::call(Interpreter* interp, uint8_t id)
         case Id::Int          : {
             float v = intToFloat(interp->stackLocal(0));
             return uint32_t(int32_t(v));
-        }
-        case Id::LogInt       : {
-            interp->logInt(interp->pc() - 1, -1, int32_t(interp->stackLocal(0)));
-            return 0;
-        }
-        case Id::LogFloat     : {
-            interp->logFloat(interp->pc() - 1, -1, intToFloat(interp->stackLocal(0)));
-            return 0;
-        }
-        case Id::LogHex       : {
-            uint32_t i = interp->stackLocal(0);
-            uint32_t v = interp->stackLocal(1);
-            interp->logHex(interp->pc() - 1, i, v);
-            return 0;
         }
         case Id::RandomInt    : {
             int32_t min = interp->stackLocal(0);

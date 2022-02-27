@@ -512,26 +512,26 @@ Interpreter::log(const char* fmt, uint8_t numArgs)
         if (c[0] == '%') {
             c[0] = fmt[i++];
             if (c[0] == '%') {
-                logString(c);
+                log(c);
             } else if (c[0] == 'i') {
                 if (arg == 0) {
                     return false;
                 }
                 String v = to_string(int32_t(_stack.top(arg - 1)));
                 --arg;
-                logString(v.c_str());
+                log(v.c_str());
             } else if (c[0] == 'f') {
                 if (arg == 0) {
                     return false;
                 }
                 String v = to_string(intToFloat(_stack.top(arg - 1)));
                 --arg;
-                logString(v.c_str());
+                log(v.c_str());
             } else {
                 return false;
             }
         } else {
-            logString(c);
+            log(c);
         }
     }
     
