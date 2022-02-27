@@ -249,14 +249,14 @@ protected:
     
     struct Command
     {
-        Command(char cmd, uint8_t count, uint16_t initAddr, uint16_t loopAddr)
+        Command(const std::string& cmd, uint8_t count, uint16_t initAddr, uint16_t loopAddr)
             : _cmd(cmd)
             , _count(count)
             , _initAddr(initAddr)
             , _loopAddr(loopAddr)
         { }
         
-        char _cmd;
+        std::string _cmd;
         uint8_t _count;
         uint16_t _initAddr = 0;
         uint16_t _loopAddr = 0;

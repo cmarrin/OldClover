@@ -70,14 +70,15 @@ Decompiler::commands()
 {
     struct Entry
     {
-        Entry(uint8_t cmd, uint8_t params, uint16_t init, uint16_t loop)
+        Entry(const std::string& cmd, uint8_t params, uint16_t init, uint16_t loop)
             : _cmd(cmd)
             , _params(params)
             , _init(init)
             , _loop(loop)
         { }
         
-        uint8_t _cmd, _params;
+        std::string _cmd;
+        uint8_t _params;
         uint16_t _init, _loop;
     };
     
@@ -85,9 +86,14 @@ Decompiler::commands()
 
     // Accumulate all Command entries
     while(1) {
-        uint8_t cmd = getUInt8();
-        if (!cmd) {
+        std::string cmd;
+        cmd += getUInt8();
+        if (cmd[0] == '\0') {
             break;
+        }
+
+        for (int i = 1; i < 7; ++i) {
+            cmd += getUInt8();
         }
         entries.emplace_back(cmd, getUInt8(), getUInt16(), getUInt16());
     }
@@ -109,11 +115,9 @@ Decompiler::commands()
     for (auto& entry : entries) {
         doIndent();
         incIndent();
-        _out->append("command '");
-        char c[2] = " ";
-        c[0] = entry._cmd;
-        _out->append(c);
-        _out->append("' ");
+        _out->append("command \"");
+        _out->append(entry._cmd);
+        _out->append("\" ");
         _out->append(std::to_string(entry._params));
         _out->append(" ");
         _out->append(std::to_string(entry._init + _codeOffset));

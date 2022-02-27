@@ -120,7 +120,7 @@ public:
     Interpreter(NativeModule** mod, uint32_t modSize);
     ~Interpreter();
     
-    bool init(uint8_t cmd, const uint8_t* buf, uint8_t size);
+    bool init(const char* cmd, const uint8_t* buf, uint8_t size);
     int32_t loop();
 
     Error error() const { return _error; }

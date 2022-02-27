@@ -43,7 +43,6 @@ public:
         ExpectedOpcode,
         ExpectedEnd,
         ExpectedIdentifier,
-        ExpectedCommandId,
         ExpectedExpr,
         ExpectedArgList,
         ExpectedFormalParams,
@@ -71,6 +70,7 @@ public:
         WrongNumberOfArgs,
         WrongType,
         OnlyAllowedInLoop,
+        DuplicateCmd,
     };
     
     Compiler() { }

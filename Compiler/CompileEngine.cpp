@@ -110,7 +110,11 @@ CompileEngine::emit(std::vector<uint8_t>& executable)
     executable.insert(executable.end(), buf, buf + _rom32.size() * 4);
 
     for (int i = 0; i < _commands.size(); ++i) {
-        executable.push_back(_commands[i]._cmd);
+        const std::string& cmd = _commands[i]._cmd;
+        for (int i = 0; i < 7; ++i) {
+            executable.push_back(cmd[i]);
+        }
+        
         executable.push_back(_commands[i]._count);
         executable.push_back(uint8_t(_commands[i]._initAddr));
         executable.push_back(uint8_t(_commands[i]._initAddr >> 8));
@@ -179,12 +183,6 @@ CompileEngine::command()
 
     expect(identifier(id), Compiler::Error::ExpectedIdentifier);
     
-    // Command Identifier must be a single char from 'a' to 'p'
-    if (id.size() != 1 || id[0] < 'a' || id[0] > 'p') {
-        _error = Compiler::Error::ExpectedCommandId;
-        throw true;
-    }
-
     int32_t paramCount;
     expect(integerValue(paramCount), Compiler::Error::ExpectedValue);
     
@@ -194,7 +192,15 @@ CompileEngine::command()
         throw true;
     }
     
-    _commands.emplace_back(id[0], paramCount, handleFunctionName().addr(), handleFunctionName().addr());
+    // Command Identifier can be any length, but we only save the
+    // first 7 chars, so it has to be unique at that length
+    id.resize(7);
+
+    auto it = find_if(_commands.begin(), _commands.end(),
+                    [id](const Command& cmd) { return cmd._cmd == id; });
+    expect(it == _commands.end(), Compiler::Error::DuplicateCmd);
+    
+    _commands.emplace_back(id, paramCount, handleFunctionName().addr(), handleFunctionName().addr());
     return true;
 }
 

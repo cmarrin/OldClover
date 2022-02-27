@@ -48,7 +48,7 @@ Interpreter::initArray(uint32_t addr, uint32_t value, uint32_t count)
 }
 
 bool
-Interpreter::init(uint8_t cmd, const uint8_t* buf, uint8_t size)
+Interpreter::init(const char* cmd, const uint8_t* buf, uint8_t size)
 {
     memcpy(_params, buf, size);
     _paramsSize = size;
@@ -83,11 +83,18 @@ Interpreter::init(uint8_t cmd, const uint8_t* buf, uint8_t size)
             _codeOffset++;
             break;
         }
-        if (c == cmd) {
+        
+        char buf[8];
+        buf[7] = '\0';
+        for (int i = 0; i < 7; ++i) {
+            buf[i] = getUInt8ROM(_codeOffset + i);
+        }
+        
+        if (strcmp(buf, cmd) == 0) {
             // found cmd
-            _numParams = getUInt8ROM(_codeOffset + 1);
-            _initStart = getUInt16ROM(_codeOffset + 2);
-            _loopStart = getUInt16ROM(_codeOffset + 4);
+            _numParams = getUInt8ROM(_codeOffset + 7);
+            _initStart = getUInt16ROM(_codeOffset + 8);
+            _loopStart = getUInt16ROM(_codeOffset + 10);
             
             found = true;
             
@@ -95,7 +102,7 @@ Interpreter::init(uint8_t cmd, const uint8_t* buf, uint8_t size)
             // to find where the code starts
         }
         
-        _codeOffset += 6;
+        _codeOffset += 12;
     }
     
     if (!found) {
