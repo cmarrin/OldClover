@@ -78,6 +78,7 @@ statement:
     | loopStatement
     | returnStatement
     | jumpStatement
+    | logStatement
     | expressionStatement
     ;
   
@@ -103,6 +104,9 @@ jumpStatement:
       'break' ';'
     | 'continue' ';'
     ;
+
+logStatement:
+    'log' '(' <string> { ',' arithmeticExpression } ')' ';' ;
 
 expressionStatement:
     arithmeticExpression ';' ;
@@ -235,6 +239,7 @@ private:
     bool loopStatement();
     bool returnStatement();
     bool jumpStatement();
+    bool logStatement();
     bool expressionStatement();
     
     enum class ArithType { Assign, Op };

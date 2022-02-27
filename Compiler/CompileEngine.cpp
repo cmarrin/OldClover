@@ -37,6 +37,7 @@ static std::vector<OpData> _opcodes = {
 
     { "Jump",           Op::Jump            , OpParams::Sz },
     { "Loop",           Op::Loop            , OpParams::Sz },
+    { "log",            Op::Log             , OpParams::Index_Sz_S },
     
     { "Or",             Op::Or              , OpParams::None },
     { "Xor",            Op::Xor             , OpParams::None },
@@ -381,6 +382,18 @@ CompileEngine::floatValue(float& f)
     }
     
     f = _scanner.getTokenValue().number;
+    _scanner.retireToken();
+    return true;
+}
+
+bool
+CompileEngine::stringValue(std::string& str)
+{
+    if (_scanner.getToken() != Token::String) {
+        return false;
+    }
+    
+    str = _scanner.getTokenString();
     _scanner.retireToken();
     return true;
 }

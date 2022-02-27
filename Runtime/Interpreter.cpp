@@ -251,6 +251,22 @@ Interpreter::execute(uint16_t addr)
                 _pc -= getSz();
                 break;
 
+            case Op::Log: {
+                if (_stringBuf) {
+                    delete [ ] _stringBuf;
+                }
+                _stringSize = getSz();
+                _stringBuf = new char[_stringSize + 1];
+                
+                for (int i = 0; i < _stringSize; ++i) {
+                    _stringBuf[i] = getConst();
+                }
+                
+                _stringBuf[_stringSize] = '\0';
+                log(_stringBuf, index);
+                break;
+            }
+            
             case Op::Call:
                 targ = uint16_t(getId()) | (uint16_t(index)  << 8);
                 _stack.push(_pc);
@@ -469,4 +485,49 @@ Interpreter::animate(uint32_t index)
         }
     }
     return 0;
+}
+
+bool
+Interpreter::log(const char* fmt, uint8_t numArgs)
+{
+    // This is a very simplified version of printf. It
+    // handles '%i' and '%f'
+    uint8_t arg = numArgs;
+    
+    for (int i = 0; ; ) {
+        char c[2];;
+        c[1] = '\0';
+        c[0] = fmt[i++];
+        if (c[0] == '\0') {
+            break;
+        }
+        
+        if (c[0] == '%') {
+            c[0] = fmt[i++];
+            if (c[0] == '%') {
+                logString(c);
+            } else if (c[0] == 'i') {
+                if (arg == 0) {
+                    return false;
+                }
+                String v = to_string(int32_t(_stack.top(arg - 1)));
+                --arg;
+                logString(v.c_str());
+            } else if (c[0] == 'f') {
+                if (arg == 0) {
+                    return false;
+                }
+                String v = to_string(intToFloat(_stack.top(arg - 1)));
+                --arg;
+                logString(v.c_str());
+            } else {
+                return false;
+            }
+        } else {
+            logString(c);
+        }
+    }
+    
+    _stack.pop(numArgs);
+    return true;
 }

@@ -58,6 +58,7 @@ enum class Token : uint8_t {
     Whitespace  = 0x86,
     Float       = 0x87,
     Identifier  = 0x88,
+    String      = 0x89,
     NewLine     = 0x89,
     Integer     = 0x8a,
     Special     = 0x8c,
@@ -151,7 +152,7 @@ public:
     const std::string getTokenString()
     {
         const TokenType tokenType = getTokenValue();
-        return (_currentToken == Token::Identifier) ? tokenType.str : "";
+        return (_currentToken == Token::Identifier || _currentToken == Token::String) ? tokenType.str : "";
     }
     
     void retireToken() { _currentToken = Token::None; }
@@ -181,6 +182,7 @@ private:
   		_lastChar = c;
 	}
 
+  	Token scanString(char terminal);
   	Token scanIdentifier();
   	Token scanNumber(TokenType& tokenValue);
   	Token scanComment();
@@ -200,7 +202,6 @@ private:
     bool _ignoreNewlines = false;
     
     std::vector<std::pair<int32_t, std::string>>* _annotations;
-
 };
 
 }

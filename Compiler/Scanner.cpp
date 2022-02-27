@@ -13,6 +13,80 @@
 
 using namespace arly;
 
+Token Scanner::scanString(char terminal)
+{    
+	uint8_t c;
+	_tokenString.clear();
+	
+	while ((c = get()) != C_EOF) {
+		if (c == terminal) {
+			break;
+		}
+        while (c == '\\') {
+            switch((c = get())) {
+                case 'a': c = 0x07; break;
+                case 'b': c = 0x08; break;
+                case 'f': c = 0x0c; break;
+                case 'n': c = 0x0a; break;
+                case 'r': c = 0x0d; break;
+                case 't': c = 0x09; break;
+                case 'v': c = 0x0b; break;
+                case '\\': c = 0x5c; break;
+                case '\'': c = 0x27; break;
+                case '"': c = 0x22; break;
+                case '?': c = 0x3f; break;
+                case 'u':
+                case 'x': {
+                    if ((c = get()) == C_EOF) {
+                        return Token::String;
+                    }
+                    
+                    if (!isHex(c) && !isdigit(c)) {
+                        c = '?';
+                        break;
+                    }
+                    
+                    uint32_t num = 0;
+                    putback(c);
+                    while ((c = get()) != C_EOF) {
+                        if (!isHex(c) && !isdigit(c)) {
+                            break;
+                        }
+                        if (isdigit(c)) {
+                            num = (num << 4) | (c - '0');
+                        } else if (isUpper(c)) {
+                            num = (num << 4) | ((c - 'A') + 0x0a);
+                        } else {
+                            num = (num << 4) | ((c - 'a') + 0x0a);
+                        }
+                    }
+                    if (num > 0xffffff) {
+                        _tokenString += static_cast<uint8_t>(num >> 24);
+                        _tokenString += static_cast<uint8_t>(num >> 16);
+                        _tokenString += static_cast<uint8_t>(num >> 8);
+                        _tokenString += static_cast<uint8_t>(num);
+                    } else if (num > 0xffff) {
+                        _tokenString += static_cast<uint8_t>(num >> 16);
+                        _tokenString += static_cast<uint8_t>(num >> 8);
+                        _tokenString += static_cast<uint8_t>(num);
+                    } else if (num > 0xff) {
+                        _tokenString += static_cast<uint8_t>(num >> 8);
+                        _tokenString += static_cast<uint8_t>(num);
+                    } else {
+                        _tokenString += static_cast<uint8_t>(num);
+                    }
+                    break;
+                }
+                default:
+                    c = '?';
+                    break;
+            }
+        }
+		_tokenString += c;
+	}
+	return Token::String;
+}
+
 Token Scanner::scanIdentifier()
 {
 	uint8_t c;
@@ -295,6 +369,12 @@ Token Scanner::getToken(TokenType& tokenValue)
 				}
 				break;
 				
+			case '\"':
+			case '\'':
+				token = scanString(c);
+                tokenValue.str = _tokenString.c_str();
+				break;
+
 			default:
 				putback(c);
 				if ((token = scanSpecial()) != Token::EndOfFile) {                    

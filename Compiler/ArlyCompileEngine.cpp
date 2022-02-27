@@ -165,7 +165,7 @@ ArlyCompileEngine::var()
     expect(identifier(id), Compiler::Error::ExpectedIdentifier);
     
     int32_t size;
-    expect(integerValue(size), Compiler::Error::ExpectedInt);
+    expect(integerValue(size), Compiler::Error::WrongType);
 
     // FIXME: deal with locals
     _globals.emplace_back(id, _nextMem, t, Symbol::Storage::Global);
@@ -260,7 +260,7 @@ ArlyCompileEngine::handleConst()
         expect(fun.isNative(), Compiler::Error::ExpectedDef);
         i = uint8_t(fun.nativeId());
     } else {
-        expect(integerValue(i), Compiler::Error::ExpectedInt);
+        expect(integerValue(i), Compiler::Error::WrongType);
     }
 
     expect(i >= 0 && i < 256, Compiler::Error::ParamOutOfRange);
@@ -366,7 +366,9 @@ ArlyCompileEngine::opStatement()
             _rom8.push_back(uint8_t(op));
             _rom8.push_back((handleI() << 4) | handleI());
             break;
-        case OpParams::Id_Sz:
+        case OpParams::Index_Sz_S:
+            // FIXME: Handle this
+            break;
         case OpParams::Sz:
             // Should never get here
             break;

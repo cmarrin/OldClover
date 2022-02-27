@@ -279,13 +279,31 @@ Decompiler::statement()
             _out->append(std::to_string(getUInt8()));
             _out->append("]");
             break;
-        case OpParams::Id_Sz:
-            _out->append(" [");
-            _out->append(std::to_string(getUInt8()));
-            _out->append("] [");
-            _out->append(std::to_string(getUInt8()));
-            _out->append("]");
+        case OpParams::Index_Sz_S: {
+            _out->append(std::to_string(index));
+            _out->append(" \"");
+            
+            uint8_t sz = getUInt8();
+            while(sz-- > 0) {
+                uint8_t c = getUInt8();
+                if (c >= 0x20) {
+                    (*_out) += char(c);
+                } else {
+                    (*_out) += '\\';
+                    if (c == '\n') {
+                        (*_out) += 'n';
+                    } else {
+                        (*_out) += 'x';
+                        uint8_t d = c >> 4;
+                        (*_out) += char((d > 9) ? (d + 'a' - 10) : (d + '0'));
+                        d = c & 0x0f;
+                        (*_out) += char((d > 9) ? (d + 'a' - 10) : (d + '0'));
+                    }
+                }
+            }
+            _out->append("\"");
             break;
+        }
     }
     
     _out->append("\n");

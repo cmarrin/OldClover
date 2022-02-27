@@ -100,6 +100,7 @@ protected:
         Return,
         Break,
         Continue,
+        Log,
         Effect,
         End,
         Loop,
@@ -144,6 +145,7 @@ protected:
     bool identifier(std::string& id, bool retire = true);
     bool integerValue(int32_t& i);
     bool floatValue(float& f);
+    bool stringValue(std::string&);
     bool reserved();
     bool reserved(Reserved &r);
     

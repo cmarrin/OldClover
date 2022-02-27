@@ -288,6 +288,7 @@ CloverCompileEngine::statement()
     if (loopStatement()) return true;
     if (returnStatement()) return true;
     if (jumpStatement()) return true;
+    if (logStatement()) return true;
     if (expressionStatement()) return true;
     return false;
 }
@@ -315,7 +316,7 @@ CloverCompileEngine::ifStatement()
     expect(Token::OpenParen);
     
     arithmeticExpression();
-    expect(bakeExpr(ExprAction::Right) == Type::Int, Compiler::Error::ExpectedInt);
+    expect(bakeExpr(ExprAction::Right) == Type::Int, Compiler::Error::WrongType);
     expect(Token::CloseParen);
 
     // At this point the expresssion has been executed and the result is on TOS
@@ -387,7 +388,7 @@ CloverCompileEngine::forStatement()
     addOpId(Op::Push, sym.addr());
     
     arithmeticExpression();
-    expect(bakeExpr(ExprAction::Right) == Type::Int, Compiler::Error::ExpectedInt);
+    expect(bakeExpr(ExprAction::Right) == Type::Int, Compiler::Error::WrongType);
     
     // We do the inverse test and break if true
     addOp(Op::GEInt);
@@ -435,7 +436,7 @@ CloverCompileEngine::whileStatement()
     uint16_t startAddr = _rom8.size();
 
     arithmeticExpression();
-    expect(bakeExpr(ExprAction::Right) == Type::Int, Compiler::Error::ExpectedInt);
+    expect(bakeExpr(ExprAction::Right) == Type::Int, Compiler::Error::WrongType);
 
     // Invert the result so we can break if the result is false
     addOp(Op::LNot);
@@ -534,6 +535,42 @@ CloverCompileEngine::jumpStatement()
     addJumpEntry(type);
 
     expect(Token::Semicolon);
+    return true;
+}
+
+bool
+CloverCompileEngine::logStatement()
+{
+    if (!match(Reserved::Log)) {
+        return false;
+    }
+    
+    expect(Token::OpenParen);
+    
+    std::string str;
+    expect(stringValue(str), Compiler::Error::ExpectedString);
+    expect(str.length() < 256, Compiler::Error::StringTooLong);
+    
+    int i = 0;
+    while (match(Token::Comma)) {
+        expect(arithmeticExpression(), Compiler::Error::ExpectedExpr);        
+        expect(++i < 16, Compiler::Error::TooManyVars);
+        
+        Type type = bakeExpr(ExprAction::Right);
+        expect(type == Type::Float || type == Type::Int, Compiler::Error::WrongType);
+    }
+
+    // Emit op. Lower 4 bits are num args. String length is next byte,
+    // followed by string
+    addOpSingleByteIndex(Op::Log, i);
+    addInt(str.length());
+    for (auto it : str) {
+        addInt(uint8_t(it));
+    }
+
+    expect(Token::CloseParen);
+    expect(Token::Semicolon);
+
     return true;
 }
 
@@ -685,7 +722,7 @@ CloverCompileEngine::unaryExpression()
                     addOp(Op::NegInt);
                 }
             } else {
-                expect(type == Type::Int, Compiler::Error::ExpectedInt);
+                expect(type == Type::Int, Compiler::Error::WrongType);
                 addOp((token == Token::Twiddle) ? Op::Not : Op::LNot);
             }
             break;
@@ -725,7 +762,7 @@ CloverCompileEngine::postfixExpression()
             expect(Token::CloseBracket);
             
             // Bake the contents of the brackets, leaving the result in r0
-            expect(bakeExpr(ExprAction::Right) == Type::Int, Compiler::Error::ExpectedInt);
+            expect(bakeExpr(ExprAction::Right) == Type::Int, Compiler::Error::WrongType);
 
             // TOS now has the index.
             // Index the Ref
@@ -851,10 +888,11 @@ CloverCompileEngine::isReserved(Token token, const std::string str, Reserved& r)
     static std::map<std::string, Reserved> reserved = {
         { "struct",        Reserved::Struct },
         { "return",        Reserved::Return },
-        { "break",         Reserved::Return },
-        { "continue",      Reserved::Return },
-        { "while",         Reserved::Return },
-        { "loop",          Reserved::Return },
+        { "break",         Reserved::Break },
+        { "continue",      Reserved::Continue },
+        { "log",           Reserved::Log },
+        { "while",         Reserved::While },
+        { "loop",          Reserved::Loop },
     };
 
     if (CompileEngine::isReserved(token, str, r)) {

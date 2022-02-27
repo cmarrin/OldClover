@@ -38,7 +38,7 @@ public:
         ExpectedToken,
         ExpectedType,
         ExpectedValue,
-        ExpectedInt,
+        ExpectedString,
         ExpectedRef,
         ExpectedOpcode,
         ExpectedEnd,
@@ -58,6 +58,7 @@ public:
         JumpTooBig,
         IfTooBig,
         ElseTooBig,
+        StringTooLong,
         TooManyConstants,
         TooManyVars,
         DefOutOfRange,
@@ -68,6 +69,7 @@ public:
         StackTooBig,
         MismatchedType,
         WrongNumberOfArgs,
+        WrongType,
         OnlyAllowedInLoop,
     };
     

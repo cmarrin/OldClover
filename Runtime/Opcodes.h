@@ -165,7 +165,7 @@ Opcodes:
     Pop id                  - global[id - 0x80] or stack[bp + id = 0xc0] = stack[--sp]
     
     PushIntConst const      - stack[sp++] = const (constant value -128 to 127)
-    PushIntConstS constS    - stack[sp++] = const (in lower 4 bits of op, -8 to 7)
+    PushIntConstS constS    - stack[sp++] = const (in lower 4 bits of op, 0 to 15)
 
     // The opcodes deal with variable references. LoadRef simply places
     // the address of the passed id in the passed register. It can later
@@ -215,6 +215,9 @@ Opcodes:
     SetFrame p l            - Set the local frame with number of formal
                               params (p) and locals (l). This must be
                               the first instruction of every function
+                              
+    Log n sz <str>          - n in lower 4 bits of op (0..15), sz is next byte, 
+                              length of string, followed by string bytes
     
     21 ops always use r0 and r1 leaving result in r0
     
@@ -381,6 +384,7 @@ enum class Op: uint8_t {
     Offset          = 0x90,
     Index           = 0xa0,
     PushIntConstS   = 0xb0,
+    Log             = 0xc0,
     
     End             = 0xff,
     
@@ -397,7 +401,7 @@ enum class OpParams : uint8_t {
     Target,     // b+1 = call target bits 7:2, b[2:0] = call target bits 1:0};
     P_L,        // b+1[7:4] = num params, b+1[3:0] = num locals
     Sz,         // b+1 = <int>
-    Id_Sz,      // b+1 = <id>, b+2 = <int>
+    Index_Sz_S, // b[3:0] = <int> (0-15), b+1 = <int>, followed by Sz string bytes
 };
 
 }

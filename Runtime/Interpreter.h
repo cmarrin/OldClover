@@ -18,7 +18,11 @@
 
 #ifdef ARDUINO
     #include <Arduino.h>
+    static inline String to_string(int32_t v) { return String(v); }
+    static inline String to_string(float v) { return String(v); }
 #else
+    #include <string>
+    
     static inline void randomSeed(uint32_t s) { srand(s); }
     static inline int32_t random(int32_t min, int32_t max)
     {
@@ -40,6 +44,10 @@
     {
         return (b > a) ? b : a;
     }
+    
+    using String = std::string;
+    static inline String to_string(int32_t v) { return std::to_string(v); }
+    static inline String to_string(float v) { return std::to_string(v); }
 #endif
 
 namespace arly {
@@ -148,6 +156,7 @@ public:
     virtual void logInt(uint16_t addr, int8_t i, int32_t v) const = 0;
     virtual void logFloat(uint16_t addr, int8_t i, float v) const = 0;
     virtual void logHex(uint16_t addr, int8_t i, uint32_t v) const = 0;
+    virtual void logString(const char* s) const = 0;
 
 private:
     class Stack
@@ -167,7 +176,7 @@ private:
         }
             
         void push(uint32_t v) { ensurePush(); _stack[_sp++] = v; }
-        uint32_t pop() { ensureCount(1); return _stack[--_sp]; }
+        uint32_t pop(uint8_t n = 1) { ensureCount(n); _sp -= n; return _stack[_sp]; }
         void swap()
         {
             ensureCount(2); 
@@ -348,6 +357,8 @@ private:
         _stack.local(addr) = v;
     }
     
+    bool log(const char* fmt, uint8_t numArgs);
+    
     Error _error = Error::None;
     int16_t _errorAddr = -1;
     
@@ -368,6 +379,9 @@ private:
     uint16_t _initStart = 0;
     uint16_t _loopStart = 0;
     uint16_t _codeOffset = 0; // Used by Call to go to the correct absolute address
+    
+    char* _stringBuf = nullptr;
+    uint8_t _stringSize = 0;
 };
 
 }
