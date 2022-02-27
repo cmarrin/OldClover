@@ -109,13 +109,13 @@ CompileEngine::emit(std::vector<uint8_t>& executable)
     char* buf = reinterpret_cast<char*>(&(_rom32[0]));
     executable.insert(executable.end(), buf, buf + _rom32.size() * 4);
 
-    for (int i = 0; i < _effects.size(); ++i) {
-        executable.push_back(_effects[i]._cmd);
-        executable.push_back(_effects[i]._count);
-        executable.push_back(uint8_t(_effects[i]._initAddr));
-        executable.push_back(uint8_t(_effects[i]._initAddr >> 8));
-        executable.push_back(uint8_t(_effects[i]._loopAddr));
-        executable.push_back(uint8_t(_effects[i]._loopAddr >> 8));
+    for (int i = 0; i < _commands.size(); ++i) {
+        executable.push_back(_commands[i]._cmd);
+        executable.push_back(_commands[i]._count);
+        executable.push_back(uint8_t(_commands[i]._initAddr));
+        executable.push_back(uint8_t(_commands[i]._initAddr >> 8));
+        executable.push_back(uint8_t(_commands[i]._loopAddr));
+        executable.push_back(uint8_t(_commands[i]._loopAddr >> 8));
     }
     executable.push_back(0);
     
@@ -169,9 +169,9 @@ CompileEngine::constant()
 }
 
 bool
-CompileEngine::effect()
+CompileEngine::command()
 {
-    if (!match(Reserved::Effect)) {
+    if (!match(Reserved::Command)) {
         return false;
     }
 
@@ -179,7 +179,7 @@ CompileEngine::effect()
 
     expect(identifier(id), Compiler::Error::ExpectedIdentifier);
     
-    // Effect Identifier must be a single char from 'a' to 'p'
+    // Command Identifier must be a single char from 'a' to 'p'
     if (id.size() != 1 || id[0] < 'a' || id[0] > 'p') {
         _error = Compiler::Error::ExpectedCommandId;
         throw true;
@@ -194,7 +194,7 @@ CompileEngine::effect()
         throw true;
     }
     
-    _effects.emplace_back(id[0], paramCount, handleFunctionName().addr(), handleFunctionName().addr());
+    _commands.emplace_back(id[0], paramCount, handleFunctionName().addr(), handleFunctionName().addr());
     return true;
 }
 
@@ -457,7 +457,7 @@ CompileEngine::isReserved(Token token, const std::string str, Reserved& r)
         { "table",      Reserved::Table },
         { "var",        Reserved::Var },
         { "function",   Reserved::Function },
-        { "effect",     Reserved::Effect },
+        { "command",    Reserved::Command },
         { "foreach",    Reserved::ForEach },
         { "if",         Reserved::If },
         { "else",       Reserved::Else },

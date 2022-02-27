@@ -32,7 +32,7 @@ bool Decompiler::decompile()
         }
     
         constants();
-        effects();
+        commands();
     }
     catch(...) {
         return false;
@@ -66,7 +66,7 @@ Decompiler::constants()
 }
 
 void
-Decompiler::effects()
+Decompiler::commands()
 {
     struct Entry
     {
@@ -83,7 +83,7 @@ Decompiler::effects()
     
     std::vector<Entry> entries;
 
-    // Accumulate all Effect entries
+    // Accumulate all Command entries
     while(1) {
         uint8_t cmd = getUInt8();
         if (!cmd) {
@@ -109,7 +109,7 @@ Decompiler::effects()
     for (auto& entry : entries) {
         doIndent();
         incIndent();
-        _out->append("effect '");
+        _out->append("command '");
         char c[2] = " ";
         c[0] = entry._cmd;
         _out->append(c);

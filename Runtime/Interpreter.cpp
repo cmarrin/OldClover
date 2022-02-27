@@ -91,7 +91,7 @@ Interpreter::init(uint8_t cmd, const uint8_t* buf, uint8_t size)
             
             found = true;
             
-            //Need to keep looping through all effects
+            //Need to keep looping through all commands
             // to find where the code starts
         }
         

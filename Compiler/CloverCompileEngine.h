@@ -36,7 +36,7 @@ program:
     { element } ;
 
 element:
-    def | constant | table | struct | var | function | effect ;
+    def | constant | table | struct | var | function | command ;
     
 def:
     'def' <id> <integer> ';'
@@ -57,8 +57,8 @@ var:
 function:
     'function' [ <type> ] <id> '( formalParameterList ')' '{' { var } { statement } '}' ;
 
-effect:
-    'effect' <id> <integer> <id> <id> ';' ;
+command:
+    'command' <id> <integer> <id> <id> ';' ;
 
 structEntry:
     type <id> ';' ;

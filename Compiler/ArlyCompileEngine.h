@@ -10,7 +10,7 @@
 
 Arly Source Format
 
-program         ::= defs constants tables vars functions effects
+program         ::= defs constants tables vars functions commands
 defs            ::= { def <n> }
 def             ::= 'def' <id> <integer>
 constants       ::= { constant <n> }
@@ -20,8 +20,8 @@ table           ::= 'table' type <id> <n> tableEntries 'end'
 tableEntries    ::= { values <n> }
 functions       ::= {function <n>
 function        ::= 'function' <id> <n> statements 'end'
-effects         ::= { effect <n> }
-effect          ::= 'effect' <id> <integer> <n> init loop 'end'
+commands        ::= { command <n> }
+command         ::= 'command' <id> <integer> <n> init loop 'end'
 vars            ::= { var <n> }
 var             ::= type <id> <integer>
 init            ::= 'init' <n> statements 'end' <n>
@@ -72,7 +72,7 @@ private:
     void constants();
     void tables();
     void functions();
-    void effects();
+    void commands();
 
     void tableEntries(Type);
 

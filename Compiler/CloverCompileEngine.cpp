@@ -86,7 +86,7 @@ CloverCompileEngine::element()
     if (strucT()) return true;
     if (function()) return true;
     
-    if (effect()) {
+    if (command()) {
         expect(Token::Semicolon);
         return true;
     }

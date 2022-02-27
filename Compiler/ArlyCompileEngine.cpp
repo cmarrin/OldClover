@@ -20,7 +20,7 @@ ArlyCompileEngine::program()
         tables();
         vars();
         functions();
-        effects();
+        commands();
         
         // Must be at the EOF
         ignoreNewLines();
@@ -81,11 +81,11 @@ ArlyCompileEngine::functions()
 }
 
 void
-ArlyCompileEngine::effects()
+ArlyCompileEngine::commands()
 {
     while(1) {
         ignoreNewLines();
-        if (!effect()) {
+        if (!command()) {
             return;
         }
         expect(Token::NewLine);

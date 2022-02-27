@@ -75,16 +75,15 @@ There are four types of values:
                     above the declared vars. They are accessed with an <id> of
                     0xc0 to 0xff.
 
-Effects
+Commands
 
-An effect name is an id, but only the first character of that id is used as
-the name of the command and that character must be 'A' - 'Z'. Using the same
-first character for two effects is an error. The number given for the 'effect'
-is the number of params expected, used for error checking. Passing too few
-params is an error and the effect does not run. If index passed to PushColorParam
-or PushInt8Param goes beyond end of param list, a 0 is pushed. Param index is 
-4 bits allowing 16 bytes of params. This is enough for 4 colors and 4 bytes of
-params.
+A command name is an id. The compiler accepts commands of any length, but only the
+first 7 characters are stored, so when looking up a command only the first 7
+characters are considered. Using the same first 7 characters  of an id for two 
+commands is an error. The number given for the 'command' is the number of params 
+expected, used for error checking. Passing too few params is an error and the 
+command does not run. If index used to access a param goes beyond end of param list, 
+a 0 is pushed. Param index is 4 bits allowing 16 bytes of params.
 
 ForEach
 
@@ -279,16 +278,15 @@ Opcodes:
     Stack size          - 1 byte: size in 4 byte units needed for the stack
     Unused              - 1 bytes: for alignment
     Constants area      - n 4 byte entries: ends after size 4 byte units
-    Effects entries     - Each entry has:
-                            1 byte command ('a' to 'p')
+    Command entries     - Each entry has:
+                            7 byte command (Unused trailing bytes are set to '\0')
                             1 byte number of param bytes
                             2 bytes start of init instructions, in bytes
                             2 bytes start of loop instructions, in bytes
                             
                           entries end when a byte of 0 is seen
                           
-    Effects             - List of init and loop instructions for each effect
-                          instruction sections are padded to end on a 4 byte boundary                            
+    Commands            - List of init and loop instructions for each command
 */
 
 // Ops of 0x80 and above have an r param in the lower 2 bits.

@@ -101,7 +101,7 @@ protected:
         Break,
         Continue,
         Log,
-        Effect,
+        Command,
         End,
         Loop,
         While,
@@ -121,7 +121,7 @@ protected:
     
     bool def();
     bool constant();
-    bool effect();
+    bool command();
 
     bool values(Type);
 
@@ -247,9 +247,9 @@ protected:
         bool _native = false;
     };
     
-    struct Effect
+    struct Command
     {
-        Effect(char cmd, uint8_t count, uint16_t initAddr, uint16_t loopAddr)
+        Command(char cmd, uint8_t count, uint16_t initAddr, uint16_t loopAddr)
             : _cmd(cmd)
             , _count(count)
             , _initAddr(initAddr)
@@ -294,7 +294,7 @@ protected:
     std::vector<Def> _defs;
     std::vector<Symbol> _globals;
     std::vector<Function> _functions;
-    std::vector<Effect> _effects;
+    std::vector<Command> _commands;
     std::vector<uint32_t> _rom32;
     std::vector<uint8_t> _rom8;
 

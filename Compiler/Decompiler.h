@@ -39,7 +39,7 @@ public:
 
 private:
     void constants();
-    void effects();
+    void commands();
     void init();
     void loop();
     Op statement();
