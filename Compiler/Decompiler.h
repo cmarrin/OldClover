@@ -1,19 +1,20 @@
-//
-//  Decompiler.h
-//  CompileArly
-//
-//  Created by Chris Marrin on 1/9/22.
-//
-// Arly compiler
-//
-// Decompile Arly executable into source string
+/*-------------------------------------------------------------------------
+    This source file is a part of Clover
+    For the latest info, see https://github.com/cmarrin/Clover
+    Copyright (c) 2021-2022, Chris Marrin
+    All rights reserved.
+    Use of this source code is governed by the MIT license that can be
+    found in the LICENSE file.
+-------------------------------------------------------------------------*/
+
+// Decompile executable into source string
 //
 
 #pragma once
 
 #include "Compiler.h"
 
-namespace arly {
+namespace clvr {
 
 class Decompiler
 {

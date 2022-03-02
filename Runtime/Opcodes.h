@@ -1,21 +1,23 @@
-//
-//  Opcodes.h
-//  CompileArly
-//
-//  Created by Chris Marrin on 1/9/22.
-//
-// Arly opcodes
-//
+/*-------------------------------------------------------------------------
+    This source file is a part of Clover
+    For the latest info, see https://github.com/cmarrin/Clover
+    Copyright (c) 2021-2022, Chris Marrin
+    All rights reserved.
+    Use of this source code is governed by the MIT license that can be
+    found in the LICENSE file.
+-------------------------------------------------------------------------*/
 
 #pragma once
 
 #include <stdint.h>
 
-namespace arly {
+namespace clvr {
 
 /*
 
-Arly Machine Code
+Machine Code for compiled Clover code
+
+The machine code and assembly language for the Clover system is called Arly.
 
 Constants and Tables
 

@@ -1,6 +1,7 @@
 /*-------------------------------------------------------------------------
-    For the latest info, see http:www.marrin.org/
-    Copyright (c) 2018-2021, Chris Marrin
+    This source file is a part of Clover
+    For the latest info, see https://github.com/cmarrin/Clover
+    Copyright (c) 2021-2022, Chris Marrin
     All rights reserved.
     Use of this source code is governed by the MIT license that can be
     found in the LICENSE file.
@@ -12,7 +13,7 @@
 #include <istream>
 #include <vector>
 
-namespace arly {
+namespace clvr {
 
 static constexpr uint8_t MAX_ID_LENGTH = 32;
 

@@ -1,9 +1,11 @@
-//
-//  Compiler.cpp
-//  CompileArly
-//
-//  Created by Chris Marrin on 1/9/22.
-//
+/*-------------------------------------------------------------------------
+    This source file is a part of Clover
+    For the latest info, see https://github.com/cmarrin/Clover
+    Copyright (c) 2021-2022, Chris Marrin
+    All rights reserved.
+    Use of this source code is governed by the MIT license that can be
+    found in the LICENSE file.
+-------------------------------------------------------------------------*/
 
 #include "Compiler.h"
 
@@ -14,7 +16,7 @@
 #include <map>
 #include <vector>
 
-using namespace arly;
+using namespace clvr;
 
 bool Compiler::compile(std::istream* istream, Language lang, std::vector<uint8_t>& executable,
                        const std::vector<NativeModule*>& modules,

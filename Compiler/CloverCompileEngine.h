@@ -1,13 +1,16 @@
-//
-//  CloverCompileEngine.h
-//  CompileArly
-//
-//  Created by Chris Marrin on 1/9/22.
-//
+/*-------------------------------------------------------------------------
+    This source file is a part of Clover
+    For the latest info, see https://github.com/cmarrin/Clover
+    Copyright (c) 2021-2022, Chris Marrin
+    All rights reserved.
+    Use of this source code is governed by the MIT license that can be
+    found in the LICENSE file.
+-------------------------------------------------------------------------*/
+
 // Clover compiler
 //
 // A simple imperative language which generates code that can be 
-// executed by the Arly Interpreter
+// executed by the Interpreter
 //
 
 #pragma once
@@ -20,7 +23,7 @@
 #include <istream>
 #include <variant>
 
-namespace arly {
+namespace clvr {
 
 //////////////////////////////////////////////////////////////////////////////
 //

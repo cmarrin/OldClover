@@ -1,14 +1,14 @@
-//
-//  Interpreter.h
-//  CompileArly
-//
-//  Created by Chris Marrin on 1/9/22.
-//
-// Arly Interpreter base class
-//
-// Interpret Arly executable
-//
+/*-------------------------------------------------------------------------
+    This source file is a part of Clover
+    For the latest info, see https://github.com/cmarrin/Clover
+    Copyright (c) 2021-2022, Chris Marrin
+    All rights reserved.
+    Use of this source code is governed by the MIT license that can be
+    found in the LICENSE file.
+-------------------------------------------------------------------------*/
 
+// Interpreter base class
+//
 #pragma once
 
 #include "Opcodes.h"
@@ -50,7 +50,7 @@
     static inline String to_string(float v) { return std::to_string(v); }
 #endif
 
-namespace arly {
+namespace clvr {
 
 static constexpr uint8_t MaxStackSize = 128;    // Could be 255 but let's avoid excessive 
                                                 // memory usage
