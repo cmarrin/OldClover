@@ -36,7 +36,7 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "YES"
-      customWorkingDirectory = "/Users/cmarrin/Projects/git/Pond/PostLightController/Clover"
+      customWorkingDirectory = "$(PROJECT_DIR)"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
@@ -73,11 +73,11 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "Test/Test.clvr"
+            argument = "../Test/Test.clvr"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "Simple.clvr"
+            argument = "../examples/Simple.clvr"
             isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
