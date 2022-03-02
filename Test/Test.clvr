@@ -7,3 +7,15 @@
     found in the LICENSE file.
 -------------------------------------------------------------------------*/
 
+function testInit()
+{
+    log("Test Init\n");
+}
+
+function int testLoop()
+{
+    log("Test Loop\n");
+    return 30;
+}
+
+command test 1 testInit testLoop;

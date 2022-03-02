@@ -15,6 +15,11 @@ using namespace clvr;
 
 Interpreter::Interpreter(NativeModule** mod, uint32_t modSize)
 {
+    // Just in case they don't match
+    if (mod == nullptr) {
+        modSize = 0;
+    }
+    
     _nativeModules = new NativeModule*[modSize + 1];
     _nativeModulesSize = modSize + 1;
     

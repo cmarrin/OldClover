@@ -117,7 +117,7 @@ public:
         StackOutOfRange,
     };
 
-    Interpreter(NativeModule** mod, uint32_t modSize);
+    Interpreter(NativeModule** mod = nullptr, uint32_t modSize = 0);
     ~Interpreter();
     
     bool init(const char* cmd, const uint8_t* buf, uint8_t size);
