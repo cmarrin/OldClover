@@ -167,7 +167,7 @@ protected:
     void addOpTarg(Op op, uint16_t targ)
     {
         annotate();
-        _rom8.push_back(uint8_t(op) | ((targ >> 6) & 0x03));
+        _rom8.push_back(uint8_t(op) | ((targ >> 8) & 0x03));
         _rom8.push_back(uint8_t(targ));
     }
     
