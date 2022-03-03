@@ -200,6 +200,7 @@ protected:
 
     struct Def
     {
+        Def() { }
         Def(std::string name, uint8_t value)
             : _name(name)
             , _value(value)
@@ -286,6 +287,7 @@ protected:
     std::vector<Symbol>& currentLocals() { return currentFunction().locals(); }
 
     bool findSymbol(const std::string&, Symbol&);
+    bool findDef(const std::string&, Def&);
     bool findFunction(const std::string&, Function&);
 
     Compiler::Error _error = Compiler::Error::None;

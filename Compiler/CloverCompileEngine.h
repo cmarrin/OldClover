@@ -202,12 +202,13 @@ private:
         enum class Assign { None, Only, Op };
         
         // assign says this is an assignmentOperator, opAssign says it also has a binary op
-        OpInfo(Token token, uint8_t prec, Op intOp, Op floatOp, Assign assign)
+        OpInfo(Token token, uint8_t prec, Op intOp, Op floatOp, Assign assign, Type resultType)
             : _token(token)
             , _intOp(intOp)
             , _floatOp(floatOp)
             , _prec(prec)
             , _assign(assign)
+            , _resultType(resultType)
         {
         }
         
@@ -221,6 +222,7 @@ private:
         Op intOp() const { return _intOp; }
         Op floatOp() const { return _floatOp; }
         Assign assign() const { return _assign; }
+        Type resultType() const { return _resultType; }
 
     private:
         Token _token;
@@ -228,6 +230,7 @@ private:
         Op _floatOp;
         uint8_t _prec;
         Assign _assign;
+        Type _resultType;
     };
     
     bool element();
@@ -302,6 +305,8 @@ private:
     class Struct
     {
     public:
+        Struct() { }
+        
         Struct(const std::string& name)
             : _name(name)
         { }
@@ -398,7 +403,7 @@ private:
                      > _variant;
     };
     
-    const Struct& structFromType(Type);
+    bool structFromType(Type, Struct&);
     void findStructElement(Type, const std::string& id, uint8_t& index, Type&);
 
     struct JumpEntry

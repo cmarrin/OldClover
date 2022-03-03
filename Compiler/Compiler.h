@@ -47,6 +47,7 @@ public:
         ExpectedFunction,
         ExpectedLHSExpr,
         ExpectedStructType,
+        ExpectedVar,
         AssignmentNotAllowedHere,
         InvalidStructId,
         InvalidParamCount,

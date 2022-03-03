@@ -94,6 +94,7 @@ static void showError(clvr::Compiler::Error error, clvr::Token token, const std:
         case clvr::Compiler::Error::ExpectedFormalParams: err = "expected formal params"; break;
         case clvr::Compiler::Error::ExpectedFunction: err = "expected function name"; break;
         case clvr::Compiler::Error::ExpectedStructType: err = "expected Struct type"; break;
+        case clvr::Compiler::Error::ExpectedVar: err = "expected var"; break;
         case clvr::Compiler::Error::AssignmentNotAllowedHere: err = "assignment not allowed here"; break;
         case clvr::Compiler::Error::InvalidStructId: err = "invalid Struct identifier"; break;
         case clvr::Compiler::Error::InvalidParamCount: err = "invalid param count"; break;

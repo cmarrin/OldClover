@@ -18,29 +18,29 @@ bool
 CloverCompileEngine::opInfo(Token token, OpInfo& op) const
 {
     static std::vector<OpInfo> opInfo = {
-        { Token::Equal,     1, Op::Pop,     Op::Pop,      OpInfo::Assign::Only },
-        { Token::AddSto,    1, Op::AddInt,  Op::AddFloat, OpInfo::Assign::Op   },
-        { Token::SubSto,    1, Op::SubInt,  Op::SubFloat, OpInfo::Assign::Op   },
-        { Token::MulSto,    1, Op::MulInt,  Op::MulFloat, OpInfo::Assign::Op   },
-        { Token::DivSto,    1, Op::DivInt,  Op::DivFloat, OpInfo::Assign::Op   },
-        { Token::AndSto,    1, Op::And,     Op::None,     OpInfo::Assign::Op   },
-        { Token::OrSto,     1, Op::Or,      Op::None,     OpInfo::Assign::Op   },
-        { Token::XorSto,    1, Op::Xor,     Op::None,     OpInfo::Assign::Op   },
-        { Token::LOr,       6, Op::LOr,     Op::None,     OpInfo::Assign::None },
-        { Token::LAnd,      7, Op::LAnd,    Op::None,     OpInfo::Assign::None },
-        { Token::Or,        8, Op::Or,      Op::None,     OpInfo::Assign::None },
-        { Token::Xor,       9, Op::Xor,     Op::None,     OpInfo::Assign::None },
-        { Token::And,      10, Op::And,     Op::None,     OpInfo::Assign::None },
-        { Token::EQ,       11, Op::EQInt,   Op::EQFloat,  OpInfo::Assign::None },
-        { Token::NE,       11, Op::NEInt,   Op::NEFloat,  OpInfo::Assign::None },
-        { Token::LT,       12, Op::LTInt,   Op::LTFloat,  OpInfo::Assign::None },
-        { Token::GT,       12, Op::GTInt,   Op::GTFloat,  OpInfo::Assign::None },
-        { Token::GE,       12, Op::GEInt,   Op::GEFloat,  OpInfo::Assign::None },
-        { Token::LE,       12, Op::LEInt,   Op::LEFloat,  OpInfo::Assign::None },
-        { Token::Plus,     14, Op::AddInt,  Op::AddFloat, OpInfo::Assign::None },
-        { Token::Minus,    14, Op::SubInt,  Op::SubFloat, OpInfo::Assign::None },
-        { Token::Mul,      15, Op::MulInt,  Op::MulFloat, OpInfo::Assign::None },
-        { Token::Div,      15, Op::DivInt,  Op::DivFloat, OpInfo::Assign::None },
+        { Token::Equal,     1, Op::Pop,     Op::Pop,      OpInfo::Assign::Only , Type::None },
+        { Token::AddSto,    1, Op::AddInt,  Op::AddFloat, OpInfo::Assign::Op   , Type::None },
+        { Token::SubSto,    1, Op::SubInt,  Op::SubFloat, OpInfo::Assign::Op   , Type::None },
+        { Token::MulSto,    1, Op::MulInt,  Op::MulFloat, OpInfo::Assign::Op   , Type::None },
+        { Token::DivSto,    1, Op::DivInt,  Op::DivFloat, OpInfo::Assign::Op   , Type::None },
+        { Token::AndSto,    1, Op::And,     Op::None,     OpInfo::Assign::Op   , Type::Int },
+        { Token::OrSto,     1, Op::Or,      Op::None,     OpInfo::Assign::Op   , Type::Int },
+        { Token::XorSto,    1, Op::Xor,     Op::None,     OpInfo::Assign::Op   , Type::Int },
+        { Token::LOr,       6, Op::LOr,     Op::None,     OpInfo::Assign::None , Type::Int },
+        { Token::LAnd,      7, Op::LAnd,    Op::None,     OpInfo::Assign::None , Type::Int },
+        { Token::Or,        8, Op::Or,      Op::None,     OpInfo::Assign::None , Type::Int },
+        { Token::Xor,       9, Op::Xor,     Op::None,     OpInfo::Assign::None , Type::Int },
+        { Token::And,      10, Op::And,     Op::None,     OpInfo::Assign::None , Type::Int },
+        { Token::EQ,       11, Op::EQInt,   Op::EQFloat,  OpInfo::Assign::None , Type::Int },
+        { Token::NE,       11, Op::NEInt,   Op::NEFloat,  OpInfo::Assign::None , Type::Int },
+        { Token::LT,       12, Op::LTInt,   Op::LTFloat,  OpInfo::Assign::None , Type::Int },
+        { Token::GT,       12, Op::GTInt,   Op::GTFloat,  OpInfo::Assign::None , Type::Int },
+        { Token::GE,       12, Op::GEInt,   Op::GEFloat,  OpInfo::Assign::None , Type::Int },
+        { Token::LE,       12, Op::LEInt,   Op::LEFloat,  OpInfo::Assign::None , Type::Int },
+        { Token::Plus,     14, Op::AddInt,  Op::AddFloat, OpInfo::Assign::None , Type::None },
+        { Token::Minus,    14, Op::SubInt,  Op::SubFloat, OpInfo::Assign::None , Type::None },
+        { Token::Mul,      15, Op::MulInt,  Op::MulFloat, OpInfo::Assign::None , Type::None },
+        { Token::Div,      15, Op::DivInt,  Op::DivFloat, OpInfo::Assign::None , Type::None },
     };
 
     auto it = find_if(opInfo.begin(), opInfo.end(),
@@ -385,6 +385,9 @@ CloverCompileEngine::forStatement()
     
     Symbol sym;
     expect(findSymbol(id, sym), Compiler::Error::UndefinedIdentifier);
+    expect(sym.storage() == Symbol::Storage::Local || 
+           sym.storage() == Symbol::Storage::Global, Compiler::Error::ExpectedVar);
+    
     addOpId(Op::Push, sym.addr());
     
     arithmeticExpression();
@@ -642,12 +645,20 @@ CloverCompileEngine::arithmeticExpression(uint8_t minPrec, ArithType arithType)
                 expect(leftType == rightType, Compiler::Error::MismatchedType);
                 addOp((leftType == Type::Int) ? info.intOp() : info.floatOp());
                 break;
-            case OpInfo::Assign::None:
+            case OpInfo::Assign::None: {
                 rightType = bakeExpr(ExprAction::Right);
                 expect(leftType == rightType, Compiler::Error::MismatchedType);
-                addOp((leftType == Type::Int) ? info.intOp() : info.floatOp());
+                
+                Op op = (leftType == Type::Int) ? info.intOp() : info.floatOp();
+                expect(op != Op::None, Compiler::Error::WrongType);
+                addOp(op);
+
+                if (info.resultType() != Type::None) {
+                    leftType = info.resultType();
+                }
                 _exprStack.push_back(ExprEntry::Value(leftType));
                 break;
+            }
             default: break;
         }
         
@@ -761,7 +772,7 @@ CloverCompileEngine::postfixExpression()
             expect(arithmeticExpression(), Compiler::Error::ExpectedExpr);
             expect(Token::CloseBracket);
             
-            // Bake the contents of the brackets, leaving the result in r0
+            // Bake the contents of the brackets, leaving the result on TOS
             expect(bakeExpr(ExprAction::Right) == Type::Int, Compiler::Error::WrongType);
 
             // TOS now has the index.
@@ -976,10 +987,16 @@ CloverCompileEngine::bakeExpr(ExprAction action)
                     type = Type::Float;
                     break;
                 case ExprEntry::Type::Id:
-                    // Push the value of the id
-                    expect(findSymbol(entry, sym), Compiler::Error::UndefinedIdentifier);
-                    addOpId(Op::Push, sym.addr());
-                    type = sym.isPointer() ? Type::Ptr : sym.type();
+                    // Push the value
+                    if (findSymbol(entry, sym)) {
+                        addOpId(Op::Push, sym.addr());
+                        type = sym.isPointer() ? Type::Ptr : sym.type();
+                    } else {
+                        Def d;
+                        expect(findDef(entry, d), Compiler::Error::UndefinedIdentifier);
+                        addOpInt(Op::PushIntConst, d._value);
+                        type = Type::Int;
+                    }
                     break;
                 case ExprEntry::Type::Ref: {
                     // If this a ptr then we want to leave the ref on TOS, not the value
@@ -1008,7 +1025,7 @@ CloverCompileEngine::bakeExpr(ExprAction action)
             addOp(Op::PopDeref);
             break;
         }
-        case ExprAction::Index:
+        case ExprAction::Index: {
             // TOS has an index, get the sym for the var so 
             // we know the size of each element
             if (entry.type() == ExprEntry::Type::Ref) {
@@ -1016,13 +1033,20 @@ CloverCompileEngine::bakeExpr(ExprAction action)
                 const ExprEntry::Ref& ref = entry;
                 type = ref._type;
             } else {
+                expect(entry.type() == ExprEntry::Type::Id, Compiler::Error::ExpectedIdentifier);
                 expect(findSymbol(entry, sym), Compiler::Error::UndefinedIdentifier);
+                expect(sym.storage() == Symbol::Storage::Local || 
+                       sym.storage() == Symbol::Storage::Global, Compiler::Error::ExpectedVar);
+
                 type = sym.type();
                 _exprStack.pop_back();
                 _exprStack.push_back(ExprEntry::Ref(type));
             }
-            addOpSingleByteIndex(Op::Index, structFromType(type).size());
+            
+            Struct s;
+            addOpSingleByteIndex(Op::Index, structFromType(type, s) ? s.size() : 1);
             return type;
+        }
         case ExprAction::Offset: {
             // Prev entry has a Ref. Get the type so we can get an element index
             // we know the size of each element
@@ -1030,6 +1054,7 @@ CloverCompileEngine::bakeExpr(ExprAction action)
             const ExprEntry& prevEntry = _exprStack.end()[-2];            
             expect(prevEntry.type() == ExprEntry::Type::Ref, Compiler::Error::InternalError);
             const ExprEntry::Ref& ref = prevEntry;
+            
             uint8_t index;
             Type elementType;
             findStructElement(ref._type, entry, index, elementType);
@@ -1057,7 +1082,7 @@ CloverCompileEngine::bakeExpr(ExprAction action)
                 return type;
             }
             
-            expect(entry.type() == ExprEntry::Type::Id, Compiler::Error::InternalError);
+            expect(entry.type() == ExprEntry::Type::Id, Compiler::Error::ExpectedIdentifier);
 
             // Turn this into a Ref
             expect(findSymbol(entry, sym), Compiler::Error::UndefinedIdentifier);
@@ -1084,20 +1109,25 @@ CloverCompileEngine::isExprFunction()
     return findFunction(_exprStack.back(), fun);
 }
 
-const CloverCompileEngine::Struct&
-CloverCompileEngine::structFromType(Type type)
+bool
+CloverCompileEngine::structFromType(Type type, Struct& s)
 {
-    expect(uint8_t(type) >= 0x80, Compiler::Error::InternalError);
+    if (uint8_t(type) < 0x80) {
+        return false;
+    }
     uint8_t index = uint8_t(type) - 0x80;
     expect(index < _structs.size(), Compiler::Error::InternalError);
     
-    return _structs[index];
+    s = _structs[index];
+    return true;
 }
 
 void
 CloverCompileEngine::findStructElement(Type type, const std::string& id, uint8_t& index, Type& elementType)
 {
-    const Struct& s = structFromType(type);
+    Struct s;
+    expect(structFromType(type, s), Compiler::Error::ExpectedStructType);
+    
     const std::vector<ParamEntry>& entries = s.entries();
 
     auto it = find_if(entries.begin(), entries.end(),

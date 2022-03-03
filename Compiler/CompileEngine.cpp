@@ -491,19 +491,35 @@ CompileEngine::findSymbol(const std::string& s, Symbol& sym)
     auto it = find_if(_globals.begin(), _globals.end(),
                     [s](const Symbol& sym) { return sym.name() == s; });
 
-    if (it == _globals.end()) {    
-        // Not found. See if it's a local to the current function (param or var)
-        it = find_if(currentLocals().begin(), currentLocals().end(),
-                        [s](const Symbol& p) { return p.name() == s; });
-
-        if (it == currentLocals().end()) {
-            return false;
-        }
+    if (it != _globals.end()) {
+        sym = *it;
+        return true;
     }
-    sym = *it;
-    return true;
+    
+    // Not found. See if it's a local to the current function (param or var)
+    it = find_if(currentLocals().begin(), currentLocals().end(),
+                    [s](const Symbol& p) { return p.name() == s; });
+
+    if (it != currentLocals().end()) {
+        sym = *it;
+        return true;
+    }
+
+    return false;
 }
 
+bool
+CompileEngine::findDef(const std::string& s, Def& def)
+{
+    auto it = find_if(_defs.begin(), _defs.end(),
+                    [s](const Def& d) { return d._name == s; });
+
+    if (it != _defs.end()) {
+        def = *it;
+        return true;
+    }
+    return false;
+}
 bool
 CompileEngine::findFunction(const std::string& s, Function& fun)
 {
