@@ -27,6 +27,26 @@ table float testFloatTable
 var int testIntGlobal;
 var float testFloatGlobal;
 
+function showIntResults(int n, int exp, int act)
+{
+    log("    Test %i: ", n);
+    if (exp != act) {
+        log("*** FAILED: expected %i, got %i\n", exp, act);
+    } else {
+        log("Passed\n");
+    }
+}
+
+function showFloatResults(int n, float exp, float act)
+{
+    log("    Test %i: ", n);
+    if (exp != act) {
+        log("*** FAILED: expected %f, got %f\n", exp, act);
+    } else {
+        log("Passed\n");
+    }
+}
+
 function testInit()
 {
     var int i;
@@ -41,22 +61,13 @@ function testInit()
     log("Test Init\n");
     
     log("\nInt Tests\n");
-    log("    1: ");
-    i = testIntTable[1] + TestSizeDef * testIntConst - testIntGlobal;
-    if (i != 8) {
-        log("*** FAILED: expected %i, got %i\n", 8, i);
-    } else {
-        log("Passed\n");
-    }
+    showIntResults(1, 8,
+        testIntTable[1] + TestSizeDef * testIntConst - testIntGlobal);
 
     log("\nFloat Tests \n");
-    log("    1: ");
-    f = testFloatTable[1] + Float(TestSizeDef) * testFloatConst - testFloatGlobal;
-    if (f != 38.0) {
-        log("*** FAILED: expected %f, got %f\n", 38.0, f);
-    } else {
-        log("Passed\n");
-    }
+    showFloatResults(1, 38.0,
+        testFloatTable[1] + Float(TestSizeDef) * testFloatConst - testFloatGlobal);
+
     log("\nDone with Init tests\n\n");
 }
 
