@@ -16,8 +16,8 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "49DAA642278B212E00F67EEB"
                BuildableName = "CompileClover"
-               BlueprintName = "CompileClover"
-               ReferencedContainer = "container:CompileClover.xcodeproj">
+               BlueprintName = "Clover"
+               ReferencedContainer = "container:Clover.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -47,8 +47,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "49DAA642278B212E00F67EEB"
             BuildableName = "CompileClover"
-            BlueprintName = "CompileClover"
-            ReferencedContainer = "container:CompileClover.xcodeproj">
+            BlueprintName = "Clover"
+            ReferencedContainer = "container:Clover.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
@@ -94,8 +94,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "49DAA642278B212E00F67EEB"
             BuildableName = "CompileClover"
-            BlueprintName = "CompileClover"
-            ReferencedContainer = "container:CompileClover.xcodeproj">
+            BlueprintName = "Clover"
+            ReferencedContainer = "container:Clover.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

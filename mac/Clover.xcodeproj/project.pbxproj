@@ -43,7 +43,7 @@
 		49BDF4E127C7CF7A00325407 /* NativeCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NativeCore.h; path = ../Runtime/NativeCore.h; sourceTree = "<group>"; };
 		49BDF4E427CEA4F800325407 /* Test.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; fileEncoding = 4; name = Test.clvr; path = ../Test/Test.clvr; sourceTree = "<group>"; };
 		49BDF4E527CEA4F800325407 /* Test.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Test.ino; path = ../Test/Test.ino; sourceTree = "<group>"; };
-		49DAA643278B212E00F67EEB /* CompileClover */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CompileClover; sourceTree = BUILT_PRODUCTS_DIR; };
+		49DAA643278B212E00F67EEB /* Clover */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Clover; sourceTree = BUILT_PRODUCTS_DIR; };
 		49DAA64F278B3AFE00F67EEB /* Compiler.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Compiler.cpp; path = ../Compiler/Compiler.cpp; sourceTree = "<group>"; };
 		49DAA650278B3AFE00F67EEB /* Compiler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Compiler.h; path = ../Compiler/Compiler.h; sourceTree = "<group>"; };
 		49DAA655278CD00500F67EEB /* Scanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Scanner.h; path = ../Compiler/Scanner.h; sourceTree = "<group>"; };
@@ -94,7 +94,7 @@
 		49DAA644278B212E00F67EEB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				49DAA643278B212E00F67EEB /* CompileClover */,
+				49DAA643278B212E00F67EEB /* Clover */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -127,9 +127,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		49DAA642278B212E00F67EEB /* CompileClover */ = {
+		49DAA642278B212E00F67EEB /* Clover */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 49DAA64A278B212E00F67EEB /* Build configuration list for PBXNativeTarget "CompileClover" */;
+			buildConfigurationList = 49DAA64A278B212E00F67EEB /* Build configuration list for PBXNativeTarget "Clover" */;
 			buildPhases = (
 				49DAA63F278B212E00F67EEB /* Sources */,
 				49DAA640278B212E00F67EEB /* Frameworks */,
@@ -139,9 +139,9 @@
 			);
 			dependencies = (
 			);
-			name = CompileClover;
+			name = Clover;
 			productName = CompileArly;
-			productReference = 49DAA643278B212E00F67EEB /* CompileClover */;
+			productReference = 49DAA643278B212E00F67EEB /* Clover */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -158,7 +158,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 49DAA63E278B212E00F67EEB /* Build configuration list for PBXProject "CompileClover" */;
+			buildConfigurationList = 49DAA63E278B212E00F67EEB /* Build configuration list for PBXProject "Clover" */;
 			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -171,7 +171,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				49DAA642278B212E00F67EEB /* CompileClover */,
+				49DAA642278B212E00F67EEB /* Clover */,
 			);
 		};
 /* End PBXProject section */
@@ -326,7 +326,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		49DAA63E278B212E00F67EEB /* Build configuration list for PBXProject "CompileClover" */ = {
+		49DAA63E278B212E00F67EEB /* Build configuration list for PBXProject "Clover" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				49DAA648278B212E00F67EEB /* Debug */,
@@ -335,7 +335,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		49DAA64A278B212E00F67EEB /* Build configuration list for PBXNativeTarget "CompileClover" */ = {
+		49DAA64A278B212E00F67EEB /* Build configuration list for PBXNativeTarget "Clover" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				49DAA64B278B212E00F67EEB /* Debug */,
