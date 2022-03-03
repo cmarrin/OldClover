@@ -7,9 +7,57 @@
     found in the LICENSE file.
 -------------------------------------------------------------------------*/
 
+def TestSizeDef 12;
+
+const int testIntConst 4;
+const float testFloatConst 3.5;
+
+table int testIntTable
+{
+    1 2 3
+    7 8 9
+}
+
+table float testFloatTable
+{
+    1.5 2.5 3.5
+    7.5 8.5 9.5
+}
+
+var int testIntGlobal;
+var float testFloatGlobal;
+
 function testInit()
 {
+    var int i;
+    var float f;
+    
+    testFloatConst == 3.5;
+
+    i = 1;
+    testIntGlobal = 42;
+    testFloatGlobal = 6.5;
+    
     log("Test Init\n");
+    
+    log("\nInt Tests\n");
+    log("    1: ");
+    i = testIntTable[1] + TestSizeDef * testIntConst - testIntGlobal;
+    if (i != 8) {
+        log("*** FAILED: expected %i, got %i\n", 8, i);
+    } else {
+        log("Passed\n");
+    }
+
+    log("\nFloat Tests \n");
+    log("    1: ");
+    f = testFloatTable[1] + Float(TestSizeDef) * testFloatConst - testFloatGlobal;
+    if (f != 38.0) {
+        log("*** FAILED: expected %f, got %f\n", 38.0, f);
+    } else {
+        log("Passed\n");
+    }
+    log("\nDone with Init tests\n\n");
 }
 
 function int testLoop()
