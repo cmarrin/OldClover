@@ -16,6 +16,8 @@
 #include <getopt.h>
 #include <cstdio>
 
+static constexpr int NumLoops = 0;
+
 // Simulator
 //
 // Subclass of Interpreter that outputs device info to consolee
@@ -129,8 +131,6 @@ static void showError(clvr::Compiler::Error error, clvr::Token token, const std:
     }
     std::cout << " on line " << lineno << ":" << charno << "\n";
 }
-
-static constexpr int NumLoops = 2;
 
 int main(int argc, char * const argv[])
 {
@@ -323,10 +323,10 @@ int main(int argc, char * const argv[])
         sim.setROM(executable);
         
         for (const Test& test : Tests) {
-            std::cout << "Simulating '" << test._cmd << "' command...\n";
+            std::cout << "Running '" << test._cmd << "' command...\n";
         
             bool success = sim.init(test._cmd, &test._buf[0], test._buf.size());
-            if (success) {
+            if (success && NumLoops > 0) {
                 for (int i = 0; i < NumLoops; ++i) {
                     int32_t delay = sim.loop();
                     if (delay < 0) {
