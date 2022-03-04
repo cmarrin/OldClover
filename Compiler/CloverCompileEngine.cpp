@@ -825,7 +825,13 @@ CloverCompileEngine::primaryExpression()
     
     std::string id;
     if (identifier(id)) {
-        _exprStack.emplace_back(id);
+        // See if this is a def
+        Def def;
+        if (findDef(id, def)) {
+            _exprStack.emplace_back(int32_t(def._value));
+        } else {
+            _exprStack.emplace_back(id);
+        }
         return true;
     }
         
@@ -988,15 +994,9 @@ CloverCompileEngine::bakeExpr(ExprAction action)
                     break;
                 case ExprEntry::Type::Id:
                     // Push the value
-                    if (findSymbol(entry, sym)) {
-                        addOpId(Op::Push, sym.addr());
-                        type = sym.isPointer() ? Type::Ptr : sym.type();
-                    } else {
-                        Def d;
-                        expect(findDef(entry, d), Compiler::Error::UndefinedIdentifier);
-                        addOpInt(Op::PushIntConst, d._value);
-                        type = Type::Int;
-                    }
+                    expect(findSymbol(entry, sym), Compiler::Error::UndefinedIdentifier);
+                    addOpId(Op::Push, sym.addr());
+                    type = sym.isPointer() ? Type::Ptr : sym.type();
                     break;
                 case ExprEntry::Type::Ref: {
                     // If this a ptr then we want to leave the ref on TOS, not the value
