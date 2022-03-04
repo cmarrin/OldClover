@@ -9,7 +9,7 @@
 
 def TestSizeDef 12;
 
-const int testIntConst 4;
+const int testIntConst 0xfc;
 const float testFloatConst 3.5;
 
 table int testIntTable
@@ -24,57 +24,88 @@ table float testFloatTable
     7.5 8.5 9.5
 }
 
+var int testNo;
 var int testIntGlobal;
 var float testFloatGlobal;
 
-function showIntResults(int n, int exp, int act)
+function showHeader(int isFloat, int type)
 {
-    log("    Test %i: ", n);
+    if (isFloat) {
+        log("\nFloat ");
+    } else {
+        log("\nInt ");
+    }
+    
+    if (type == 0) {
+        log("val");
+    } else  if (type == 1) {
+        log("binop");
+    } else  if (type == 2) {
+        log("unop");
+    } else  if (type == 3) {
+        log("mixed expr");
+    } else  if (type == 4) {
+        log("loop");
+    } else  if (type == 5) {
+        log("struct");
+    } else  if (type == 6) {
+        log("ref");
+    }
+    log(" tests\n");
+}
+
+function showIntResults(int exp, int act)
+{
+    log("    Test %i: ", testNo++);
     if (exp != act) {
-        log("*** FAILED: expected %i, got %i\n", exp, act);
+        log("FAIL: exp %i, got %i\n", exp, act);
     } else {
         log("Passed\n");
     }
 }
 
-function showFloatResults(int n, float exp, float act)
+function showFloatResults(float exp, float act)
 {
-    log("    Test %i: ", n);
+    log("    Test %i: ", testNo++);
     if (exp != act) {
-        log("*** FAILED: expected %f, got %f\n", exp, act);
+        log("FAIL: exp %f, got %f\n", exp, act);
     } else {
-        log("Passed\n");
+        log("Pass\n");
     }
 }
 
-function testInit()
+function test()
 {
     var int i;
     var float f;
     
     testFloatConst == 3.5;
 
-    i = 1;
     testIntGlobal = 42;
     testFloatGlobal = 6.5;
-    
-    log("Test Init\n");
-    
-    log("\nInt Tests\n");
-    showIntResults(1, 8,
-        testIntTable[1] + TestSizeDef * testIntConst - testIntGlobal);
 
-    log("\nFloat Tests \n");
-    showFloatResults(1, 38.0,
-        testFloatTable[1] + Float(TestSizeDef) * testFloatConst - testFloatGlobal);
+    testNo = 1;
 
-    log("\nDone with Init tests\n\n");
+    showHeader(0, 0);
+    showIntResults(TestSizeDef, 12);
+    showIntResults(testIntConst, 0xfc);
+    showIntResults(testIntTable[1], 2);
+    showIntResults(testIntTable[3], 7);
+    showIntResults(testIntGlobal, 42);
+    
+    showHeader(0, 3);
+    showIntResults(2984, testIntTable[1] + TestSizeDef * testIntConst - testIntGlobal);
+
+    showHeader(1, 0);
+    showFloatResults(testFloatConst, 3.5);
+    showFloatResults(testFloatTable[1], 2.5);
+    showFloatResults(testFloatTable[3], 7.5);
+    showFloatResults(testFloatGlobal, 6.5);
+
+    showHeader(1, 1);
+    showFloatResults(38.0, testFloatTable[1] + Float(TestSizeDef) * testFloatConst - testFloatGlobal);
+
+    log("\nDone\n\n");
 }
 
-function int testLoop()
-{
-    log("Test Loop\n");
-    return 30;
-}
-
-command test 1 testInit testLoop;
+command test 1 test test;
