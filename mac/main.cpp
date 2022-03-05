@@ -186,10 +186,10 @@ int main(int argc, char * const argv[])
     std::vector<uint8_t> executable;
     
     clvr::Compiler::Language lang;
-    std::string suffix = inputFile.substr(inputFile.find_last_of('c'));
-    if (suffix == "clvr") {
+    std::string suffix = inputFile.substr(inputFile.find_last_of('.'));
+    if (suffix == ".clvr") {
         lang = clvr::Compiler::Language::Clover;
-    } else if (suffix == "arly") {
+    } else if (suffix == ".arly") {
         lang = clvr::Compiler::Language::Arly;
     } else {
         std::cout << "*** suffix '" << suffix << "' not recognized\n";
@@ -208,15 +208,19 @@ int main(int argc, char * const argv[])
     
     // Write executable if needed
     if (outputFile.size()) {
+        // Use the same dir as the input file for the output
+        std::string path = inputFile.substr(0, inputFile.find_last_of('/'));
+        path += "/" + outputFile;
+        
         // Delete any old copies
-        std::string name = outputFile + ".h";
+        std::string name = path + ".h";
         remove(name.c_str());
 
-        name = outputFile + ".arlx";
+        name = path + ".arlx";
         remove(name.c_str());
 
         for (int i = 0; ; ++i) {
-            name = outputFile + std::to_string(i) + ".arlx";
+            name = path + std::to_string(i) + ".arlx";
             if (remove(name.c_str()) != 0) {
                 break;
             }
@@ -230,11 +234,11 @@ int main(int argc, char * const argv[])
         
         for (uint8_t i = 0; ; i++) {
             if (segmented) {
-                name = outputFile + std::to_string(i) + ".arlx";
+                name = path + std::to_string(i) + ".arlx";
             } else if (headerFile) {
-                name = outputFile + ".h";
+                name = path + ".h";
             } else {
-                name = outputFile + ".arlx";
+                name = path + ".arlx";
             }
         
             std::ios_base::openmode mode = std::fstream::out;
@@ -244,7 +248,7 @@ int main(int argc, char * const argv[])
             
             outStream.open(name.c_str(), mode);
             if (outStream.fail()) {
-                std::cout << "Can't open '" << outputFile << "'\n";
+                std::cout << "Can't open '" << name << "'\n";
                 return 0;
             } else {
                 char* buf = reinterpret_cast<char*>(&(executable[i * 64]));
@@ -276,8 +280,7 @@ int main(int argc, char * const argv[])
                         }
                     }
                 } else {
-                    outStream << "static constexpr uint16_t EEPROM_Upload_Size = " << sizeRemaining << "\n";
-                    outStream << "static const uint8_t PROGMEM EEPROM_Upload = {\n";
+                    outStream << "static const uint8_t PROGMEM EEPROM_Upload_" << outputFile << "[ ] = {\n";
                     
                     for (size_t i = 0; i < sizeRemaining; ++i) {
                         char hexbuf[5];
