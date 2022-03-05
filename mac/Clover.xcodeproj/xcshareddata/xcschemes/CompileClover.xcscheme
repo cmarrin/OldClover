@@ -66,11 +66,11 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-s"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-h"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "../Test/Test.clvr"
