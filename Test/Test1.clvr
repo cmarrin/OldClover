@@ -1,0 +1,132 @@
+/*-------------------------------------------------------------------------
+    This source file is a part of Clover
+    For the latest info, see https://github.com/cmarrin/Clover
+    Copyright (c) 2021-2022, Chris Marrin
+    All rights reserved.
+    Use of this source code is governed by the MIT license that can be
+    found in the LICENSE file.
+-------------------------------------------------------------------------*/
+
+// Test constants, vars, operands and expressions
+
+def TestSizeDef   12;
+
+def TypeInt       0;
+def TypeFloat     1;
+
+def TestSetValue  0;
+def TestSetOps    1;
+def TestSetExpr   2;
+def TestSetLoop   3;
+def TestSetStruct 4;
+def TestSetRef    5;
+
+const int testIntConst 0xfc;
+const float testFloatConst 3.5;
+
+table int testIntTable
+{
+    1 2 3
+    7 8 9
+}
+
+table float testFloatTable
+{
+    1.5 2.5 3.5
+    7.5 8.5 9.5
+}
+
+var int testNo;
+var int testIntGlobal;
+var float testFloatGlobal;
+
+function showHeader(int type, int testSet)
+{
+    if (type == TypeFloat) {
+        log("\nFloat ");
+    } else {
+        log("\nInt ");
+    }
+    
+    if (testSet == TestSetValue) {
+        log("val");
+    } else  if (testSet == TestSetOps) {
+        log("ops");
+    } else  if (testSet == TestSetExpr) {
+        log("expr");
+    } else  if (testSet == TestSetLoop) {
+        log("loop");
+    } else  if (testSet == TestSetStruct) {
+        log("struct");
+    } else  if (testSet == TestSetRef) {
+        log("ref");
+    }
+    log(" tests\n");
+}
+
+function showIntResults(int exp, int act)
+{
+    log("    Test %i: ", testNo++);
+    if (exp != act) {
+        log("FAIL: exp %i, got %i\n", exp, act);
+    } else {
+        log("Pass\n");
+    }
+}
+
+function showFloatResults(float exp, float act)
+{
+    log("    Test %i: ", testNo++);
+    if (exp != act) {
+        log("FAIL: exp %f, got %f\n", exp, act);
+    } else {
+        log("Pass\n");
+    }
+}
+
+function test()
+{
+    var int i;
+    var int j;
+    var float f;
+    
+    testIntGlobal = 42;
+    testFloatGlobal = 6.5;
+
+    testNo = 1;
+
+    log("\nTest Int values\n"); 
+    showIntResults(12, TestSizeDef);
+    showIntResults(0xfc, testIntConst);
+    showIntResults(2, testIntTable[1]);
+    showIntResults(7, testIntTable[3]);
+    showIntResults(42, testIntGlobal);
+    
+    log("\nTest Int operators\n"); 
+    showIntResults(294, testIntConst + testIntGlobal);
+    showIntResults(210, testIntConst - testIntGlobal);
+    showIntResults(10584, testIntConst * testIntGlobal);
+    showIntResults(6, testIntConst / testIntGlobal);
+
+    log("\nTest Int expressions\n"); 
+    showIntResults(2984, testIntTable[1] + TestSizeDef * testIntConst - testIntGlobal);
+
+    log("\nTest Float values\n"); 
+    showFloatResults(3.5, testFloatConst);
+    showFloatResults(2.5, testFloatTable[1]);
+    showFloatResults(7.5, testFloatTable[3]);
+    showFloatResults(6.5, testFloatGlobal);
+
+    log("\nTest Float operators\n"); 
+    showFloatResults(10, testFloatConst + testFloatGlobal);
+    showFloatResults(-3, testFloatConst - testFloatGlobal);
+    showFloatResults(22.75, testFloatConst * testFloatGlobal);
+    showFloatResults(2.5, 16.25 / testFloatGlobal);
+
+    log("\nTest Float expressions\n"); 
+    showFloatResults(38, testFloatTable[1] + Float(TestSizeDef) * testFloatConst - testFloatGlobal);
+
+    log("\nDone\n\n");
+}
+
+command test 1 test test;

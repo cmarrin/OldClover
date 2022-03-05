@@ -53,12 +53,8 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-o Test"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
             argument = "-d"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-x"
@@ -73,7 +69,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "../Test/Test.clvr"
+            argument = "../Test/Test.clvr ../Test/Test1.clvr"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
