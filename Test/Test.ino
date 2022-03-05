@@ -10,6 +10,7 @@
 #include <Clover.h>
 #include <EEPROM.h>
 #include "Test.h"
+#include "Test1.h"
 
 /*
 
@@ -97,8 +98,12 @@ public:
         Serial.println(errorMsg);
     }
     
-    void runTest(const uint8_t* testCode, uint32_t size)
+    void runTest(const char* name, const uint8_t* testCode, uint32_t size)
     {
+        Serial.print(F("\nRunning test script '"));
+        Serial.print(name);
+        Serial.println(F("'..."));
+
         // First see if the test is already uploaded to avoid an EEPROM write
         Serial.println(F("Checking EEPROM..."));
         
@@ -126,6 +131,7 @@ public:
         if (!_device.init("test", buf, 1)) {
             showError(_device.error());
         }
+        Serial.println(F("...Finished running test"));
     }
 	
 	void setup()
@@ -136,7 +142,8 @@ public:
         
 		Serial.println(F("Test v0.1"));
   
-        runTest(EEPROM_Upload_Test, sizeof(EEPROM_Upload_Test));
+        runTest("Test", EEPROM_Upload_Test, sizeof(EEPROM_Upload_Test));
+        runTest("Test1", EEPROM_Upload_Test1, sizeof(EEPROM_Upload_Test1));
     }
 
 	void loop()
