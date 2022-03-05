@@ -207,7 +207,7 @@ int main(int argc, char * const argv[])
             return -1;
         }
 
-        std::cout << "Compile succeeded!\n";
+        std::cout << "Compile succeeded. Executable size=" << std::to_string(executable.size()) << "\n";
         
         // Write executable
         // Use the same name as the input file for the output
