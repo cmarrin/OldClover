@@ -967,6 +967,8 @@ CloverCompileEngine::findFloat(float f)
 CompileEngine::Type
 CloverCompileEngine::bakeExpr(ExprAction action, Type matchingType)
 {
+    expect(!_exprStack.empty(), Compiler::Error::InternalError);
+    
     Type type = Type::None;
     ExprEntry entry = _exprStack.back();   
     Symbol sym;
