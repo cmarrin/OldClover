@@ -282,7 +282,7 @@ private:
     }
 
     uint8_t getId() { return getUInt8ROM(_pc++); }
-    int8_t getConst() { return getUInt8ROM(_pc++); }
+    uint8_t getConst() { return getUInt8ROM(_pc++); }
     uint8_t getSz() { return getUInt8ROM(_pc++); }
     void getPL(uint8_t& p, uint8_t& l)
     {
