@@ -281,7 +281,7 @@ int main(int argc, char * const argv[])
                         }
                     }
                 } else {
-                    std::string name = path.substr(path.find_last_of('/'));
+                    std::string name = path.substr(path.find_last_of('/') + 1);
                     outStream << "static const uint8_t PROGMEM EEPROM_Upload_" << name << "[ ] = {\n";
                     
                     for (size_t i = 0; i < sizeRemaining; ++i) {
