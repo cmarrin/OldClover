@@ -724,6 +724,34 @@ CloverCompileEngine::unaryExpression()
         case Token::Minus:
         case Token::Twiddle:
         case Token::Bang:
+            // if the exprStack has an Int or Float constant, apply the operator
+            // to that value rather than generating an Op. It avoids an
+            // unnecessary instruction and in the case of minus, allows an
+            // implicit conversion to float when needed.
+            expect(!_exprStack.empty(), Compiler::Error::InternalError);
+            ExprEntry::Type exprType = _exprStack.back().type();
+            if (exprType == ExprEntry::Type::Float && token == Token::Minus) {
+                float f = _exprStack.back();
+                f = -f;
+                _exprStack.pop_back();
+                _exprStack.push_back(f);
+                break;
+            }
+            
+            if (exprType == ExprEntry::Type::Int) {
+                int32_t i = _exprStack.back();
+                if (token == Token::Minus) {
+                    i = -i;
+                } else if (token == Token::Twiddle) {
+                    i = ~i;
+                } else if (token == Token::Bang) {
+                    i = !i;
+                }
+                _exprStack.pop_back();
+                _exprStack.push_back(i);
+                break;
+            }
+            
             type = bakeExpr(ExprAction::Right);
             _exprStack.push_back(ExprEntry::Value(type));
 
