@@ -533,7 +533,7 @@ CloverCompileEngine::jumpStatement()
     }
     
     // Make sure we're in a loop
-    expect(_jumpList.empty(), Compiler::Error::OnlyAllowedInLoop);
+    expect(!_jumpList.empty(), Compiler::Error::OnlyAllowedInLoop);
     
     addJumpEntry(type);
 
