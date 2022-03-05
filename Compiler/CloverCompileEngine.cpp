@@ -634,19 +634,19 @@ CloverCompileEngine::arithmeticExpression(uint8_t minPrec, ArithType arithType)
         switch(info.assign()) {
             case OpInfo::Assign::Only: {
                 // Bake RHS
-                rightType = bakeExpr(ExprAction::Right);
+                rightType = bakeExpr(ExprAction::Right, leftType);
                 break;
             }
             case OpInfo::Assign::Op:
                 // The ref is on TOS, dup and get the value, then bake the right, then do the op
                 addOp(Op::Dup);
                 addOp(Op::PushDeref);
-                rightType = bakeExpr(ExprAction::Right);
+                rightType = bakeExpr(ExprAction::Right, leftType);
                 expect(leftType == rightType, Compiler::Error::MismatchedType);
                 addOp((leftType == Type::Int) ? info.intOp() : info.floatOp());
                 break;
             case OpInfo::Assign::None: {
-                rightType = bakeExpr(ExprAction::Right);
+                rightType = bakeExpr(ExprAction::Right, leftType);
                 expect(leftType == rightType, Compiler::Error::MismatchedType);
                 
                 Op op = (leftType == Type::Int) ? info.intOp() : info.floatOp();
@@ -887,8 +887,9 @@ CloverCompileEngine::argumentList(const Function& fun)
         expect(fun.args() >= i, Compiler::Error::WrongNumberOfArgs);
     
         // Bake the arithmeticExpression, leaving the result in r0.
-        // Make sure the type matches the formal argument and push r0
-        expect(bakeExpr(ExprAction::Right) == fun.locals()[i - 1].type(), Compiler::Error::MismatchedType);
+        // Make sure the type matches the formal argument and push
+        Type t = fun.locals()[i - 1].type();
+        expect(bakeExpr(ExprAction::Right, t) == t, Compiler::Error::MismatchedType);
 
         if (!match(Token::Comma)) {
             break;
@@ -962,7 +963,7 @@ CloverCompileEngine::findFloat(float f)
 }
 
 CompileEngine::Type
-CloverCompileEngine::bakeExpr(ExprAction action)
+CloverCompileEngine::bakeExpr(ExprAction action, Type matchingType)
 {
     Type type = Type::None;
     ExprEntry entry = _exprStack.back();   
@@ -976,6 +977,15 @@ CloverCompileEngine::bakeExpr(ExprAction action)
                     expect(false, Compiler::Error::InternalError);
                 case ExprEntry::Type::Int: {
                     uint32_t i = uint32_t(int32_t(entry));
+                    
+                    if (matchingType == Type::Float) {
+                        // Promote to float
+                        float f = float(int32_t(i));
+                        addOpInt(Op::Push, findFloat(f));
+                        type = Type::Float;
+                        break;
+                    }
+                    
                     if (i <= 15) {
                         addOpSingleByteIndex(Op::PushIntConstS, i);
                     } else if (i <= 255) {

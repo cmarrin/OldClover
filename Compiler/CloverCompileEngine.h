@@ -288,7 +288,7 @@ private:
     //                    pop the two 
     //
     enum class ExprAction { Left, Right, Ref, LeftRef, Ptr, Index, Offset };
-    Type bakeExpr(ExprAction);
+    Type bakeExpr(ExprAction, Type matchingType = Type::None);
     bool isExprFunction();
     uint8_t elementSize(Type);
     
