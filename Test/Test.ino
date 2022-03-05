@@ -7,4 +7,155 @@
     found in the LICENSE file.
 -------------------------------------------------------------------------*/
 
+#include <Clover.h>
+#include <EEPROM.h>
+#include "Test.h"
 
+/*
+
+Test
+
+Each test is included as a .h file generated on the Mac and appears as a
+uint_t array with a name of the form 'EEPROM_Upload_<name>'. Each array is
+uploaded to EEPROM and then the test is run. All tests are named simply
+"test".
+*/
+
+class Device : public clvr::Interpreter
+{
+public:
+	Device() : Interpreter(nullptr, 0) { }
+	
+    virtual uint8_t rom(uint16_t i) const override
+    {
+        return EEPROM[i];
+    }
+    
+    virtual void log(const char* s) const override
+    {
+        Serial.print(s);
+    }
+};
+
+class Test
+{
+public:
+	Test() { }
+	~Test() { }
+ 
+    void showError(clvr::Interpreter::Error error)
+    {
+        String errorMsg;
+        
+        switch(error) {
+            case Device::Error::None:
+            errorMsg = F("???");
+            break;
+            case Device::Error::CmdNotFound:
+            errorMsg = F("bad cmd");
+            break;
+            break;
+            case Device::Error::UnexpectedOpInIf:
+            errorMsg = F("bad op in if");
+            break;
+            case Device::Error::InvalidOp:
+            errorMsg = F("inv op");
+            break;
+            case Device::Error::OnlyMemAddressesAllowed:
+            errorMsg = F("mem addrs only");
+            break;
+            case Device::Error::AddressOutOfRange:
+            errorMsg = F("addr out of rng");
+            break;
+            case Device::Error::InvalidModuleOp:
+            errorMsg = F("inv mod op");
+            break;
+            case Device::Error::ExpectedSetFrame:
+            errorMsg = F("SetFrame needed");
+            break;
+            case Device::Error::InvalidNativeFunction:
+            errorMsg = F("inv native func");
+            break;
+            case Device::Error::NotEnoughArgs:
+            errorMsg = F("not enough args");
+            break;
+            case Device::Error::StackOverrun:
+            errorMsg = F("can't call, stack full");
+            break;
+            case Device::Error::StackUnderrun:
+            errorMsg = F("stack underrun");
+            break;
+            case Device::Error::StackOutOfRange:
+            errorMsg = F("stack out of range");
+            break;
+            case Device::Error::WrongNumberOfArgs:
+            errorMsg = F("wrong arg cnt");
+            break;
+        }
+
+        Serial.print(F("Interp err: "));
+        Serial.println(errorMsg);
+    }
+    
+    void runTest(const uint8_t* testCode, uint32_t size)
+    {
+        // First see if the test is already uploaded to avoid an EEPROM write
+        Serial.println(F("Checking EEPROM..."));
+        
+        bool same = true;
+        for (int i = 0; i < size; ++i) {
+            if (EEPROM[i] != pgm_read_byte(&(testCode[i]))) {
+                same = false;
+                break;
+            }
+        }
+        
+        if (same) {
+            Serial.println(F("EEPROM has correct code, skipping write..."));
+        } else {
+            Serial.println(F("EEPROM does not have correct code, writing..."));
+
+            // Upload the test
+            for (int i = 0; i < size; ++i) {
+                EEPROM[i] = pgm_read_byte(&(testCode[i]));
+            }
+        }
+        
+        // Run the test
+        uint8_t buf[2] = { 0, 0 };
+        if (!_device.init("test", buf, 1)) {
+            showError(_device.error());
+        }
+    }
+	
+	void setup()
+	{
+	    Serial.begin(115200);
+		delay(500);
+        randomSeed(millis());
+        
+		Serial.println(F("Test v0.1"));
+  
+        runTest(EEPROM_Upload_Test, sizeof(EEPROM_Upload_Test));
+    }
+
+	void loop()
+	{
+		delay(100);
+	}
+
+private:
+    Device _device;
+};
+
+Test test;
+
+void setup()
+{
+	test.setup();
+}
+
+void loop()
+{
+	test.loop();
+}
