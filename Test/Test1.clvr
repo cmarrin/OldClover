@@ -11,16 +11,6 @@
 
 def TestSizeDef   12;
 
-def TypeInt       0;
-def TypeFloat     1;
-
-def TestSetValue  0;
-def TestSetOps    1;
-def TestSetExpr   2;
-def TestSetLoop   3;
-def TestSetStruct 4;
-def TestSetRef    5;
-
 const int testIntConst 0xfc;
 const float testFloatConst 3.5;
 
@@ -39,30 +29,6 @@ table float testFloatTable
 var int testNo;
 var int testIntGlobal;
 var float testFloatGlobal;
-
-function showHeader(int type, int testSet)
-{
-    if (type == TypeFloat) {
-        log("\nFloat ");
-    } else {
-        log("\nInt ");
-    }
-    
-    if (testSet == TestSetValue) {
-        log("val");
-    } else  if (testSet == TestSetOps) {
-        log("ops");
-    } else  if (testSet == TestSetExpr) {
-        log("expr");
-    } else  if (testSet == TestSetLoop) {
-        log("loop");
-    } else  if (testSet == TestSetStruct) {
-        log("struct");
-    } else  if (testSet == TestSetRef) {
-        log("ref");
-    }
-    log(" tests\n");
-}
 
 function showIntResults(int exp, int act)
 {
@@ -94,6 +60,8 @@ function test()
     testFloatGlobal = 6.5;
 
     testNo = 1;
+    
+    log("\nTest constants, vars, operands and expressions\n");
 
     log("\nTest Int values\n"); 
     showIntResults(12, TestSizeDef);

@@ -39,10 +39,10 @@
 		4963436527A4BCC000ABF09F /* CloverCompileEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CloverCompileEngine.cpp; path = ../Compiler/CloverCompileEngine.cpp; sourceTree = "<group>"; };
 		4963436A27A81DA200ABF09F /* CompileEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CompileEngine.h; path = ../Compiler/CompileEngine.h; sourceTree = "<group>"; };
 		4963436B27A81DA200ABF09F /* CompileEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CompileEngine.cpp; path = ../Compiler/CompileEngine.cpp; sourceTree = "<group>"; };
-		49BB16B827D3F07E0054C59F /* Test1.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; name = Test1.clvr; path = ../Test/Test1.clvr; sourceTree = "<group>"; };
+		49BB16B827D3F07E0054C59F /* Test1.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; name = Test1.clvr; path = ../Test/Test1.clvr; sourceTree = "<group>"; };
+		49BB16B927D428CE0054C59F /* Test2.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; name = Test2.clvr; path = ../Test/Test2.clvr; sourceTree = "<group>"; };
 		49BDF4E027C7CF7A00325407 /* NativeCore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NativeCore.cpp; path = ../Runtime/NativeCore.cpp; sourceTree = "<group>"; };
 		49BDF4E127C7CF7A00325407 /* NativeCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NativeCore.h; path = ../Runtime/NativeCore.h; sourceTree = "<group>"; };
-		49BDF4E427CEA4F800325407 /* Test.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; fileEncoding = 4; name = Test.clvr; path = ../Test/Test.clvr; sourceTree = "<group>"; };
 		49BDF4E527CEA4F800325407 /* Test.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Test.ino; path = ../Test/Test.ino; sourceTree = "<group>"; };
 		49DAA643278B212E00F67EEB /* Clover */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Clover; sourceTree = BUILT_PRODUCTS_DIR; };
 		49DAA64F278B3AFE00F67EEB /* Compiler.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Compiler.cpp; path = ../Compiler/Compiler.cpp; sourceTree = "<group>"; };
@@ -78,7 +78,7 @@
 			isa = PBXGroup;
 			children = (
 				49BB16B827D3F07E0054C59F /* Test1.clvr */,
-				49BDF4E427CEA4F800325407 /* Test.clvr */,
+				49BB16B927D428CE0054C59F /* Test2.clvr */,
 			);
 			name = Test;
 			sourceTree = "<group>";

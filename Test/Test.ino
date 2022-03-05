@@ -9,8 +9,8 @@
 
 #include <Clover.h>
 #include <EEPROM.h>
-#include "Test.h"
 #include "Test1.h"
+#include "Test2.h"
 
 /*
 
@@ -21,6 +21,8 @@ uint_t array with a name of the form 'EEPROM_Upload_<name>'. Each array is
 uploaded to EEPROM and then the test is run. All tests are named simply
 "test".
 */
+
+#define RunTest(name) runTest(#name, EEPROM_Upload_##name, sizeof(EEPROM_Upload_##name))
 
 class Device : public clvr::Interpreter
 {
@@ -142,8 +144,8 @@ public:
         
 		Serial.println(F("Test v0.1"));
   
-        runTest("Test", EEPROM_Upload_Test, sizeof(EEPROM_Upload_Test));
-        runTest("Test1", EEPROM_Upload_Test1, sizeof(EEPROM_Upload_Test1));
+        RunTest(Test1);
+        RunTest(Test2);
     }
 
 	void loop()

@@ -1,0 +1,105 @@
+/*-------------------------------------------------------------------------
+    This source file is a part of Clover
+    For the latest info, see https://github.com/cmarrin/Clover
+    Copyright (c) 2021-2022, Chris Marrin
+    All rights reserved.
+    Use of this source code is governed by the MIT license that can be
+    found in the LICENSE file.
+-------------------------------------------------------------------------*/
+
+// Test foreach, while, loop, break, continue
+
+var int testNo;
+
+function showIntResults(int exp, int act)
+{
+    log("    Test %i: ", testNo++);
+    if (exp != act) {
+        log("FAIL: exp %i, got %i\n", exp, act);
+    } else {
+        log("Pass\n");
+    }
+}
+
+function showFloatResults(float exp, float act)
+{
+    log("    Test %i: ", testNo++);
+    if (exp != act) {
+        log("FAIL: exp %f, got %f\n", exp, act);
+    } else {
+        log("Pass\n");
+    }
+}
+
+function test()
+{
+    var int i;
+    var int j;
+    var float f;
+    
+    testNo = 1;
+    
+    log("\nTest foreach, while, loop, break, continue\n");
+
+    log("\nTest Int foreach\n"); 
+    i = 0;
+    j = 0;
+    foreach(i : 10) {
+        j += i;
+    }
+    showIntResults(45, j);
+
+    i = 0;
+    j = 0;
+    foreach(i : 10) {
+        j += i;
+        if (i == 5) {
+            break;
+        }
+    }
+    showIntResults(15, j);
+
+    i = 0;
+    j = 0;
+    foreach(i : 10) {
+        j += i;
+        if (i >= 5) {
+            continue;
+        }
+        ++j;
+    }
+    showIntResults(50, j);
+
+    log("\nTest Float foreach\n"); 
+    i = 0;
+    f = 0;
+    foreach(i : 10) {
+        f += Float(i);
+    }
+    showFloatResults(45, f);
+
+    i = 0;
+    f = 0;
+    foreach(i : 10) {
+        f += Float(i);
+        if (i == 5) {
+            break;
+        }
+    }
+    showFloatResults(15, f);
+
+    i = 0;
+    f = 0;
+    foreach(i : 10) {
+        f += Float(i);
+        if (i >= 5) {
+            continue;
+        }
+        ++f;
+    }
+    showFloatResults(50, f);
+
+    log("\nDone\n\n");
+}
+
+command test 1 test test;
