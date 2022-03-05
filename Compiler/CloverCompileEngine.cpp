@@ -629,24 +629,26 @@ CloverCompileEngine::arithmeticExpression(uint8_t minPrec, ArithType arithType)
             leftType = bakeExpr(ExprAction::Right);
         }
         
+        if (info.assign() == OpInfo::Assign::Op) {
+            // The ref is on TOS, dup and get the value. That will
+            // leave the value, then the ref to that value on the stack.
+            addOp(Op::Dup);
+            addOp(Op::PushDeref);
+        }
+        
         expect(arithmeticExpression(nextMinPrec), Compiler::Error::ExpectedExpr);
+
+        rightType = bakeExpr(ExprAction::Right, leftType);
 
         switch(info.assign()) {
             case OpInfo::Assign::Only: {
-                // Bake RHS
-                rightType = bakeExpr(ExprAction::Right, leftType);
                 break;
             }
             case OpInfo::Assign::Op:
-                // The ref is on TOS, dup and get the value, then bake the right, then do the op
-                addOp(Op::Dup);
-                addOp(Op::PushDeref);
-                rightType = bakeExpr(ExprAction::Right, leftType);
                 expect(leftType == rightType, Compiler::Error::MismatchedType);
                 addOp((leftType == Type::Int) ? info.intOp() : info.floatOp());
                 break;
             case OpInfo::Assign::None: {
-                rightType = bakeExpr(ExprAction::Right, leftType);
                 expect(leftType == rightType, Compiler::Error::MismatchedType);
                 
                 Op op = (leftType == Type::Int) ? info.intOp() : info.floatOp();
