@@ -50,14 +50,16 @@ private:
     uint8_t _rom[1024];
 };
 
-// compile [-o <output file>] [-x] <input file>
+// compile [-xdsh] <input file>...
 //
-//      -o      output compiled binary root name
 //      -s      output binary in 64 byte segments (named <root name>00.{clvr,arly}, etc.
 //      -h      output in include file format. Output file is <root name>.h
 //      -d      decompile and print result
 //      -x      simulate resulting binary
 //
+// Multiple input files accepted. Output file(s) are placed in the same dir as input
+// files with extension .arlx or .h. If segmented (-s), filename has 2 digit suffix
+// added before the .arlx.
 
 // Include file format
 //
@@ -141,15 +143,13 @@ int main(int argc, char * const argv[])
     bool decompile = false;
     bool segmented = false;
     bool headerFile = false;
-    std::string outputFile;
     
-    while ((c = getopt(argc, argv, "dxsho:")) != -1) {
+    while ((c = getopt(argc, argv, "dxsh")) != -1) {
         switch(c) {
             case 'd': decompile = true; break;
             case 'x': execute = true; break;
             case 's': segmented = true; break;
             case 'h': headerFile = true; break;
-            case 'o': outputFile = optarg; break;
             default: break;
         }
     }
@@ -164,53 +164,54 @@ int main(int argc, char * const argv[])
         return 0;
     }
     
-    if (optind != argc - 1) {
-        std::cout << "Too many input files given\n";
-        return 0;
-    }
+    std::vector<std::string> inputFiles;
     
-    std::string inputFile = argv[optind];
+    for (int i = 0; ; ++i) {
+        inputFiles.push_back(argv[optind + i]);
+        if (optind + i >= argc - 1) {
+            break;
+        }
+    }
     
     std::vector<std::pair<int32_t, std::string>> annotations;
 
-    clvr::Compiler compiler;
-    std::fstream stream;
-    stream.open(inputFile.c_str(), std::fstream::in);
-    if (stream.fail()) {
-        std::cout << "Can't open '" << inputFile << "'\n";
-        return 0;
-    }
-    
-    std::cout << "Compiling '" << inputFile << "'\n";
-    
-    std::vector<uint8_t> executable;
-    
-    clvr::Compiler::Language lang;
-    std::string suffix = inputFile.substr(inputFile.find_last_of('.'));
-    if (suffix == ".clvr") {
-        lang = clvr::Compiler::Language::Clover;
-    } else if (suffix == ".arly") {
-        lang = clvr::Compiler::Language::Arly;
-    } else {
-        std::cout << "*** suffix '" << suffix << "' not recognized\n";
-        return -1;
-    }
-    
-    randomSeed(uint32_t(clock()));
+    for (const auto& it : inputFiles) {
+        clvr::Compiler compiler;
+        std::fstream stream;
+        stream.open(it.c_str(), std::fstream::in);
+        if (stream.fail()) {
+            std::cout << "Can't open '" << it << "'\n";
+            return 0;
+        }
+        
+        std::cout << "Compiling '" << it << "'\n";
+        
+        std::vector<uint8_t> executable;
+        
+        clvr::Compiler::Language lang;
+        std::string suffix = it.substr(it.find_last_of('.'));
+        if (suffix == ".clvr") {
+            lang = clvr::Compiler::Language::Clover;
+        } else if (suffix == ".arly") {
+            lang = clvr::Compiler::Language::Arly;
+        } else {
+            std::cout << "*** suffix '" << suffix << "' not recognized\n";
+            return -1;
+        }
+        
+        randomSeed(uint32_t(clock()));
 
-    compiler.compile(&stream, lang, executable, { }, &annotations);
-    if (compiler.error() != clvr::Compiler::Error::None) {
-        showError(compiler.error(), compiler.expectedToken(), compiler.expectedString(), compiler.lineno(), compiler.charno());
-        return -1;
-    }
+        compiler.compile(&stream, lang, executable, { }, &annotations);
+        if (compiler.error() != clvr::Compiler::Error::None) {
+            showError(compiler.error(), compiler.expectedToken(), compiler.expectedString(), compiler.lineno(), compiler.charno());
+            return -1;
+        }
 
-    std::cout << "Compile succeeded!\n";
-    
-    // Write executable if needed
-    if (outputFile.size()) {
-        // Use the same dir as the input file for the output
-        std::string path = inputFile.substr(0, inputFile.find_last_of('/'));
-        path += "/" + outputFile;
+        std::cout << "Compile succeeded!\n";
+        
+        // Write executable
+        // Use the same name as the input file for the output
+        std::string path = it.substr(0, it.find_last_of('.'));
         
         // Delete any old copies
         std::string name = path + ".h";
@@ -226,7 +227,7 @@ int main(int argc, char * const argv[])
             }
         }
         
-        std::cout << "\nEmitting executable to '" << outputFile << "'\n";
+        std::cout << "\nEmitting executable to '" << path << "'\n";
         std::fstream outStream;
         
         // If segmented break it up into 64 byte chunks, prefix each file with start addr byte
@@ -280,7 +281,8 @@ int main(int argc, char * const argv[])
                         }
                     }
                 } else {
-                    outStream << "static const uint8_t PROGMEM EEPROM_Upload_" << outputFile << "[ ] = {\n";
+                    std::string name = path.substr(path.find_last_of('/'));
+                    outStream << "static const uint8_t PROGMEM EEPROM_Upload_" << name << "[ ] = {\n";
                     
                     for (size_t i = 0; i < sizeRemaining; ++i) {
                         char hexbuf[5];
@@ -298,81 +300,80 @@ int main(int argc, char * const argv[])
             }
         }
         std::cout << "Executables saved\n";
-    }
 
-    // decompile if needed
-    if (decompile) {
-        std::string out;
-        clvr::Decompiler decompiler(&executable, &out, annotations);
-        bool success = decompiler.decompile();
-        std::cout << "\nDecompiled executable:\n" << out << "\nEnd decompilation\n\n";
-        if (!success) {
-            const char* err = "unknown";
-            switch(decompiler.error()) {
-                case clvr::Decompiler::Error::None: err = "internal error"; break;
-                case clvr::Decompiler::Error::InvalidSignature: err = "invalid signature"; break;
-                case clvr::Decompiler::Error::InvalidOp: err = "invalid op"; break;
-                case clvr::Decompiler::Error::PrematureEOF: err = "premature EOF"; break;
-            }
-            std::cout << "Decompile failed: " << err << "\n\n";
-            return 0;
-        }
-    }
-    
-    // Execute if needed
-    if (execute) {
-        Simulator sim;
-        
-        sim.setROM(executable);
-        
-        for (const Test& test : Tests) {
-            std::cout << "Running '" << test._cmd << "' command...\n";
-        
-            bool success = sim.init(test._cmd, &test._buf[0], test._buf.size());
-            if (success && NumLoops > 0) {
-                for (int i = 0; i < NumLoops; ++i) {
-                    int32_t delay = sim.loop();
-                    if (delay < 0) {
-                        success = false;
-                        break;
-                    }
-                    std::cout << "[" << i << "]: delay = " << delay << "\n";
-                }
-            
-                if (success) {
-                    std::cout << "Complete\n\n";
-                }
-            }
-            
+        // decompile if needed
+        if (decompile) {
+            std::string out;
+            clvr::Decompiler decompiler(&executable, &out, annotations);
+            bool success = decompiler.decompile();
+            std::cout << "\nDecompiled executable:\n" << out << "\nEnd decompilation\n\n";
             if (!success) {
                 const char* err = "unknown";
-                switch(sim.error()) {
-                    case clvr::Interpreter::Error::None: err = "internal error"; break;
-                    case clvr::Interpreter::Error::CmdNotFound: err = "command not found"; break;
-                    case clvr::Interpreter::Error::UnexpectedOpInIf: err = "unexpected op in if (internal error)"; break;
-                    case clvr::Interpreter::Error::InvalidOp: err = "invalid opcode"; break;
-                    case clvr::Interpreter::Error::InvalidNativeFunction: err = "invalid native function"; break;
-                    case clvr::Interpreter::Error::OnlyMemAddressesAllowed: err = "only Mem addresses allowed"; break;
-                    case clvr::Interpreter::Error::StackOverrun: err = "can't call, stack full"; break;
-                    case clvr::Interpreter::Error::StackUnderrun: err = "stack underrun"; break;
-                    case clvr::Interpreter::Error::StackOutOfRange: err = "stack access out of range"; break;
-                    case clvr::Interpreter::Error::AddressOutOfRange: err = "address out of range"; break;
-                    case clvr::Interpreter::Error::InvalidModuleOp: err = "invalid operation in module"; break;
-                    case clvr::Interpreter::Error::ExpectedSetFrame: err = "expected SetFrame as first function op"; break;
-                    case clvr::Interpreter::Error::NotEnoughArgs: err = "not enough args on stack"; break;
-                    case clvr::Interpreter::Error::WrongNumberOfArgs: err = "wrong number of args"; break;
+                switch(decompiler.error()) {
+                    case clvr::Decompiler::Error::None: err = "internal error"; break;
+                    case clvr::Decompiler::Error::InvalidSignature: err = "invalid signature"; break;
+                    case clvr::Decompiler::Error::InvalidOp: err = "invalid op"; break;
+                    case clvr::Decompiler::Error::PrematureEOF: err = "premature EOF"; break;
                 }
-                std::cout << "Interpreter failed: " << err;
-                
-                int16_t errorAddr = sim.errorAddr();
-                if (errorAddr >= 0) {
-                    std::cout << " at addr " << errorAddr;
-                }
-                
-                std::cout << "\n\n";
+                std::cout << "Decompile failed: " << err << "\n\n";
+                return 0;
             }
         }
         
+        // Execute if needed
+        if (execute) {
+            Simulator sim;
+            
+            sim.setROM(executable);
+            
+            for (const Test& test : Tests) {
+                std::cout << "Running '" << test._cmd << "' command...\n";
+            
+                bool success = sim.init(test._cmd, &test._buf[0], test._buf.size());
+                if (success && NumLoops > 0) {
+                    for (int i = 0; i < NumLoops; ++i) {
+                        int32_t delay = sim.loop();
+                        if (delay < 0) {
+                            success = false;
+                            break;
+                        }
+                        std::cout << "[" << i << "]: delay = " << delay << "\n";
+                    }
+                
+                    if (success) {
+                        std::cout << "Complete\n\n";
+                    }
+                }
+                
+                if (!success) {
+                    const char* err = "unknown";
+                    switch(sim.error()) {
+                        case clvr::Interpreter::Error::None: err = "internal error"; break;
+                        case clvr::Interpreter::Error::CmdNotFound: err = "command not found"; break;
+                        case clvr::Interpreter::Error::UnexpectedOpInIf: err = "unexpected op in if (internal error)"; break;
+                        case clvr::Interpreter::Error::InvalidOp: err = "invalid opcode"; break;
+                        case clvr::Interpreter::Error::InvalidNativeFunction: err = "invalid native function"; break;
+                        case clvr::Interpreter::Error::OnlyMemAddressesAllowed: err = "only Mem addresses allowed"; break;
+                        case clvr::Interpreter::Error::StackOverrun: err = "can't call, stack full"; break;
+                        case clvr::Interpreter::Error::StackUnderrun: err = "stack underrun"; break;
+                        case clvr::Interpreter::Error::StackOutOfRange: err = "stack access out of range"; break;
+                        case clvr::Interpreter::Error::AddressOutOfRange: err = "address out of range"; break;
+                        case clvr::Interpreter::Error::InvalidModuleOp: err = "invalid operation in module"; break;
+                        case clvr::Interpreter::Error::ExpectedSetFrame: err = "expected SetFrame as first function op"; break;
+                        case clvr::Interpreter::Error::NotEnoughArgs: err = "not enough args on stack"; break;
+                        case clvr::Interpreter::Error::WrongNumberOfArgs: err = "wrong number of args"; break;
+                    }
+                    std::cout << "Interpreter failed: " << err;
+                    
+                    int16_t errorAddr = sim.errorAddr();
+                    if (errorAddr >= 0) {
+                        std::cout << " at addr " << errorAddr;
+                    }
+                    
+                    std::cout << "\n\n";
+                }
+            }
+        }
     }
 
     return 1;
