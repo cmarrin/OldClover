@@ -7,7 +7,17 @@
     found in the LICENSE file.
 -------------------------------------------------------------------------*/
 
-def TestSizeDef 12;
+def TestSizeDef   12;
+
+def TypeInt       0;
+def TypeFloat     1;
+
+def TestSetValue  0;
+def TestSetOps    1;
+def TestSetExpr   2;
+def TestSetLoop   3;
+def TestSetStruct 4;
+def TestSetRef    5;
 
 const int testIntConst 0xfc;
 const float testFloatConst 3.5;
@@ -28,27 +38,25 @@ var int testNo;
 var int testIntGlobal;
 var float testFloatGlobal;
 
-function showHeader(int isFloat, int type)
+function showHeader(int type, int testSet)
 {
-    if (isFloat) {
+    if (type == TypeFloat) {
         log("\nFloat ");
     } else {
         log("\nInt ");
     }
     
-    if (type == 0) {
+    if (testSet == TestSetValue) {
         log("val");
-    } else  if (type == 1) {
-        log("binop");
-    } else  if (type == 2) {
-        log("unop");
-    } else  if (type == 3) {
-        log("mixed expr");
-    } else  if (type == 4) {
+    } else  if (testSet == TestSetOps) {
+        log("ops");
+    } else  if (testSet == TestSetExpr) {
+        log("expr");
+    } else  if (testSet == TestSetLoop) {
         log("loop");
-    } else  if (type == 5) {
+    } else  if (testSet == TestSetStruct) {
         log("struct");
-    } else  if (type == 6) {
+    } else  if (testSet == TestSetRef) {
         log("ref");
     }
     log(" tests\n");
@@ -60,7 +68,7 @@ function showIntResults(int exp, int act)
     if (exp != act) {
         log("FAIL: exp %i, got %i\n", exp, act);
     } else {
-        log("Passed\n");
+        log("Pass\n");
     }
 }
 
@@ -77,33 +85,104 @@ function showFloatResults(float exp, float act)
 function test()
 {
     var int i;
+    var int j;
     var float f;
     
-    testFloatConst == 3.5;
-
     testIntGlobal = 42;
     testFloatGlobal = 6.5;
 
     testNo = 1;
 
-    showHeader(0, 0);
-    showIntResults(TestSizeDef, 12);
-    showIntResults(testIntConst, 0xfc);
-    showIntResults(testIntTable[1], 2);
-    showIntResults(testIntTable[3], 7);
-    showIntResults(testIntGlobal, 42);
+    showHeader(TypeInt, TestSetValue);
+    showIntResults(12, TestSizeDef);
+    showIntResults(0xfc, testIntConst);
+    showIntResults(2, testIntTable[1]);
+    showIntResults(7, testIntTable[3]);
+    showIntResults(42, testIntGlobal);
     
-    showHeader(0, 3);
+    showHeader(TypeInt, TestSetOps);
+    showIntResults(294, testIntConst + testIntGlobal);
+    showIntResults(210, testIntConst - testIntGlobal);
+    showIntResults(10584, testIntConst * testIntGlobal);
+    showIntResults(6, testIntConst / testIntGlobal);
+
+    showHeader(TypeInt, TestSetExpr);
     showIntResults(2984, testIntTable[1] + TestSizeDef * testIntConst - testIntGlobal);
 
-    showHeader(1, 0);
-    showFloatResults(testFloatConst, 3.5);
-    showFloatResults(testFloatTable[1], 2.5);
-    showFloatResults(testFloatTable[3], 7.5);
-    showFloatResults(testFloatGlobal, 6.5);
+    showHeader(TypeInt, TestSetLoop);
 
-    showHeader(1, 1);
-    showFloatResults(38.0, testFloatTable[1] + Float(TestSizeDef) * testFloatConst - testFloatGlobal);
+    i = 0;
+    j = 0;
+    foreach(i : 10) {
+        j += i;
+    }
+    showIntResults(45, j);
+
+    i = 0;
+    j = 0;
+    foreach(i : 10) {
+        j += i;
+        if (i == 5) {
+            break;
+        }
+    }
+    showIntResults(15, j);
+
+    i = 0;
+    j = 0;
+    foreach(i : 10) {
+        j += i;
+        if (i >= 5) {
+            continue;
+        }
+        ++j;
+    }
+    showIntResults(50, j);
+
+    showHeader(TypeFloat, TestSetValue);
+    showFloatResults(3.5, testFloatConst);
+    showFloatResults(2.5, testFloatTable[1]);
+    showFloatResults(7.5, testFloatTable[3]);
+    showFloatResults(6.5, testFloatGlobal);
+
+    showHeader(TypeFloat, TestSetOps);
+    showFloatResults(10, testFloatConst + testFloatGlobal);
+    showFloatResults(-3, testFloatConst - testFloatGlobal);
+    showFloatResults(22.75, testFloatConst * testFloatGlobal);
+    showFloatResults(2.5, 16.25 / testFloatGlobal);
+
+    showHeader(TypeFloat, TestSetExpr);
+    showFloatResults(38, testFloatTable[1] + Float(TestSizeDef) * testFloatConst - testFloatGlobal);
+
+    showHeader(TypeFloat, TestSetLoop);
+
+    i = 0;
+    f = 0;
+    foreach(i : 10) {
+        f += Float(i);
+    }
+    showFloatResults(45., f);
+
+//    i = 0;
+//    j = 0;
+//    foreach(i : 10) {
+//        j += i;
+//        if (i == 5) {
+//            break;
+//        }
+//    }
+//    showIntResults(15, j);
+//
+//    i = 0;
+//    j = 0;
+//    foreach(i : 10) {
+//        j += i;
+//        if (i >= 5) {
+//            continue;
+//        }
+//        ++j;
+//    }
+//    showIntResults(50, j);
 
     log("\nDone\n\n");
 }
