@@ -11,9 +11,24 @@
 
 int testNo;
 
+function space(int n)
+{
+    while (n--) {
+        log(" ");
+    }
+}
+
 function showIntResults(int exp, int act)
 {
+    int n;
+    if (testNo > 9) {
+        n = 19;
+    } else {
+        n = 20;
+    }
+   
     log("    Test %i: ", testNo++);
+    space(n);
     if (exp != act) {
         log("FAIL: exp %i, got %i\n", exp, act);
     } else {
@@ -23,7 +38,15 @@ function showIntResults(int exp, int act)
 
 function showFloatResults(float exp, float act)
 {
+    int n;
+    if (testNo > 9) {
+        n = 19;
+    } else {
+        n = 20;
+    }
+   
     log("    Test %i: ", testNo++);
+    space(n);
     if (exp != act) {
         log("FAIL: exp %f, got %f\n", exp, act);
     } else {
