@@ -33,8 +33,7 @@ function showFloatResults(float exp, float act)
 
 function test()
 {
-    int i;
-    int j;
+    int i, j;
     float f;
     
     testNo = 1;

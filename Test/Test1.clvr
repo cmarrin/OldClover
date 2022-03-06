@@ -26,8 +26,7 @@ table float testFloatTable
     7.5 8.5 9.5
 }
 
-int testNo;
-int testIntGlobal;
+int testNo, testIntGlobal;
 float testFloatGlobal;
 
 function showIntResults(int exp, int act)
@@ -52,8 +51,7 @@ function showFloatResults(float exp, float act)
 
 function test()
 {
-    int i;
-    int j;
+    int i, j;
     float f;
     
     testIntGlobal = 42;

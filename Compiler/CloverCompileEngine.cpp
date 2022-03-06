@@ -81,7 +81,7 @@ CloverCompileEngine::element()
         return true;
     }
     
-    if (var()) return true;    
+    if (varList()) return true;    
     if (table()) return true;
     if (strucT()) return true;
     if (function()) return true;
@@ -136,7 +136,7 @@ CloverCompileEngine::strucT()
 }
 
 bool
-CloverCompileEngine::var()
+CloverCompileEngine::varList()
 {
     Type t;
     
@@ -144,6 +144,28 @@ CloverCompileEngine::var()
         return false;
     }
     
+    bool haveOne = false;
+    while (true) {
+        if (!var(t)) {
+            if (!haveOne) {
+                break;
+            }
+            expect(false, Compiler::Error::ExpectedVar);
+        }
+        
+        haveOne = true;
+        if (!match(Token::Comma)) {
+            break;
+        }
+    }
+
+    expect(Token::Semicolon);
+    return true;
+}
+
+bool
+CloverCompileEngine::var(Type type)
+{
     bool isPointer = false;
     if (match(Token::Mul)) {
         isPointer = true;
@@ -157,15 +179,13 @@ CloverCompileEngine::var()
         size = 1;
     }
     
-    size *= elementSize(t);
-
-    expect(Token::Semicolon);
+    size *= elementSize(type);
 
     // Put the var in _globals unless we're in a function, then put it in _locals
     if (inFunction) {
-        currentLocals().emplace_back(id, currentLocals().size(), t, Symbol::Storage::Local, isPointer);
+        currentLocals().emplace_back(id, currentLocals().size(), type, Symbol::Storage::Local, isPointer);
     } else {
-        _globals.emplace_back(id, _nextMem, t, Symbol::Storage::Global, isPointer);
+        _globals.emplace_back(id, _nextMem, type, Symbol::Storage::Global, isPointer);
 
         // There is only enough room for GlobalSize values
         expect(_nextMem + size <= GlobalSize, Compiler::Error::TooManyVars);
@@ -234,7 +254,7 @@ CloverCompileEngine::function()
     // Remember the rom addr so we can check to see if we've emitted any code
     uint16_t size = romSize();
     
-    while(var()) { }
+    while(varList()) { }
     
     // SetFrame has to be the first instruction in the Function. Pass Params and Locals
     addOpPL(Op::SetFrame, currentFunction().args(), currentFunction().locals().size() - currentFunction().args());

@@ -53,9 +53,11 @@ table:
 struct:
     'struct' <id> '{' { structEntry } '}' ;
     
-// First integer is num elements, second is size of each element
+varList:
+    type var { ',' var } ';' ;
+
 var:
-    type [ '*' ] <id> [ <integer> ] ';' ;
+    [ '*' ] <id> [ <integer> ] ;
 
 function:
     'function' [ <type> ] <id> '( formalParameterList ')' '{' { var } { statement } '}' ;
@@ -192,7 +194,8 @@ protected:
     virtual bool table() override;
     virtual bool type(Type&) override;
   
-    bool var();
+    bool varList();
+    bool var(Type);
 
 private:
     class OpInfo {
