@@ -39,7 +39,7 @@ program:
     { element } ;
 
 element:
-    def | constant | table | struct | var | function | command ;
+    def | constant | table | struct | varList | function | command ;
     
 def:
     'def' <id> <integer> ';'
@@ -60,7 +60,7 @@ var:
     [ '*' ] <id> [ <integer> ] ;
 
 function:
-    'function' [ <type> ] <id> '( formalParameterList ')' '{' { var } { statement } '}' ;
+    'function' [ <type> ] <id> '( formalParameterList ')' '{' { varList } { statement } '}' ;
 
 command:
     'command' <id> <integer> <id> <id> ';' ;
