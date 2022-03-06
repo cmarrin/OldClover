@@ -66,7 +66,7 @@ function test()
         if (i >= 10) break;
         j += i++;
     }
-    showIntResults(7, 45, j);
+    showIntResults(1, 45, j);
 
     i = 0;
     j = 0;
@@ -77,7 +77,7 @@ function test()
             break;
         }
     }
-    showIntResults(8, 15, j);
+    showIntResults(2, 15, j);
 
     i = 0;
     j = 0;
@@ -89,7 +89,7 @@ function test()
         }
         ++j;
     }
-    showIntResults(9, 50, j);
+    showIntResults(3, 50, j);
 
     log("\nTest Float loop\n"); 
     i = 0;
@@ -98,7 +98,7 @@ function test()
         if (i >= 10) break;
         f += Float(i++);
     }
-    showFloatResults(13, 45, f);
+    showFloatResults(4, 45, f);
 
     i = 0;
     f = 0;
@@ -109,7 +109,7 @@ function test()
             break;
         }
     }
-    showFloatResults(14, 15, f);
+    showFloatResults(5, 15, f);
 
     i = 0;
     f = 0;
@@ -121,7 +121,7 @@ function test()
         }
         ++f;
     }
-    showFloatResults(15, 50, f);
+    showFloatResults(6, 50, f);
 
     log("\nDone\n\n");
 }

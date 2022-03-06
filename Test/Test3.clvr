@@ -65,7 +65,7 @@ function test()
     while(i < 10) {
         j += i++;
     }
-    showIntResults(4, 45, j);
+    showIntResults(1, 45, j);
 
     i = 0;
     j = 0;
@@ -75,7 +75,7 @@ function test()
             break;
         }
     }
-    showIntResults(5, 15, j);
+    showIntResults(2, 15, j);
 
     i = 0;
     j = 0;
@@ -86,7 +86,7 @@ function test()
         }
         ++j;
     }
-    showIntResults(6, 50, j);
+    showIntResults(3, 50, j);
 
     log("\nTest Float while\n"); 
     i = 0;
@@ -94,7 +94,7 @@ function test()
     while(i < 10) {
         f += Float(i++);
     }
-    showFloatResults(10, 45, f);
+    showFloatResults(4, 45, f);
 
     i = 0;
     f = 0;
@@ -104,7 +104,7 @@ function test()
             break;
         }
     }
-    showFloatResults(11, 15, f);
+    showFloatResults(5, 15, f);
 
     i = 0;
     f = 0;
@@ -115,7 +115,7 @@ function test()
         }
         ++f;
     }
-    showFloatResults(12, 50, f);
+    showFloatResults(6, 50, f);
 
     log("\nDone\n\n");
 }
