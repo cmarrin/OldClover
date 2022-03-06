@@ -57,15 +57,31 @@ function test()
     int i, j;
     float f;
     
-    log("\nTest foreach, break, continue\n");
+    log("\nTest if, foreach, break, continue\n");
 
+    log("\nTest if\n");
+    i = 0;
+    j = 0;
+
+    if (0) {
+        showIntResults(1, 0, 1);
+    } else {
+        showIntResults(1, 1, 1);
+    }
+    
+    if (1) {
+        showIntResults(2, 1, 1);
+    } else {
+        showIntResults(2, 0, 1);
+    }
+    
     log("\nTest Int foreach\n"); 
     i = 0;
     j = 0;
     foreach(i : 10) {
         j += i;
     }
-    showIntResults(1, 45, j);
+    showIntResults(3, 45, j);
 
     i = 0;
     j = 0;
@@ -75,7 +91,7 @@ function test()
             break;
         }
     }
-    showIntResults(2, 15, j);
+    showIntResults(4, 15, j);
 
     i = 0;
     j = 0;
@@ -86,7 +102,7 @@ function test()
         }
         ++j;
     }
-    showIntResults(3, 50, j);
+    showIntResults(5, 50, j);
 
     log("\nTest Float foreach\n"); 
     i = 0;
@@ -94,7 +110,7 @@ function test()
     foreach(i : 10) {
         f += Float(i);
     }
-    showFloatResults(10, 45, f);
+    showFloatResults(6, 45, f);
 
     i = 0;
     f = 0;
@@ -104,7 +120,7 @@ function test()
             break;
         }
     }
-    showFloatResults(11, 15, f);
+    showFloatResults(7, 15, f);
 
     i = 0;
     f = 0;
@@ -115,7 +131,7 @@ function test()
         }
         ++f;
     }
-    showFloatResults(12, 50, f);
+    showFloatResults(8, 50, f);
 
     log("\nDone\n\n");
 }
