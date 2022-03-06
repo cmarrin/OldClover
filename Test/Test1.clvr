@@ -80,16 +80,16 @@ function test()
     testIntGlobal = 42;
     testFloatGlobal = 6.5;
 
-    log("\nTest constants, vars, operands and expressions\n");
+    log("\nTest consts, vars, ops and exprs\n");
 
-    log("\nTest Int values\n"); 
+    log("\nTest Int vals\n"); 
     showIntResults(1, 12, TestSizeDef);
     showIntResults(2, 0xfc, testIntConst);
     showIntResults(3, 2, testIntTable[1]);
     showIntResults(4, 7, testIntTable[3]);
     showIntResults(5, 42, testIntGlobal);
     
-    log("\nTest Int operators\n"); 
+    log("\nTest Int ops\n"); 
     showIntResults(6, 294, testIntConst + testIntGlobal);
     showIntResults(7, 210, testIntConst - testIntGlobal);
     showIntResults(8, 10584, testIntConst * testIntGlobal);
@@ -99,41 +99,55 @@ function test()
     showIntResults(11, 0, !testIntConst);
     showIntResults(12, -253, ~testIntConst);
     
+    showIntResults(13, 0, testIntConst < testIntGlobal);
+    showIntResults(14, 0, testIntConst <= testIntGlobal);
+    showIntResults(15, 0, testIntConst == testIntGlobal);
+    showIntResults(16, 1, testIntConst != testIntGlobal);
+    showIntResults(17, 1, testIntConst >= testIntGlobal);
+    showIntResults(18, 1, testIntConst > testIntGlobal);
+    
     i = 20;
     j = i++;
-    showIntResults(13, 21, i);
-    showIntResults(14, 20, j);
-    j = i--;
-    showIntResults(15, 20, i);
-    showIntResults(16, 21, j);
-    j = ++i;
-    showIntResults(17, 21, i);
-    showIntResults(18, 21, j);
-    j = --i;
-    showIntResults(19, 20, i);
+    showIntResults(19, 21, i);
     showIntResults(20, 20, j);
+    j = i--;
+    showIntResults(21, 20, i);
+    showIntResults(22, 21, j);
+    j = ++i;
+    showIntResults(23, 21, i);
+    showIntResults(24, 21, j);
+    j = --i;
+    showIntResults(25, 20, i);
+    showIntResults(26, 20, j);
 
-    log("\nTest Int expressions\n"); 
-    showIntResults(21, 2984, testIntTable[1] + TestSizeDef * testIntConst - testIntGlobal);
-    showIntResults(22, 2940, (testIntTable[1] + TestSizeDef) * (testIntConst - testIntGlobal));
+    log("\nTest Int exprs\n"); 
+    showIntResults(27, 2984, testIntTable[1] + TestSizeDef * testIntConst - testIntGlobal);
+    showIntResults(28, 2940, (testIntTable[1] + TestSizeDef) * (testIntConst - testIntGlobal));
 
-    log("\nTest Float values\n"); 
-    showFloatResults(23, 3.5, testFloatConst);
-    showFloatResults(24, 2.5, testFloatTable[1]);
-    showFloatResults(25, 7.5, testFloatTable[3]);
-    showFloatResults(26, 6.5, testFloatGlobal);
+    log("\nTest Float vals\n"); 
+    showFloatResults(29, 3.5, testFloatConst);
+    showFloatResults(30, 2.5, testFloatTable[1]);
+    showFloatResults(31, 7.5, testFloatTable[3]);
+    showFloatResults(32, 6.5, testFloatGlobal);
 
-    log("\nTest Float operators\n"); 
-    showFloatResults(27, 10, testFloatConst + testFloatGlobal);
-    showFloatResults(28, -3, testFloatConst - testFloatGlobal);
-    showFloatResults(29, 22.75, testFloatConst * testFloatGlobal);
-    showFloatResults(30, 2.5, 16.25 / testFloatGlobal);
+    log("\nTest Float ops\n"); 
+    showFloatResults(33, 10, testFloatConst + testFloatGlobal);
+    showFloatResults(34, -3, testFloatConst - testFloatGlobal);
+    showFloatResults(35, 22.75, testFloatConst * testFloatGlobal);
+    showFloatResults(36, 2.5, 16.25 / testFloatGlobal);
 
-    log("\nTest Float expressions\n"); 
-    showFloatResults(31, 38, testFloatTable[1] + Float(TestSizeDef) * testFloatConst - testFloatGlobal);
-    showFloatResults(32, -43.5, (testFloatTable[1] + Float(TestSizeDef)) * (testFloatConst - testFloatGlobal));
+    showFloatResults(37, -6.5, -testFloatGlobal);
 
-    showFloatResults(33, -6.5, -testFloatGlobal);
+    showIntResults(38, 1, testFloatConst < testFloatGlobal);
+    showIntResults(39, 1, testFloatConst <= testFloatGlobal);
+    showIntResults(40, 0, testFloatConst == testFloatGlobal);
+    showIntResults(41, 1, testFloatConst != testFloatGlobal);
+    showIntResults(42, 0, testFloatConst >= testFloatGlobal);
+    showIntResults(43, 0, testFloatConst > testFloatGlobal);
+    
+    log("\nTest Float exprs\n"); 
+    showFloatResults(44, 38, testFloatTable[1] + Float(TestSizeDef) * testFloatConst - testFloatGlobal);
+    showFloatResults(45, -43.5, (testFloatTable[1] + Float(TestSizeDef)) * (testFloatConst - testFloatGlobal));
 
     log("\nDone\n\n");
 }
