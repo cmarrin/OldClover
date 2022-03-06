@@ -138,20 +138,18 @@ CloverCompileEngine::strucT()
 bool
 CloverCompileEngine::var()
 {
-    if (!match(Reserved::Var)) {
+    Type t;
+    
+    if (!type(t)) {
         return false;
     }
-
-    Type t;
-    std::string id;
-    
-    expect(type(t), Compiler::Error::ExpectedType);
     
     bool isPointer = false;
     if (match(Token::Mul)) {
         isPointer = true;
     }
     
+    std::string id;
     expect(identifier(id), Compiler::Error::ExpectedIdentifier);
     
     int32_t size;

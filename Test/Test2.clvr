@@ -9,7 +9,7 @@
 
 // Test foreach, while, loop, break, continue
 
-var int testNo;
+int testNo;
 
 function showIntResults(int exp, int act)
 {
@@ -33,9 +33,9 @@ function showFloatResults(float exp, float act)
 
 function test()
 {
-    var int i;
-    var int j;
-    var float f;
+    int i;
+    int j;
+    float f;
     
     testNo = 1;
     

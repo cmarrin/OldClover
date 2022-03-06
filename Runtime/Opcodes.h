@@ -65,12 +65,12 @@ There are four types of values:
                     'const' and 'table' are the same thing. They appear first
                     in ROM and are accessed with an <id> from 0 to 127.
                     
-    Global vars     These are introduced with the 'var' keyword and are stored in
+    Global vars     These are introduced with a type and are stored in
                     RAM. The executable has the size needed for this memory and it
                     is allocated at runtime. They are globally available to all
                     functions. They are accessed with an <id> of 0x80 to 0xbf.
 
-    Local vars      These are also introduced by the 'var' keyword, but at the
+    Local vars      These are also introduced by a type, but at the
                     top of functions. They are kept on the stack, so they are only 
                     available while the function is active. The system can also 
                     allocate temp variables, which are also placed on the stack 

@@ -55,7 +55,7 @@ struct:
     
 // First integer is num elements, second is size of each element
 var:
-    'var' type [ '*' ] <id> [ <integer> ] ';' ;
+    type [ '*' ] <id> [ <integer> ] ';' ;
 
 function:
     'function' [ <type> ] <id> '( formalParameterList ')' '{' { var } { statement } '}' ;

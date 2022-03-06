@@ -26,9 +26,9 @@ table float testFloatTable
     7.5 8.5 9.5
 }
 
-var int testNo;
-var int testIntGlobal;
-var float testFloatGlobal;
+int testNo;
+int testIntGlobal;
+float testFloatGlobal;
 
 function showIntResults(int exp, int act)
 {
@@ -52,9 +52,9 @@ function showFloatResults(float exp, float act)
 
 function test()
 {
-    var int i;
-    var int j;
-    var float f;
+    int i;
+    int j;
+    float f;
     
     testIntGlobal = 42;
     testFloatGlobal = 6.5;

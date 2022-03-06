@@ -463,7 +463,6 @@ CompileEngine::isReserved(Token token, const std::string str, Reserved& r)
         { "def",        Reserved::Def },
         { "const",      Reserved::Const },
         { "table",      Reserved::Table },
-        { "var",        Reserved::Var },
         { "function",   Reserved::Function },
         { "command",    Reserved::Command },
         { "foreach",    Reserved::ForEach },

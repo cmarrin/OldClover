@@ -155,15 +155,12 @@ ArlyCompileEngine::tableEntries(Type t)
 bool
 ArlyCompileEngine::var()
 {
-    if (!match(Reserved::Var)) {
+    Type t;
+    if (!type(t)) {
         return false;
     }
-
-    Type t;
+    
     std::string id;
-    
-    expect(type(t), Compiler::Error::ExpectedType);
-    
     expect(identifier(id), Compiler::Error::ExpectedIdentifier);
     
     int32_t size;

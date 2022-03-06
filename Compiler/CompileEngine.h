@@ -98,7 +98,6 @@ protected:
         Struct,
         Const,
         Table,
-        Var,
         Function,
         Return,
         Break,
