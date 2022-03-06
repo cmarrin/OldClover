@@ -125,6 +125,8 @@ unaryExpression:
     | '-' unaryExpression
     | '~' unaryExpression
     | '!' unaryExpression
+    | '++' unaryExpression
+    | '--' unaryExpression
     | '&' unaryExpression
     ;
 
@@ -133,6 +135,8 @@ postfixExpression:
     | postfixExpression '(' argumentList ')'
     | postfixExpression '[' arithmeticExpression ']'
     | postfixExpression '.' identifier
+    | postfixExpression '++'
+    | postfixExpression '--'
     ;
 
 primaryExpression:
