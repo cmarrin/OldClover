@@ -70,13 +70,15 @@ public:
         WrongType,
         OnlyAllowedInLoop,
         DuplicateCmd,
+        ExecutableTooBig,
     };
     
     Compiler() { }
     
     enum class Language { Arly, Clover };
     
-    bool compile(std::istream*, Language, std::vector<uint8_t>& executable,
+    bool compile(std::istream*, Language, 
+                 std::vector<uint8_t>& executable, uint32_t maxExecutableSize,
                  const std::vector<NativeModule*>&,
                  std::vector<std::pair<int32_t, std::string>>* annotations = nullptr);
 

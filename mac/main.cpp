@@ -16,6 +16,7 @@
 #include <getopt.h>
 #include <cstdio>
 
+static constexpr uint32_t MaxExecutableSize = 1024;
 static constexpr int NumLoops = 0;
 
 // Simulator
@@ -29,12 +30,12 @@ public:
     
     virtual uint8_t rom(uint16_t i) const override
     {
-        return (i < 1024) ? _rom[i] : 0;
+        return (i < MaxExecutableSize) ? _rom[i] : 0;
     }
     
     virtual void log(const char* s) const override
     {
-        std::cout << s;
+        std::cout << s << std::flush;
     }
 
     void setROM(const std::vector<uint8_t>& buf)
@@ -121,6 +122,7 @@ static void showError(clvr::Compiler::Error error, clvr::Token token, const std:
         case clvr::Compiler::Error::WrongNumberOfArgs: err = "wrong number of args"; break;
         case clvr::Compiler::Error::OnlyAllowedInLoop: err = "break/continue only allowed in loop"; break;
         case clvr::Compiler::Error::DuplicateCmd: err = "duplicate command"; break;
+        case clvr::Compiler::Error::ExecutableTooBig: err = "executable too big"; break;
     }
     
     if (token == clvr::Token::EndOfFile) {
@@ -201,9 +203,10 @@ int main(int argc, char * const argv[])
         
         randomSeed(uint32_t(clock()));
 
-        compiler.compile(&stream, lang, executable, { }, &annotations);
+        compiler.compile(&stream, lang, executable, MaxExecutableSize, { }, &annotations);
         if (compiler.error() != clvr::Compiler::Error::None) {
             showError(compiler.error(), compiler.expectedToken(), compiler.expectedString(), compiler.lineno(), compiler.charno());
+            std::cout << "          Executable size=" << std::to_string(executable.size()) << "\n";
             return -1;
         }
 

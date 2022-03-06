@@ -18,7 +18,8 @@
 
 using namespace clvr;
 
-bool Compiler::compile(std::istream* istream, Language lang, std::vector<uint8_t>& executable,
+bool Compiler::compile(std::istream* istream, Language lang,
+                       std::vector<uint8_t>& executable, uint32_t maxExecutableSize,
                        const std::vector<NativeModule*>& modules,
                        std::vector<std::pair<int32_t, std::string>>* annotations)
 {
@@ -59,6 +60,10 @@ bool Compiler::compile(std::istream* istream, Language lang, std::vector<uint8_t
         }
     }
     catch(...) {
+    }
+    
+    if (_error == Error::None && executable.size() > maxExecutableSize) {
+        _error = Error::ExecutableTooBig;
     }
     
     delete engine;
