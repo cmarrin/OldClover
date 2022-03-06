@@ -57,50 +57,50 @@ function test()
     int i, j;
     float f;
     
-    log("\nTest foreach, break, continue\n");
+    log("\nTest while, break, continue\n");
 
-    log("\nTest Int foreach\n"); 
+    log("\nTest Int while\n"); 
     i = 0;
     j = 0;
-    foreach(i : 10) {
-        j += i;
+    while(i < 10) {
+        j += i++;
     }
-    showIntResults(1, 45, j);
+    showIntResults(4, 45, j);
 
     i = 0;
     j = 0;
-    foreach(i : 10) {
-        j += i;
-        if (i == 5) {
+    while(i < 10) {
+        j += i++;
+        if (i == 6) {
             break;
         }
     }
-    showIntResults(2, 15, j);
+    showIntResults(5, 15, j);
 
     i = 0;
     j = 0;
-    foreach(i : 10) {
-        j += i;
-        if (i >= 5) {
+    while(i < 10) {
+        j += i++;
+        if (i > 5) {
             continue;
         }
         ++j;
     }
-    showIntResults(3, 50, j);
+    showIntResults(6, 50, j);
 
-    log("\nTest Float foreach\n"); 
+    log("\nTest Float while\n"); 
     i = 0;
     f = 0;
-    foreach(i : 10) {
-        f += Float(i);
+    while(i < 10) {
+        f += Float(i++);
     }
     showFloatResults(10, 45, f);
 
     i = 0;
     f = 0;
-    foreach(i : 10) {
-        f += Float(i);
-        if (i == 5) {
+    while(i < 10) {
+        f += Float(i++);
+        if (i == 6) {
             break;
         }
     }
@@ -108,9 +108,9 @@ function test()
 
     i = 0;
     f = 0;
-    foreach(i : 10) {
-        f += Float(i);
-        if (i >= 5) {
+    while(i < 10) {
+        f += Float(i++);
+        if (i > 5) {
             continue;
         }
         ++f;

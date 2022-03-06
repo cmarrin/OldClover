@@ -69,7 +69,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "../Test/Test1.clvr ../Test/Test2.clvr"
+            argument = "../Test/Test1.clvr ../Test/Test2.clvr ../Test/Test3.clvr ../Test/Test4.clvr"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
