@@ -9,8 +9,6 @@
 
 // Test foreach, while, loop, break, continue
 
-int testNo;
-
 function space(int n)
 {
     while (n--) {
@@ -18,7 +16,7 @@ function space(int n)
     }
 }
 
-function showIntResults(int exp, int act)
+function showIntResults(int testNo, int exp, int act)
 {
     int n;
     if (testNo > 9) {
@@ -27,7 +25,7 @@ function showIntResults(int exp, int act)
         n = 20;
     }
    
-    log("    Test %i: ", testNo++);
+    log("    Test %i: ", testNo);
     space(n);
     if (exp != act) {
         log("FAIL: exp %i, got %i\n", exp, act);
@@ -36,7 +34,7 @@ function showIntResults(int exp, int act)
     }
 }
 
-function showFloatResults(float exp, float act)
+function showFloatResults(int testNo, float exp, float act)
 {
     int n;
     if (testNo > 9) {
@@ -45,7 +43,7 @@ function showFloatResults(float exp, float act)
         n = 20;
     }
    
-    log("    Test %i: ", testNo++);
+    log("    Test %i: ", testNo);
     space(n);
     if (exp != act) {
         log("FAIL: exp %f, got %f\n", exp, act);
@@ -59,8 +57,6 @@ function test()
     int i, j;
     float f;
     
-    testNo = 1;
-    
     log("\nTest foreach, while, loop, break, continue\n");
 
     log("\nTest Int foreach\n"); 
@@ -69,7 +65,7 @@ function test()
     foreach(i : 10) {
         j += i;
     }
-    showIntResults(45, j);
+    showIntResults(1, 45, j);
 
     i = 0;
     j = 0;
@@ -79,7 +75,7 @@ function test()
             break;
         }
     }
-    showIntResults(15, j);
+    showIntResults(2, 15, j);
 
     i = 0;
     j = 0;
@@ -90,7 +86,7 @@ function test()
         }
         ++j;
     }
-    showIntResults(50, j);
+    showIntResults(3, 50, j);
 
     log("\nTest Float foreach\n"); 
     i = 0;
@@ -98,7 +94,7 @@ function test()
     foreach(i : 10) {
         f += Float(i);
     }
-    showFloatResults(45, f);
+    showFloatResults(4, 45, f);
 
     i = 0;
     f = 0;
@@ -108,7 +104,7 @@ function test()
             break;
         }
     }
-    showFloatResults(15, f);
+    showFloatResults(5, 15, f);
 
     i = 0;
     f = 0;
@@ -119,7 +115,7 @@ function test()
         }
         ++f;
     }
-    showFloatResults(50, f);
+    showFloatResults(6, 50, f);
 
     log("\nDone\n\n");
 }
