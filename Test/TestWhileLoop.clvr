@@ -7,7 +7,7 @@
     found in the LICENSE file.
 -------------------------------------------------------------------------*/
 
-// Test loop, break, continue
+// Test while, break, continue
 
 function space(int n)
 {
@@ -57,7 +57,65 @@ function test()
     int i, j;
     float f;
     
-    log("\nTest loop, break, continue\n");
+    log("\nTest while, loop, break, continue\n");
+
+    log("\nTest Int while\n"); 
+    i = 0;
+    j = 0;
+    while(i < 10) {
+        j += i++;
+    }
+    showIntResults(1, 45, j);
+
+    i = 0;
+    j = 0;
+    while(i < 10) {
+        j += i++;
+        if (i == 6) {
+            break;
+        }
+    }
+    showIntResults(2, 15, j);
+
+    i = 0;
+    j = 0;
+    while(i < 10) {
+        j += i++;
+        if (i > 5) {
+            continue;
+        }
+        ++j;
+    }
+    showIntResults(3, 50, j);
+
+    log("\nTest Float while\n"); 
+    i = 0;
+    f = 0;
+    while(i < 10) {
+        f += Float(i++);
+    }
+    showFloatResults(4, 45, f);
+
+    i = 0;
+    f = 0;
+    while(i < 10) {
+        f += Float(i++);
+        if (i == 6) {
+            break;
+        }
+    }
+    showFloatResults(5, 15, f);
+
+    i = 0;
+    f = 0;
+    while(i < 10) {
+        f += Float(i++);
+        if (i > 5) {
+            continue;
+        }
+        ++f;
+    }
+    showFloatResults(6, 50, f);
 
     log("\nTest Int loop\n"); 
     i = 0;
@@ -122,7 +180,6 @@ function test()
         ++f;
     }
     showFloatResults(6, 50, f);
-
     log("\nDone\n\n");
 }
 

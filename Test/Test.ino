@@ -9,8 +9,10 @@
 
 #include <Clover.h>
 #include <EEPROM.h>
-#include "Test1.h"
-#include "Test2.h"
+#include "TestExpr.h"
+#include "TestIfForeach.h"
+#include "TestWhile.h"
+#include "TestLoop.h"
 
 /*
 

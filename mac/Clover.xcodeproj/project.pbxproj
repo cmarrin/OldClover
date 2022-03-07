@@ -41,8 +41,7 @@
 		4963436B27A81DA200ABF09F /* CompileEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CompileEngine.cpp; path = ../Compiler/CompileEngine.cpp; sourceTree = "<group>"; };
 		49BB16B827D3F07E0054C59F /* TestExpr.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; name = TestExpr.clvr; path = ../Test/TestExpr.clvr; sourceTree = "<group>"; };
 		49BB16B927D428CE0054C59F /* TestIfForeach.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; name = TestIfForeach.clvr; path = ../Test/TestIfForeach.clvr; sourceTree = "<group>"; };
-		49BB16BA27D54EE00054C59F /* TestLoop.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; name = TestLoop.clvr; path = ../Test/TestLoop.clvr; sourceTree = "<group>"; };
-		49BB16BB27D54EE00054C59F /* TestWhile.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; name = TestWhile.clvr; path = ../Test/TestWhile.clvr; sourceTree = "<group>"; };
+		49BB16BB27D54EE00054C59F /* TestWhileLoop.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; name = TestWhileLoop.clvr; path = ../Test/TestWhileLoop.clvr; sourceTree = "<group>"; };
 		49BDF4E027C7CF7A00325407 /* NativeCore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = NativeCore.cpp; path = ../Runtime/NativeCore.cpp; sourceTree = "<group>"; };
 		49BDF4E127C7CF7A00325407 /* NativeCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NativeCore.h; path = ../Runtime/NativeCore.h; sourceTree = "<group>"; };
 		49BDF4E527CEA4F800325407 /* Test.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = Test.ino; path = ../Test/Test.ino; sourceTree = "<group>"; };
@@ -81,8 +80,7 @@
 			children = (
 				49BB16B827D3F07E0054C59F /* TestExpr.clvr */,
 				49BB16B927D428CE0054C59F /* TestIfForeach.clvr */,
-				49BB16BB27D54EE00054C59F /* TestWhile.clvr */,
-				49BB16BA27D54EE00054C59F /* TestLoop.clvr */,
+				49BB16BB27D54EE00054C59F /* TestWhileLoop.clvr */,
 			);
 			name = Test;
 			sourceTree = "<group>";
