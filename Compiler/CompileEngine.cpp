@@ -9,7 +9,6 @@
 
 #include "CompileEngine.h"
 
-#include "Interpreter.h"
 #include <cmath>
 #include <map>
 
@@ -487,7 +486,7 @@ CompileEngine::isReserved(Token token, const std::string str, Reserved& r)
 bool
 CompileEngine::findSymbol(const std::string& s, Symbol& sym)
 {
-    auto it = find_if(_globals.begin(), _globals.end(),
+    const auto& it = find_if(_globals.begin(), _globals.end(),
                     [s](const Symbol& sym) { return sym.name() == s; });
 
     if (it != _globals.end()) {
@@ -496,15 +495,7 @@ CompileEngine::findSymbol(const std::string& s, Symbol& sym)
     }
     
     // Not found. See if it's a local to the current function (param or var)
-    it = find_if(currentLocals().begin(), currentLocals().end(),
-                    [s](const Symbol& p) { return p.name() == s; });
-
-    if (it != currentLocals().end()) {
-        sym = *it;
-        return true;
-    }
-
-    return false;
+    return currentFunction().findLocal(s, sym);
 }
 
 bool

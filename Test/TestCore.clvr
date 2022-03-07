@@ -1,0 +1,100 @@
+/*-------------------------------------------------------------------------
+    This source file is a part of Clover
+    For the latest info, see https://github.com/cmarrin/Clover
+    Copyright (c) 2021-2022, Chris Marrin
+    All rights reserved.
+    Use of this source code is governed by the MIT license that can be
+    found in the LICENSE file.
+-------------------------------------------------------------------------*/
+
+// Test Core module
+
+struct AnimEntry
+{
+    float cur;
+    float inc;
+    float min;
+    float max;
+}
+
+function space(int n)
+{
+    while (n--) {
+        log(" ");
+    }
+}
+
+function showIntResults(int testNo, int exp, int act)
+{
+    int n;
+    if (testNo > 9) {
+        n = 19;
+    } else {
+        n = 20;
+    }
+   
+    log("    Test %i: ", testNo);
+    space(n);
+    if (exp != act) {
+        log("FAIL: exp %i, got %i\n", exp, act);
+    } else {
+        log("Pass\n");
+    }
+}
+
+function showFloatResults(int testNo, float exp, float act)
+{
+    int n;
+    if (testNo > 9) {
+        n = 19;
+    } else {
+        n = 20;
+    }
+   
+    log("    Test %i: ", testNo);
+    space(n);
+    if (exp != act) {
+        log("FAIL: exp %f, got %f\n", exp, act);
+    } else {
+        log("Pass\n");
+    }
+}
+
+function test()
+{
+    AnimEntry entry;
+    entry.cur = 1.5;
+    entry.inc = 0.5;
+    entry.min = 0;
+    entry.max = 3;
+    
+    log("\nTest Core Module\n");
+
+
+
+
+
+//        Animate      = CorePrefix0 | 0x00,
+//        Param        = CorePrefix0 | 0x01,
+//        Float        = CorePrefix0 | 0x02,
+//        Int          = CorePrefix0 | 0x03,
+//        RandomInt    = CorePrefix0 | 0x07,
+//        RandomFloat  = CorePrefix0 | 0x08,
+//        InitArray    = CorePrefix0 | 0x09,
+//        MinInt       = CorePrefix0 | 0x0a,
+//        MinFloat     = CorePrefix0 | 0x0b,
+//        MaxInt       = CorePrefix0 | 0x0c,
+//        MaxFloat     = CorePrefix0 | 0x0d,
+
+
+
+
+
+    log("\nTest Animate\n");
+    showIntResults(1, 1, Animate(&entry));
+    showFloatResults(1, 2, entry.cur);
+
+    log("\nDone\n\n");
+}
+
+command test 1 test test;

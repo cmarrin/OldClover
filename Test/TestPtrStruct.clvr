@@ -1,0 +1,139 @@
+/*-------------------------------------------------------------------------
+    This source file is a part of Clover
+    For the latest info, see https://github.com/cmarrin/Clover
+    Copyright (c) 2021-2022, Chris Marrin
+    All rights reserved.
+    Use of this source code is governed by the MIT license that can be
+    found in the LICENSE file.
+-------------------------------------------------------------------------*/
+
+// Test foreach, break, continue
+
+function space(int n)
+{
+    while (n--) {
+        log(" ");
+    }
+}
+
+function showIntResults(int testNo, int exp, int act)
+{
+    int n;
+    if (testNo > 9) {
+        n = 19;
+    } else {
+        n = 20;
+    }
+   
+    log("    Test %i: ", testNo);
+    space(n);
+    if (exp != act) {
+        log("FAIL: exp %i, got %i\n", exp, act);
+    } else {
+        log("Pass\n");
+    }
+}
+
+function showFloatResults(int testNo, float exp, float act)
+{
+    int n;
+    if (testNo > 9) {
+        n = 19;
+    } else {
+        n = 20;
+    }
+   
+    log("    Test %i: ", testNo);
+    space(n);
+    if (exp != act) {
+        log("FAIL: exp %f, got %f\n", exp, act);
+    } else {
+        log("Pass\n");
+    }
+}
+
+function test()
+{
+    int i, j;
+    float f;
+    
+    log("\nTest if, foreach, break, continue\n");
+
+    log("\nTest if\n");
+    i = 0;
+    j = 0;
+
+    if (0) {
+        showIntResults(1, 0, 1);
+    } else {
+        showIntResults(1, 1, 1);
+    }
+    
+    if (1) {
+        showIntResults(2, 1, 1);
+    } else {
+        showIntResults(2, 0, 1);
+    }
+    
+    log("\nTest Int foreach\n"); 
+    i = 0;
+    j = 0;
+    foreach(i : 10) {
+        j += i;
+    }
+    showIntResults(3, 45, j);
+
+    i = 0;
+    j = 0;
+    foreach(i : 10) {
+        j += i;
+        if (i == 5) {
+            break;
+        }
+    }
+    showIntResults(4, 15, j);
+
+    i = 0;
+    j = 0;
+    foreach(i : 10) {
+        j += i;
+        if (i >= 5) {
+            continue;
+        }
+        ++j;
+    }
+    showIntResults(5, 50, j);
+
+    log("\nTest Float foreach\n"); 
+    i = 0;
+    f = 0;
+    foreach(i : 10) {
+        f += Float(i);
+    }
+    showFloatResults(6, 45, f);
+
+    i = 0;
+    f = 0;
+    foreach(i : 10) {
+        f += Float(i);
+        if (i == 5) {
+            break;
+        }
+    }
+    showFloatResults(7, 15, f);
+
+    i = 0;
+    f = 0;
+    foreach(i : 10) {
+        f += Float(i);
+        if (i >= 5) {
+            continue;
+        }
+        ++f;
+    }
+    showFloatResults(8, 50, f);
+
+    log("\nDone\n\n");
+}
+
+command test 1 test test;

@@ -12,6 +12,7 @@
 #include "TestExpr.h"
 #include "TestIfForeach.h"
 #include "TestWhileLoop.h"
+#include "TestFunction.h"
 
 /*
 
@@ -148,6 +149,7 @@ public:
         RunTest(TestExpr);
         RunTest(TestIfForeach);
         RunTest(TestWhileLoop);
+        RunTest(TestFunction);
     }
 
 	void loop()

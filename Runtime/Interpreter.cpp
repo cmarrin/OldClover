@@ -67,11 +67,9 @@ Interpreter::init(const char* cmd, const uint8_t* buf, uint8_t size)
         _globalSize = 0;
     }
     
-    _constOffset = 8;
-    
     uint32_t constSize = uint32_t(getUInt8ROM(4)) * 4;
     bool found = false;
-    _codeOffset = _constOffset + constSize;
+    _codeOffset = ConstOffset + constSize;
     
     // Alloc globals
     _globalSize = getUInt8ROM(5);
