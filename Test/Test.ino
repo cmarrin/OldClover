@@ -11,8 +11,7 @@
 #include <EEPROM.h>
 #include "TestExpr.h"
 #include "TestIfForeach.h"
-#include "TestWhile.h"
-#include "TestLoop.h"
+#include "TestWhileLoop.h"
 
 /*
 
@@ -146,8 +145,9 @@ public:
         
 		Serial.println(F("Test v0.1"));
   
-        RunTest(Test1);
-        RunTest(Test2);
+        RunTest(TestExpr);
+        RunTest(TestIfForeach);
+        RunTest(TestWhileLoop);
     }
 
 	void loop()
