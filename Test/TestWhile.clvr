@@ -7,7 +7,7 @@
     found in the LICENSE file.
 -------------------------------------------------------------------------*/
 
-// Test foreach, while, loop, break, continue
+// Test while, break, continue
 
 function space(int n)
 {
