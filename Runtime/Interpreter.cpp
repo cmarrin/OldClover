@@ -178,6 +178,7 @@ Interpreter::execute(uint16_t addr)
         uint8_t numParams;
         uint8_t numLocals;
         uint32_t value;
+        Address addr;
         
         switch(Op(cmd)) {
 			default:
@@ -185,11 +186,11 @@ Interpreter::execute(uint16_t addr)
 				return -1;
             case Op::Push:
                 id = getId();
-                _stack.push(loadInt(id));
+                _stack.push(Address::fromId(id));
                 break;
             case Op::Pop:
                 id = getId();
-                storeInt(id, _stack.pop());
+                storeInt(Address::fromId(id), _stack.pop());
                 break;
             case Op::PushIntConst:
                 _stack.push(getConst());
@@ -202,13 +203,13 @@ Interpreter::execute(uint16_t addr)
                 _stack.push(getId());
                 break;
             case Op::PushDeref:
-                value = _stack.pop();
-                _stack.push(loadInt(value));
+                addr = _stack.popAddr();
+                _stack.push(loadInt(addr));
                 break;
             case Op::PopDeref:
-                value = _stack.pop();
                 index = _stack.pop();
-                storeInt(index, value);
+                addr = _stack.popAddr();
+                storeInt(addr, index);
                 break;
 
             case Op::Offset:
@@ -444,7 +445,7 @@ Interpreter::execute(uint16_t addr)
             case Op::PreDecInt:
             case Op::PostIncInt:
             case Op::PostDecInt: {
-                uint32_t addr = _stack.pop();
+                Address addr = _stack.popAddr();
                 int32_t value = int32_t(loadInt(addr));
                 int32_t valueAfter = (Op(cmd) == Op::PreIncInt || Op(cmd) == Op::PostIncInt) ? (value + 1) : (value - 1);
                 storeInt(addr, valueAfter);
@@ -455,7 +456,7 @@ Interpreter::execute(uint16_t addr)
             case Op::PreDecFloat:
             case Op::PostIncFloat:
             case Op::PostDecFloat: {
-                uint32_t addr = _stack.pop();
+                Address addr = _stack.popAddr();
                 float value = loadFloat(addr);
                 float valueAfter = (Op(cmd) == Op::PreIncFloat || Op(cmd) == Op::PostIncFloat) ? (value + 1) : (value - 1);
                 storeFloat(addr, valueAfter);
@@ -471,28 +472,30 @@ Interpreter::execute(uint16_t addr)
 int32_t
 Interpreter::animate(uint32_t index)
 {
-    float cur = loadFloat(index, 0);
-    float inc = loadFloat(index, 1);
-    float min = loadFloat(index, 2);
-    float max = loadFloat(index, 3);
+    // index is actually an Address
+    Address addr = Address::fromVar(index);
+    float cur = loadFloat(addr, 0);
+    float inc = loadFloat(addr, 1);
+    float min = loadFloat(addr, 2);
+    float max = loadFloat(addr, 3);
 
     cur += inc;
-    storeFloat(index, 0, cur);
+    storeFloat(addr, 0, cur);
 
     if (0 < inc) {
         if (cur >= max) {
             cur = max;
             inc = -inc;
-            storeFloat(index, 0, cur);
-            storeFloat(index, 1, inc);
+            storeFloat(addr, 0, cur);
+            storeFloat(addr, 1, inc);
             return 1;
         }
     } else {
         if (cur <= min) {
             cur = min;
             inc = -inc;
-            storeFloat(index, 0, cur);
-            storeFloat(index, 1, inc);
+            storeFloat(addr, 0, cur);
+            storeFloat(addr, 1, inc);
             return -1;
         }
     }

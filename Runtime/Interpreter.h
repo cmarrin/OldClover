@@ -172,56 +172,40 @@ private:
     class Address
     {
     public:
+        enum class Type : uint8_t { None, Const, Global, LocalRel, LocalAbs };
+
         Address() { }
-        Address(uint8_t id)
+
+        static Address fromId(uint8_t id)
         {
+            Address addr;
             if (id < GlobalStart) {
-                _type = Type::Const;
-                _addr = id;
+                addr._type = Type::Const;
+                addr._addr = id;
             } else if (id < LocalStart) {
-                _type = Type::Global;
-                _addr = id & 0x3f;
+                addr._type = Type::Global;
+                addr._addr = id & 0x3f;
             } else {
-                _type = Type::LocalRel;
-                _addr = id & 0x3f;
+                addr._type = Type::LocalRel;
+                addr._addr = id & 0x3f;
             }
-        }
-        Address(uint32_t a)
-        {
-            _type = Type(a >> 8);
-            _addr = uint8_t(a);
+            return addr;
         }
         
-        operator uint32_t() { return (uint32_t(_type) << 8) | _addr; }
-        
-        uint32_t loadInt(uint8_t index = 0)
+        static Address fromVar(uint32_t v)
         {
-            switch(_type) {
-                case Type::Const: {
-                    uint16_t addr = ((_addr + index) * 4) + ConstOffset;
-
-                    // Little endian
-                    uint32_t u = uint32_t(getUInt8ROM(addr)) | 
-                                (uint32_t(getUInt8ROM(addr + 1)) << 8) | 
-                                (uint32_t(getUInt8ROM(addr + 2)) << 16) | 
-                                (uint32_t(getUInt8ROM(addr + 3)) << 24);
-
-                    return u;
-                }
-                case Type::Global:
-                    return _global[_addr + index];
-                case Type::LocalRel:
-                    return _stack.local(_addr + index);
-                case Type::LocalAbs:
-                    return _stack.abs(_addr + index);
-                default:
-                    _error = Interpreter::Error::AddressOutOfRange;
-                    return 0;
-            }
+            Address addr;
+            addr._type = Type(v >> 8);
+            addr._addr = uint8_t(v);
+            return addr;
         }
+        
+        uint32_t toVar() { return (uint32_t(_type) << 8) | _addr; }
+
+        uint8_t addr() const { return _addr; }
+        Type type() const { return _type; }
         
     private:
-        enum class Type : uint8_t { None, Const, Global, LocalRel, LocalAbs };
         Type _type = Type::None;
         uint8_t _addr = 0;
     };
@@ -243,7 +227,9 @@ private:
         }
             
         void push(uint32_t v) { ensurePush(); _stack[_sp++] = v; }
+        void push(Address addr) { ensurePush(); _stack[_sp++] = addr.toVar(); }
         uint32_t pop(uint8_t n = 1) { ensureCount(n); _sp -= n; return _stack[_sp]; }
+        Address popAddr(uint8_t n = 1) { ensureCount(n); _sp -= n; return Address::fromVar(_stack[_sp]); }
         void swap()
         {
             ensureCount(2); 
@@ -259,7 +245,7 @@ private:
         const uint32_t& abs(uint16_t addr) const { ensureCount(addr); return get(addr); }
         uint32_t& abs(uint16_t addr) { ensureCount(addr); return get(addr); }
         
-        uint8_t localToAbs(uint16_t addr) const { ensureLocal(addr); return addr + _bp); }
+        uint8_t localToAbs(uint16_t addr) const { ensureLocal(addr); return addr + _bp; }
 
         bool empty() const { return _sp == 0; }
         Error error() const { return _error; }
@@ -379,54 +365,64 @@ private:
         return f;
     }
     
+    uint32_t loadInt(Address addr, uint8_t index = 0)
+    {
+        switch(addr.type()) {
+            case Address::Type::Const: {
+                uint16_t a = ((addr.addr() + index) * 4) + ConstOffset;
+
+                // Little endian
+                uint32_t u = uint32_t(getUInt8ROM(a)) |
+                            (uint32_t(getUInt8ROM(a + 1)) << 8) |
+                            (uint32_t(getUInt8ROM(a + 2)) << 16) |
+                            (uint32_t(getUInt8ROM(a + 3)) << 24);
+
+                return u;
+            }
+            case Address::Type::Global:
+                return _global[addr.addr() + index];
+            case Address::Type::LocalRel:
+                return _stack.local(addr.addr() + index);
+            case Address::Type::LocalAbs:
+                return _stack.abs(addr.addr() + index);
+            default:
+                _error = Error::AddressOutOfRange;
+                return 0;
+        }
+    }
+        
     void storeFloat(Address addr, float v) { storeFloat(addr, 0, v); }
     
     void storeFloat(Address addr, uint8_t index, float v) { storeInt(addr, index, floatToInt(v)); }
-    
-    uint32_t loadInt(Address addr, uint8_t index = 0)
-    {
-        switch(
-        if (id < GlobalStart) {
-            // ROM address
-            uint16_t addr = ((id + index) * 4) + _constOffset;
-
-            // Little endian
-            uint32_t u = uint32_t(getUInt8ROM(addr)) | 
-                        (uint32_t(getUInt8ROM(addr + 1)) << 8) | 
-                        (uint32_t(getUInt8ROM(addr + 2)) << 16) | 
-                        (uint32_t(getUInt8ROM(addr + 3)) << 24);
-
-            return u;
-        }
-        
-        if (id < LocalStart) {
-            // Global address
-            return _global[id - GlobalStart + index];
-        }
-
-        // Local address. Relative to current bp.
-        return _stack.local(id - LocalStart + index);        
-    }
     
     void storeInt(Address addr, uint32_t v) { storeInt(addr, 0, v); }
     
     void storeInt(Address addr, uint8_t index, uint32_t v)
     {
-        // Only Global or Local
-        if (id < GlobalStart) {
-            return;
+        switch(addr.type()) {
+            case Address::Type::Const: {
+                // Only Global or Local
+                return;
+            }
+            case Address::Type::Global: {
+                uint32_t a = uint32_t(addr.addr()) + uint32_t(index);
+                _global[a] = v;
+                return;
+            }
+            case Address::Type::LocalRel: {
+                uint32_t a = uint32_t(addr.addr()) + uint32_t(index);
+                _stack.local(a) = v;
+                return;
+            }
+            case Address::Type::LocalAbs: {
+                uint32_t a = uint32_t(addr.addr()) + uint32_t(index);
+                _stack.abs(a) = v;
+                return;
+            }
+            default:
+                _error = Error::AddressOutOfRange;
+                return;
         }
-
-        if (id < LocalStart) {
-            // Global address
-            uint32_t addr = uint32_t(id) - GlobalStart + uint32_t(index);
-            _global[addr] = v;
-            return;
-        }
-            
-        // Local address. Relative to current bp.
-        uint32_t addr = uint32_t(id) - LocalStart + uint32_t(index);
-        _stack.local(addr) = v;
     }
     
     bool log(const char* fmt, uint8_t numArgs);
