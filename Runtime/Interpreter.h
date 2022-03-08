@@ -344,12 +344,12 @@ private:
     int32_t execute(uint16_t addr);
     
     // Index is in bytes
-    uint8_t getUInt8ROM(uint16_t index)
+    uint8_t getUInt8ROM(uint16_t index) const
     {
         return rom(index);
     }
     
-    uint16_t getUInt16ROM(uint16_t index)
+    uint16_t getUInt16ROM(uint16_t index) const
     {
         // Little endian
         return uint32_t(getUInt8ROM(index)) | 
