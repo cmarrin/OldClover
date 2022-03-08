@@ -421,6 +421,11 @@ private:
     
     bool log(const char* fmt, uint8_t numArgs);
     
+    bool isNextOpcodeSetFrame() const
+    {
+        return Op(getUInt8ROM(_pc) & 0xf0) == Op::SetFrame;
+    }
+    
     Error _error = Error::None;
     int16_t _errorAddr = -1;
     

@@ -138,7 +138,8 @@ Interpreter::init(const char* cmd, const uint8_t* buf, uint8_t size)
     }
     
     // Execute init();
-    if (Op(getUInt8ROM(_initStart)) != Op::SetFrame) {
+    _pc = _initStart;
+    if (!isNextOpcodeSetFrame()) {
         _error = Error::ExpectedSetFrame;
         return false;
     }
@@ -155,7 +156,8 @@ Interpreter::init(const char* cmd, const uint8_t* buf, uint8_t size)
 int32_t
 Interpreter::loop()
 {
-    if (Op(getUInt8ROM(_loopStart)) != Op::SetFrame) {
+    _pc = _loopStart;
+    if (!isNextOpcodeSetFrame()) {
         _error = Error::ExpectedSetFrame;
         return false;
     }
@@ -298,7 +300,7 @@ Interpreter::execute(uint16_t addr)
                 _stack.push(_pc);
                 _pc = targ + _codeOffset;
                 
-                if (Op(getUInt8ROM(_pc)) != Op::SetFrame) {
+                if (!isNextOpcodeSetFrame()) {
                     _error = Error::ExpectedSetFrame;
                     return -1;
                 }
