@@ -33,7 +33,7 @@ public:
         
         Symbol() { }
         
-        Symbol(const std::string& name, uint8_t addr, Type type, Storage storage, bool ptr = false, uint8_t size = 1)
+        Symbol(const std::string& name, uint8_t addr, Type type, Storage storage = Storage::Local, bool ptr = false, uint8_t size = 1)
             : _name(name)
             , _addr(addr)
             , _type(type)
@@ -42,16 +42,6 @@ public:
             , _size(size)
         { }
         
-        // Used to add locals to function
-        Symbol(const char* name, uint8_t addr, Type type, bool ptr = false)
-            : _name(name)
-            , _addr(addr)
-            , _type(type)
-            , _ptr(ptr)
-            , _storage(Storage::Local)
-            , _size(1)
-        { }
-
         const std::string& name() const { return _name; }
         uint8_t addr() const;
         Type type() const { return _type; }
@@ -188,7 +178,11 @@ protected:
     void addOpI(Op op, uint8_t i) { addOpInt(op, i); }
     void addOpId(Op op, uint8_t id) { addOpInt(op, id); }
     void addOpConst(Op op, uint8_t c) { addOpInt(op, c); }
-    void addOpPL(Op op, uint8_t p, uint8_t l) {addOpInt(op, (p << 4) | (l & 0x0f)); }
+    void addOpPL(Op op, uint8_t p, uint8_t l)
+    {
+        addOpSingleByteIndex(op, p);
+        _rom8.push_back(l);
+    }
     
     virtual bool isReserved(Token token, const std::string str, Reserved& r);
 
@@ -232,14 +226,40 @@ protected:
 
         const std::string& name() const { return _name; }
         int16_t addr() const { return _addr; }
-        std::vector<Symbol>& locals() { return _locals; }
-        const std::vector<Symbol>& locals() const { return _locals; }
         uint8_t& args() { return _args; }
         const uint8_t& args() const { return _args; }
         Type type() const { return _type; }
+        uint8_t localSize() const { return _localSize; }
+        Type localType(uint8_t i) const { return (i >= _locals.size()) ? Type::None : _locals[i].type(); }
         
         bool isNative() const { return _native; }
         int16_t nativeId() const { return _addr; }
+
+        // Args are always 1 word and will always come before locals. So the
+        // addr is the current locals size.
+        void addArg(const std::string& name, Type type)
+        {
+            _locals.emplace_back(name, _locals.size(), type, Symbol::Storage::Local);
+            _args++;
+        }
+        
+        void addLocal(const std::string& name, Type type, bool ptr, uint8_t size)
+        {
+            _locals.emplace_back(name, _localSize + _args, type, Symbol::Storage::Local, ptr, size);
+            _localSize += size;
+        }
+
+        bool findLocal(const std::string& s, Symbol& sym)
+        {
+            const auto& it = find_if(_locals.begin(), _locals.end(),
+                    [s](const Symbol& p) { return p.name() == s; });
+
+            if (it != _locals.end()) {
+                sym = *it;
+                return true;
+            }
+            return false;
+        }
         
     private:
         std::string _name;
@@ -248,6 +268,7 @@ protected:
         uint8_t _args = 0;
         Type _type;
         bool _native = false;
+        uint8_t _localSize = 0;
     };
     
     struct Command
@@ -283,8 +304,6 @@ protected:
     
     uint8_t allocNativeId() { return _nextNativeId++; }
         
-    std::vector<Symbol>& currentLocals() { return currentFunction().locals(); }
-
     bool findSymbol(const std::string&, Symbol&);
     bool findDef(const std::string&, Def&);
     bool findFunction(const std::string&, Function&);

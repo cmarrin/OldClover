@@ -69,11 +69,11 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "../Test/TestExpr.clvr ../Test/TestIfForeach.clvr ../Test/TestWhileLoop.clvr"
+            argument = "../Test/TestExpr.clvr ../Test/TestIfForeach.clvr ../Test/TestWhileLoop.clvr ../Test/TestFunction.clvr ../Test/TestCore.clvr"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "../examples/Simple.clvr"
+            argument = "../Test/TestCore.clvr"
             isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>

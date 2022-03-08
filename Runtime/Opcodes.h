@@ -325,10 +325,9 @@ enum class Op: uint8_t {
 
     CallNative      = 0x3f,
     Return          = 0x40,
-    SetFrame        = 0x41,
     
-    Jump            = 0x42,
-    Loop            = 0x43,
+    Jump            = 0x41,
+    Loop            = 0x42,
     
 // 5 unused opcodes
     
@@ -385,6 +384,7 @@ enum class Op: uint8_t {
     Index           = 0xa0,
     PushIntConstS   = 0xb0,
     Log             = 0xc0,
+    SetFrame        = 0xd0,
     
     End             = 0xff,
     
@@ -399,7 +399,7 @@ enum class OpParams : uint8_t {
     Index,      // b[3:0] = <int> (0-15)
     Const,      // b+1 = 0-255
     Target,     // b+1 = call target bits 7:2, b[2:0] = call target bits 1:0};
-    P_L,        // b+1[7:4] = num params, b+1[3:0] = num locals
+    P_L,        // b[3:0] = num params (0-15), b+1 = num locals (0-255)
     Sz,         // b+1 = <int>
     Index_Sz_S, // b[3:0] = <int> (0-15), b+1 = <int>, followed by Sz string bytes
 };

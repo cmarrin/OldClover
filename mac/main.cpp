@@ -76,7 +76,7 @@ struct Test
 };
 
 static std::vector<Test> Tests = {
-    { "test", { 1 } },
+    { "test", { 4, 7, 11 } },
 };
 
 static void showError(clvr::Compiler::Error error, clvr::Token token, const std::string& str, uint32_t lineno, uint32_t charno)

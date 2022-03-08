@@ -1,0 +1,104 @@
+/*-------------------------------------------------------------------------
+    This source file is a part of Clover
+    For the latest info, see https://github.com/cmarrin/Clover
+    Copyright (c) 2021-2022, Chris Marrin
+    All rights reserved.
+    Use of this source code is governed by the MIT license that can be
+    found in the LICENSE file.
+-------------------------------------------------------------------------*/
+
+// Test functions
+
+def TestSizeDef   12;
+
+const int testIntConst 10;
+const float testFloatConst 3.5;
+
+int testIntGlobal;
+float testFloatGlobal;
+
+function space(int n)
+{
+    while (n--) {
+        log(" ");
+    }
+}
+
+function showIntResults(int testNo, int exp, int act)
+{
+    int n;
+    if (testNo > 9) {
+        n = 19;
+    } else {
+        n = 20;
+    }
+   
+    log("    Test %i: ", testNo);
+    space(n);
+    if (exp != act) {
+        log("FAIL: exp %i, got %i\n", exp, act);
+    } else {
+        log("Pass\n");
+    }
+}
+
+function showFloatResults(int testNo, float exp, float act)
+{
+    int n;
+    if (testNo > 9) {
+        n = 19;
+    } else {
+        n = 20;
+    }
+   
+    log("    Test %i: ", testNo);
+    space(n);
+    if (exp != act) {
+        log("FAIL: exp %f, got %f\n", exp, act);
+    } else {
+        log("Pass\n");
+    }
+}
+
+// Dummy function just to make we make the call
+function function1()
+{
+    showIntResults(1, 0, 0);
+}
+
+function int function2(int a, int b)
+{
+    int c;
+    c = 7;
+    return a + b + c + TestSizeDef + testIntConst + testIntGlobal;
+}
+
+function float function3(float a, float b)
+{
+    float c;
+    c = 123;
+    return a + b + c + TestSizeDef + testFloatConst + testFloatGlobal;
+}
+
+function int function4(int a, float b)
+{
+    return a + Int(b);
+}
+
+function test()
+{
+    log("\nTest functions\n");
+
+    testIntGlobal = 42;
+    testFloatGlobal = 6.5;
+
+    function1();
+    
+    showIntResults(2, 82, function2( 5, 6));
+    showFloatResults(2, 195.5, function3( 20, 30.5));
+    showIntResults(2, 110, function4( 50, 60.5));
+
+    log("\nDone\n\n");
+}
+
+command test 3 test test;

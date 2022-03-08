@@ -362,8 +362,8 @@ ArlyCompileEngine::opStatement()
             break;
         }
         case OpParams::P_L:
-            _rom8.push_back(uint8_t(op));
-            _rom8.push_back((handleI() << 4) | handleI());
+            addOpSingleByteIndex(op, handleI());
+            _rom8.push_back(handleI());
             break;
         case OpParams::Index_Sz_S:
             // FIXME: Handle this

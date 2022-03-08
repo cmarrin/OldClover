@@ -183,9 +183,9 @@ CloverCompileEngine::var(Type type)
 
     // Put the var in _globals unless we're in a function, then put it in _locals
     if (inFunction) {
-        currentLocals().emplace_back(id, currentLocals().size(), type, Symbol::Storage::Local, isPointer);
+        currentFunction().addLocal(id, type, isPointer, size);
     } else {
-        _globals.emplace_back(id, _nextMem, type, Symbol::Storage::Global, isPointer);
+        _globals.emplace_back(id, _nextMem, type, Symbol::Storage::Global, isPointer, size);
 
         // There is only enough room for GlobalSize values
         expect(_nextMem + size <= GlobalSize, Compiler::Error::TooManyVars);
@@ -245,9 +245,6 @@ CloverCompileEngine::function()
     
     expect(formalParameterList(), Compiler::Error::ExpectedFormalParams);
     
-    // Remember how many formal params we have
-    currentFunction().args() = currentFunction().locals().size();
-    
     expect(Token::CloseParen);
     expect(Token::OpenBrace);
 
@@ -257,7 +254,7 @@ CloverCompileEngine::function()
     while(varList()) { }
     
     // SetFrame has to be the first instruction in the Function. Pass Params and Locals
-    addOpPL(Op::SetFrame, currentFunction().args(), currentFunction().locals().size() - currentFunction().args());
+    addOpPL(Op::SetFrame, currentFunction().args(), currentFunction().localSize());
     
     while(statement()) { }
 
@@ -908,7 +905,7 @@ CloverCompileEngine::formalParameterList()
         
         std::string id;
         expect(identifier(id), Compiler::Error::ExpectedIdentifier);
-        currentLocals().emplace_back(id, currentLocals().size(), t, Symbol::Storage::Local);
+        currentFunction().addArg(id, t);
         
         if (!match(Token::Comma)) {
             return true;
@@ -936,7 +933,7 @@ CloverCompileEngine::argumentList(const Function& fun)
     
         // Bake the arithmeticExpression, leaving the result in r0.
         // Make sure the type matches the formal argument and push
-        Type t = fun.locals()[i - 1].type();
+        Type t = fun.localType(i - 1);
         expect(bakeExpr(ExprAction::Right, t) == t, Compiler::Error::MismatchedType);
 
         if (!match(Token::Comma)) {
