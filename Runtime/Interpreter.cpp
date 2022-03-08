@@ -201,7 +201,7 @@ Interpreter::execute(uint16_t addr)
 				return -1;
             case Op::Push:
                 id = getId();
-                _stack.push(Address::fromId(id));
+                _stack.push(loadInt(Address::fromId(id)));
                 break;
             case Op::Pop:
                 id = getId();
