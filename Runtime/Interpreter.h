@@ -200,6 +200,14 @@ private:
             return addr;
         }
         
+        static Address fromLocalAbs(uint8_t a)
+        {
+            Address addr;
+            addr._type = Type::LocalAbs;
+            addr._addr = a;
+            return addr;
+        }
+
         uint32_t toVar() { return (uint32_t(_type) << 8) | _addr; }
 
         uint8_t addr() const { return _addr; }
@@ -244,8 +252,15 @@ private:
         uint32_t& local(uint16_t addr) { ensureLocal(addr); return get(addr + _bp); }
         const uint32_t& abs(uint16_t addr) const { ensureCount(addr); return get(addr); }
         uint32_t& abs(uint16_t addr) { ensureCount(addr); return get(addr); }
-        
-        uint8_t localToAbs(uint16_t addr) const { ensureLocal(addr); return addr + _bp; }
+
+        Address toAbsAddress(uint8_t id) const
+        {
+            Address addr = Address::fromId(id);
+            if (addr.type() == Address::Type::LocalRel) {
+                addr = Address::fromLocalAbs(addr.addr() + _bp);
+            }
+            return addr;
+        }
 
         bool empty() const { return _sp == 0; }
         Error error() const { return _error; }

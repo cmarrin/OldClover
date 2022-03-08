@@ -215,16 +215,18 @@ Interpreter::execute(uint16_t addr)
                 break;
             }    
             case Op::PushRef:
-                _stack.push(getId());
+                // If this is a stack address we need to convert
+                // it to absolute from relative
+                _stack.push(_stack.toAbsAddress(getId()));
                 break;
             case Op::PushDeref:
                 addr = _stack.popAddr();
                 _stack.push(loadInt(addr));
                 break;
             case Op::PopDeref:
-                index = _stack.pop();
+                value = _stack.pop();
                 addr = _stack.popAddr();
-                storeInt(addr, index);
+                storeInt(addr, value);
                 break;
 
             case Op::Offset:
