@@ -13,6 +13,7 @@
 #include "TestIfForeach.h"
 #include "TestWhileLoop.h"
 #include "TestFunction.h"
+#include "TestCore.h"
 
 /*
 
@@ -131,8 +132,8 @@ public:
         }
         
         // Run the test
-        uint8_t buf[2] = { 0, 0 };
-        if (!_device.init("test", buf, 1)) {
+        uint8_t buf[3] = { 4, 7, 11 };
+        if (!_device.init("test", buf, 3)) {
             showError(_device.error());
         }
         Serial.println(F("...Finished running test"));
@@ -150,6 +151,7 @@ public:
         RunTest(TestIfForeach);
         RunTest(TestWhileLoop);
         RunTest(TestFunction);
+        RunTest(TestCore);
     }
 
 	void loop()
