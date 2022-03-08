@@ -339,7 +339,8 @@ Interpreter::execute(uint16_t addr)
                 break;
             }
             case Op::SetFrame:
-                getPL(numParams, numLocals);
+                numParams = index;
+                numLocals = getSz();
                 if (!_stack.setFrame(numParams, numLocals)) {
                     return -1;
                 }

@@ -178,7 +178,11 @@ protected:
     void addOpI(Op op, uint8_t i) { addOpInt(op, i); }
     void addOpId(Op op, uint8_t id) { addOpInt(op, id); }
     void addOpConst(Op op, uint8_t c) { addOpInt(op, c); }
-    void addOpPL(Op op, uint8_t p, uint8_t l) {addOpInt(op, (p << 4) | (l & 0x0f)); }
+    void addOpPL(Op op, uint8_t p, uint8_t l)
+    {
+        addOpSingleByteIndex(op, p);
+        _rom8.push_back(l);
+    }
     
     virtual bool isReserved(Token token, const std::string str, Reserved& r);
 

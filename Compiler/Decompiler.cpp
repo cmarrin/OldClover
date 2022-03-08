@@ -276,9 +276,9 @@ Decompiler::statement()
             break;
         case OpParams::P_L:
             id = getUInt8();
-            _out->append(std::to_string(id >> 4));
+            _out->append(std::to_string(index));
             _out->append(" ");
-            _out->append(std::to_string(id & 0x0f));
+            _out->append(std::to_string(id));
             break;
         case OpParams::Sz:
             _out->append("[");
