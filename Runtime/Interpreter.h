@@ -250,8 +250,8 @@ private:
         uint32_t& top(uint8_t rel = 0) { ensureRel(rel); return _stack[_sp - rel - 1]; }
         const uint32_t& local(uint16_t addr) const { ensureLocal(addr); return get(addr + _bp); }
         uint32_t& local(uint16_t addr) { ensureLocal(addr); return get(addr + _bp); }
-        const uint32_t& abs(uint16_t addr) const { ensureCount(addr); return get(addr); }
-        uint32_t& abs(uint16_t addr) { ensureCount(addr); return get(addr); }
+        const uint32_t& absolute(uint16_t addr) const { ensureCount(addr); return get(addr); }
+        uint32_t& absolute(uint16_t addr) { ensureCount(addr); return get(addr); }
 
         Address toAbsAddress(uint8_t id) const
         {
@@ -393,7 +393,7 @@ private:
             case Address::Type::LocalRel:
                 return _stack.local(addr.addr() + index);
             case Address::Type::LocalAbs:
-                return _stack.abs(addr.addr() + index);
+                return _stack.absolute(addr.addr() + index);
             default:
                 _error = Error::AddressOutOfRange;
                 return 0;
@@ -425,7 +425,7 @@ private:
             }
             case Address::Type::LocalAbs: {
                 uint32_t a = uint32_t(addr.addr()) + uint32_t(index);
-                _stack.abs(a) = v;
+                _stack.absolute(a) = v;
                 return;
             }
             default:

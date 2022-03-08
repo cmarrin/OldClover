@@ -58,7 +58,7 @@ Interpreter::initArray(uint32_t index, uint32_t value, uint32_t count)
             memAddr = &_stack.local(addr.addr());
             break;
         case Address::Type::LocalAbs:
-            memAddr = &_stack.abs(addr.addr());
+            memAddr = &_stack.absolute(addr.addr());
             break;
     }
     
