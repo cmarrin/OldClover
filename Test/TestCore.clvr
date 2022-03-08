@@ -17,6 +17,8 @@ struct AnimEntry
     float max;
 }
 
+int globalArray 20;
+
 function space(int n)
 {
     while (n--) {
@@ -62,39 +64,71 @@ function showFloatResults(int testNo, float exp, float act)
 
 function test()
 {
+    int i;
+    float f;
+    
+    int localArray 10;
+    
     AnimEntry entry;
+    
     entry.cur = 1.5;
     entry.inc = 0.5;
-    entry.min = 0;
+    entry.min = 1;
     entry.max = 3;
     
     log("\nTest Core Module\n");
 
-
-
-
-
-//        Animate      = CorePrefix0 | 0x00,
-//        Param        = CorePrefix0 | 0x01,
-//        Float        = CorePrefix0 | 0x02,
-//        Int          = CorePrefix0 | 0x03,
-//        RandomInt    = CorePrefix0 | 0x07,
-//        RandomFloat  = CorePrefix0 | 0x08,
-//        InitArray    = CorePrefix0 | 0x09,
-//        MinInt       = CorePrefix0 | 0x0a,
-//        MinFloat     = CorePrefix0 | 0x0b,
-//        MaxInt       = CorePrefix0 | 0x0c,
-//        MaxFloat     = CorePrefix0 | 0x0d,
-
-
-
-
-
     log("\nTest Animate\n");
-    showIntResults(1, 1, Animate(&entry));
-    showFloatResults(1, 2, entry.cur);
+    showIntResults(1, 0, Animate(&entry));
+    showFloatResults(2, 2, entry.cur);
+    showIntResults(3, 0, Animate(&entry));
+    showFloatResults(4, 2.5, entry.cur);
+    showIntResults(5, 1, Animate(&entry));
+    showFloatResults(6, 3, entry.cur);
+    showIntResults(7, 0, Animate(&entry));
+    showFloatResults(8, 2.5, entry.cur);
+    showIntResults(9, 0, Animate(&entry));
+    showFloatResults(10, 2.0, entry.cur);
+    showIntResults(11, 0, Animate(&entry));
+    showFloatResults(12, 1.5, entry.cur);
+    showIntResults(13, -1, Animate(&entry));
+    showFloatResults(14, 1, entry.cur);
+    showIntResults(15, 0, Animate(&entry));
+    showFloatResults(16, 1.5, entry.cur);
+
+    log("\nTest Param\n");
+    showIntResults(17, 4, Param(0));
+    showIntResults(18, 7, Param(1));
+    showIntResults(19, 11, Param(2));
+
+    log("\nTest Type Conversion\n");
+    showIntResults(20, 5, Int(5.3));
+    showFloatResults(21, 7.5, Float(7) + 0.5);
+
+    log("\nTest Random\n");
+    
+    i = RandomInt(3, 5);
+    showIntResults(22, 1, i >= 3 && i <= 5);
+    f = RandomFloat(3.5, 5.5);
+    showIntResults(23, 1, f >= 3.5 && f <= 5.5);
+
+    log("\nTest InitArray\n");
+    InitArray(&localArray, 200, 10);
+    showIntResults(24, 200, localArray[5]);
+    InitArray(&globalArray, 2134, 20);
+    showIntResults(25, 2134, globalArray[9]);
+
+    log("\nTest Min/Max\n");
+    showIntResults(26, 20, MinInt(20, 21));
+    showIntResults(27, 10, MinInt(11, 10));
+    showIntResults(28, 21, MaxInt(20, 21));
+    showIntResults(29, 11, MaxInt(11, 10));
+    showFloatResults(30, 20.5, MinFloat(20.5, 21.5));
+    showFloatResults(31, 10.5, MinFloat(11.5, 10.5));
+    showFloatResults(32, 21.5, MaxFloat(20.5, 21.5));
+    showFloatResults(33, 11.5, MaxFloat(11.5, 10.5));
 
     log("\nDone\n\n");
 }
 
-command test 1 test test;
+command test 3 test test;
