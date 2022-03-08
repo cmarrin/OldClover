@@ -154,20 +154,16 @@ NativeCore::call(Interpreter* interp, uint8_t id)
             return 0;
         }
         case Id::MinInt       : {
-            interp->stackPush(min(int32_t(interp->stackLocal(0)), int32_t(interp->stackLocal(1))));
-            return 0;
+            return min(int32_t(interp->stackLocal(0)), int32_t(interp->stackLocal(1)));
         }
         case Id::MinFloat     : {
-            interp->stackPush(floatToInt(min(intToFloat(interp->stackLocal(0)), intToFloat(interp->stackLocal(1)))));
-            return 0;
+            return floatToInt(min(intToFloat(interp->stackLocal(0)), intToFloat(interp->stackLocal(1))));
         }
         case Id::MaxInt       : {
-            interp->stackPush(max(int32_t(interp->stackLocal(0)), int32_t(interp->stackLocal(1))));
-            return 0;
+            return max(int32_t(interp->stackLocal(0)), int32_t(interp->stackLocal(1)));
         }
         case Id::MaxFloat     : {
-            interp->stackPush(floatToInt(max(intToFloat(interp->stackLocal(0)), intToFloat(interp->stackLocal(1)))));
-            return 0;
+            return floatToInt(max(intToFloat(interp->stackLocal(0)), intToFloat(interp->stackLocal(1))));
         }
     }
 }
