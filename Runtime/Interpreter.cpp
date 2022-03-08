@@ -39,18 +39,31 @@ Interpreter::~Interpreter()
 }
 
 void
-Interpreter::initArray(uint32_t addr, uint32_t value, uint32_t count)
+Interpreter::initArray(uint32_t index, uint32_t value, uint32_t count)
 {
-    // Only global or local
-    if (addr < GlobalStart) {
-        _error = Error::OnlyMemAddressesAllowed;
-        return;
-    }
+    // index is actually an Address
+    Address addr = Address::fromVar(index);
 
-    if (addr < LocalStart) {
-        memset(_global + (addr - GlobalStart), value, count * sizeof(uint32_t));
-    } else {
-        memset(&_stack.local(addr - LocalStart), value, count * sizeof(uint32_t));
+    uint32_t* memAddr = nullptr;
+    switch(addr.type()) {
+        case Address::Type::None:
+            return;
+        case Address::Type::Const:
+            _error = Error::OnlyMemAddressesAllowed;
+            return;
+        case Address::Type::Global:
+            memAddr = _global + addr.addr();
+            break;
+        case Address::Type::LocalRel:
+            memAddr = &_stack.local(addr.addr());
+            break;
+        case Address::Type::LocalAbs:
+            memAddr = &_stack.abs(addr.addr());
+            break;
+    }
+    
+    for (uint32_t i = 0; i < count; ++i) {
+        memAddr[i] = value;
     }
 }
 
