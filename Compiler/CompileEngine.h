@@ -245,7 +245,7 @@ protected:
         
         void addLocal(const std::string& name, Type type, bool ptr, uint8_t size)
         {
-            _locals.emplace_back(name, _localSize, type, Symbol::Storage::Local, ptr, size);
+            _locals.emplace_back(name, _localSize + _args, type, Symbol::Storage::Local, ptr, size);
             _localSize += size;
         }
 
