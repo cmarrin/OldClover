@@ -136,4 +136,4 @@ function test()
     log("\nDone\n\n");
 }
 
-command test 1 test test;
+command test 3 test test;
