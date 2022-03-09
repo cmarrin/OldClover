@@ -81,7 +81,7 @@ CloverCompileEngine::element()
         return true;
     }
     
-    if (varList()) return true;    
+    if (varStatement()) return true;    
     if (table()) return true;
     if (strucT()) return true;
     if (function()) return true;
@@ -136,7 +136,7 @@ CloverCompileEngine::strucT()
 }
 
 bool
-CloverCompileEngine::varList()
+CloverCompileEngine::varStatement()
 {
     Type t;
     
@@ -248,17 +248,22 @@ CloverCompileEngine::function()
     expect(Token::CloseParen);
     expect(Token::OpenBrace);
 
+    // SetFrame has to be the first instruction in the Function. Pass Params and
+    // set Locals byte to 0 and remember it's location so we can fix it at the
+    // end of the function
+    addOpSingleByteIndex(Op::SetFrame, currentFunction().args());
+    auto localsIndex = _rom8.size();
+    addInt(0);
+
     // Remember the rom addr so we can check to see if we've emitted any code
     uint16_t size = romSize();
     
-    while(varList()) { }
-    
-    // SetFrame has to be the first instruction in the Function. Pass Params and Locals
-    addOpPL(Op::SetFrame, currentFunction().args(), currentFunction().localSize());
-    
     while(statement()) { }
-
+    
     expect(Token::CloseBrace);
+
+    // Update locals size
+    _rom8[localsIndex] = currentFunction().localSize();
 
     // Set the high water mark
     if (_nextMem > _localHighWaterMark) {
@@ -304,6 +309,7 @@ CloverCompileEngine::statement()
     if (returnStatement()) return true;
     if (jumpStatement()) return true;
     if (logStatement()) return true;
+    if (varStatement()) return true;
     if (expressionStatement()) return true;
     return false;
 }

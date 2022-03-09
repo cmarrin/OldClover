@@ -53,13 +53,13 @@ function showFloatResults(int testNo, float exp, float act)
 }
 
 function test()
-{
-    int i, j;
-    float f;
-    
+{    
     log("\nTest while, loop, break, continue\n");
 
     log("\nTest Int while\n"); 
+
+    int i, j;
+
     i = 0;
     j = 0;
     while(i < 10) {
@@ -89,6 +89,9 @@ function test()
     showIntResults(3, 50, j);
 
     log("\nTest Float while\n"); 
+
+    float f;
+
     i = 0;
     f = 0;
     while(i < 10) {

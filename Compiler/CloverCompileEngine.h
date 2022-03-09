@@ -39,7 +39,7 @@ program:
     { element } ;
 
 element:
-    def | constant | table | struct | varList | function | command ;
+    def | constant | table | struct | varStatement | function | command ;
     
 def:
     'def' <id> <integer> ';'
@@ -53,14 +53,11 @@ table:
 struct:
     'struct' <id> '{' { structEntry } '}' ;
     
-varList:
-    type var { ',' var } ';' ;
-
 var:
     [ '*' ] <id> [ <integer> ] ;
 
 function:
-    'function' [ <type> ] <id> '( formalParameterList ')' '{' { varList } { statement } '}' ;
+    'function' [ <type> ] <id> '( formalParameterList ')' '{' { statement } '}' ;
 
 command:
     'command' <id> <integer> <id> <id> ';' ;
@@ -84,6 +81,7 @@ statement:
     | returnStatement
     | jumpStatement
     | logStatement
+    | varStatement
     | expressionStatement
     ;
   
@@ -112,6 +110,9 @@ jumpStatement:
 
 logStatement:
     'log' '(' <string> { ',' arithmeticExpression } ')' ';' ;
+
+varStatement:
+    type var { ',' var } ';' ;
 
 expressionStatement:
     arithmeticExpression ';' ;
@@ -198,7 +199,7 @@ protected:
     virtual bool table() override;
     virtual bool type(Type&) override;
   
-    bool varList();
+    bool varStatement();
     bool var(Type);
 
 private:

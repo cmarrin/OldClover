@@ -63,12 +63,11 @@ function showFloatResults(int testNo, float exp, float act)
 }
 
 function test()
-{
-    int i;
-    float f;
-    
-    int localArray 10;
-    
+{    
+    log("\nTest Core Module\n");
+
+    log("\nTest Animate\n");
+
     AnimEntry entry;
     
     entry.cur = 1.5;
@@ -76,9 +75,6 @@ function test()
     entry.min = 1;
     entry.max = 3;
     
-    log("\nTest Core Module\n");
-
-    log("\nTest Animate\n");
     showIntResults(1, 0, Animate(&entry));
     showFloatResults(2, 2, entry.cur);
     showIntResults(3, 0, Animate(&entry));
@@ -107,12 +103,20 @@ function test()
 
     log("\nTest Random\n");
     
+    int i;
+
     i = RandomInt(3, 5);
     showIntResults(22, 1, i >= 3 && i <= 5);
+
+    float f;
+
     f = RandomFloat(3.5, 5.5);
     showIntResults(23, 1, f >= 3.5 && f <= 5.5);
 
     log("\nTest InitArray\n");
+
+    int localArray 10;
+    
     InitArray(&localArray, 200, 10);
     showIntResults(24, 200, localArray[5]);
     InitArray(&globalArray, 2134, 20);
