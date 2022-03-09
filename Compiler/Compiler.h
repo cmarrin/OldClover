@@ -69,7 +69,7 @@ public:
         WrongNumberOfArgs,
         WrongType,
         OnlyAllowedInLoop,
-        DuplicateCmd,
+        DuplicateIdentifier,
         ExecutableTooBig,
     };
     

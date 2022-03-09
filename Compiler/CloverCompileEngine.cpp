@@ -183,7 +183,7 @@ CloverCompileEngine::var(Type type)
 
     // Put the var in _globals unless we're in a function, then put it in _locals
     if (inFunction) {
-        currentFunction().addLocal(id, type, isPointer, size);
+        expect(currentFunction().addLocal(id, type, isPointer, size), Compiler::Error::DuplicateIdentifier);
     } else {
         _globals.emplace_back(id, _nextMem, type, Symbol::Storage::Global, isPointer, size);
 

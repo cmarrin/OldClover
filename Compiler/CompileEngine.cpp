@@ -199,7 +199,7 @@ CompileEngine::command()
 
     auto it = find_if(_commands.begin(), _commands.end(),
                     [id](const Command& cmd) { return cmd._cmd == id; });
-    expect(it == _commands.end(), Compiler::Error::DuplicateCmd);
+    expect(it == _commands.end(), Compiler::Error::DuplicateIdentifier);
     
     _commands.emplace_back(id, paramCount, handleFunctionName().addr(), handleFunctionName().addr());
     return true;

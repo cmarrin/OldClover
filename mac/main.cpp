@@ -121,7 +121,7 @@ static void showError(clvr::Compiler::Error error, clvr::Token token, const std:
         case clvr::Compiler::Error::WrongType: err = "wrong type"; break;
         case clvr::Compiler::Error::WrongNumberOfArgs: err = "wrong number of args"; break;
         case clvr::Compiler::Error::OnlyAllowedInLoop: err = "break/continue only allowed in loop"; break;
-        case clvr::Compiler::Error::DuplicateCmd: err = "duplicate command"; break;
+        case clvr::Compiler::Error::DuplicateIdentifier: err = "duplicate identifier"; break;
         case clvr::Compiler::Error::ExecutableTooBig: err = "executable too big"; break;
     }
     

@@ -243,10 +243,16 @@ protected:
             _args++;
         }
         
-        void addLocal(const std::string& name, Type type, bool ptr, uint8_t size)
+        bool addLocal(const std::string& name, Type type, bool ptr, uint8_t size)
         {
+            // Check for duplicates
+            Symbol sym;
+            if (findLocal(name, sym)) {
+                return false;
+            }
             _locals.emplace_back(name, _localSize + _args, type, Symbol::Storage::Local, ptr, size);
             _localSize += size;
+            return true;
         }
 
         bool findLocal(const std::string& s, Symbol& sym)
