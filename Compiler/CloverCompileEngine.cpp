@@ -321,9 +321,21 @@ CloverCompileEngine::compoundStatement()
         return false;
     }
 
+    // If we're in a function, remember the number of local variables
+    // added so we can toss them at the end
+    auto numLocals = 0;
+    if (_inFunction) {
+        numLocals = currentFunction().numLocals();
+    }
+    
     while(statement()) { }
 
     expect(Token::CloseBrace);
+    
+    // prune the locals added in this block
+    if (_inFunction) {
+        currentFunction().pruneLocals(currentFunction().numLocals() - numLocals);
+    }
     return true;
 }
 

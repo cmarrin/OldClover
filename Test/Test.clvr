@@ -1,0 +1,63 @@
+/*-------------------------------------------------------------------------
+    This source file is a part of Clover
+    For the latest info, see https://github.com/cmarrin/Clover
+    Copyright (c) 2021-2022, Chris Marrin
+    All rights reserved.
+    Use of this source code is governed by the MIT license that can be
+    found in the LICENSE file.
+-------------------------------------------------------------------------*/
+
+// Test constants, vars, operands and expressions
+
+def TestSizeDef   12;
+
+const int testIntConst 0xfc;
+const float testFloatConst 3.5;
+
+table int testIntTable
+{
+    1 2 3
+    7 8 9
+}
+
+table float testFloatTable
+{
+    1.5 2.5 3.5
+    7.5 8.5 9.5
+}
+
+int testIntGlobal;
+float testFloatGlobal;
+
+function testFunction(int a, float b)
+{
+    int c;
+    c = 5;
+    
+    {
+        int d, e;
+        d = 6;
+        e = 7;
+
+        {
+            int f;
+            f = 10;
+            log("a=%i, b=%f, c=%i, e=%i, f=%i\n", a, b, c, e, f);
+        }
+        
+        {
+            float f;
+            f = 24.5;
+            log("a=%i, b=%f, c=%i, e=%i, f=%f\n", a, b, c, e, f);
+        }
+        
+        log("a=%i, b=%f, c=%i, d=%i, e=%i\n", a, b, c, d, e);
+    }
+}
+
+function test()
+{
+    testFunction(1, 2.5);
+}
+
+command test 3 test test;

@@ -240,8 +240,18 @@ protected:
         uint8_t& args() { return _args; }
         const uint8_t& args() const { return _args; }
         Type type() const { return _type; }
-        uint8_t localSize() const { return _localSize; }
+        uint8_t localSize() const { return _localHighWaterMark; }
         Type localType(uint8_t i) const { return (i >= _locals.size()) ? Type::None : _locals[i].type(); }
+
+        uint32_t numLocals() const { return uint32_t(_locals.size()); }
+        void pruneLocals(uint32_t n)
+        {
+            // remove the last n locals and reduce _localSize
+            while (n-- > 0) {
+                _localSize -= _locals.back().size();
+                _locals.pop_back();
+            }
+        }
         
         bool isNative() const { return _native; }
         int16_t nativeId() const { return _addr; }
@@ -263,6 +273,9 @@ protected:
             }
             _locals.emplace_back(name, _localSize + _args, type, Symbol::Storage::Local, ptr, size);
             _localSize += size;
+            if (_localHighWaterMark < _localSize) {
+                _localHighWaterMark = _localSize;
+            }
             return true;
         }
 
@@ -286,6 +299,7 @@ protected:
         Type _type;
         bool _native = false;
         uint8_t _localSize = 0;
+        uint8_t _localHighWaterMark = 0;
     };
     
     struct Command
