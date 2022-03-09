@@ -107,7 +107,7 @@ CloverCompileEngine::table()
     expect(Token::OpenBrace);
     
     // Set the start address of the table. tableEntries() will fill them in
-    _globals.emplace_back(id, _rom32.size(), t, Symbol::Storage::Const);
+    expect(addGlobal(id, _rom32.size(), t, Symbol::Storage::Const), Compiler::Error::DuplicateIdentifier);
     
     values(t);
     expect(Token::CloseBrace);
@@ -185,7 +185,7 @@ CloverCompileEngine::var(Type type)
     if (inFunction) {
         expect(currentFunction().addLocal(id, type, isPointer, size), Compiler::Error::DuplicateIdentifier);
     } else {
-        _globals.emplace_back(id, _nextMem, type, Symbol::Storage::Global, isPointer, size);
+        expect(addGlobal(id, _nextMem, type, Symbol::Storage::Global, isPointer, size), Compiler::Error::DuplicateIdentifier);
 
         // There is only enough room for GlobalSize values
         expect(_nextMem + size <= GlobalSize, Compiler::Error::TooManyVars);

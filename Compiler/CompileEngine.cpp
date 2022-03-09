@@ -167,7 +167,8 @@ CompileEngine::constant()
     expect(_rom32.size() < 128, Compiler::Error::TooManyConstants);
 
     // Save constant
-    _globals.emplace_back(id, _rom32.size(), t, Symbol::Storage::Const);
+    expect(addGlobal(id, _rom32.size(), t, Symbol::Storage::Const), Compiler::Error::DuplicateIdentifier)
+    ;
     _rom32.push_back(val);
     
     return true;

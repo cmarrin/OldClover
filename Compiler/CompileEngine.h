@@ -191,6 +191,17 @@ protected:
 
     static bool opDataFromString(const std::string str, OpData& data);
 
+    bool addGlobal(const std::string& name, uint8_t addr, Type type, Symbol::Storage storage, bool ptr = false, uint8_t size = 1)
+    {
+        // Check for duplicates
+        Symbol sym;
+        if (findSymbol(name, sym)) {
+            return false;
+        }
+        _globals.emplace_back(name, addr, type, storage, ptr, size);
+        return true;
+    }
+
     struct Def
     {
         Def() { }
