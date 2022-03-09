@@ -182,7 +182,7 @@ CloverCompileEngine::var(Type type)
     size *= elementSize(type);
 
     // Put the var in _globals unless we're in a function, then put it in _locals
-    if (inFunction) {
+    if (_inFunction) {
         expect(currentFunction().addLocal(id, type, isPointer, size), Compiler::Error::DuplicateIdentifier);
     } else {
         expect(addGlobal(id, _nextMem, type, Symbol::Storage::Global, isPointer, size), Compiler::Error::DuplicateIdentifier);
@@ -239,7 +239,7 @@ CloverCompileEngine::function()
 
     // Remember the function
     _functions.emplace_back(id, uint16_t(_rom8.size()), t);
-    inFunction = true;
+    _inFunction = true;
     
     expect(Token::OpenParen);
     
@@ -276,7 +276,7 @@ CloverCompileEngine::function()
         addOp(Op::Return);
     }
     
-    inFunction = false;
+    _inFunction = false;
     return true;
 }
 

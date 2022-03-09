@@ -346,7 +346,7 @@ protected:
     uint16_t _nextMem = 0; // next available location in mem
     uint16_t _localHighWaterMark = 0;
     uint16_t _globalSize = 0;
-    bool inFunction = false;
+    bool _inFunction = false;
     uint8_t _nextNativeId = 0;
 };
 
