@@ -226,7 +226,7 @@ int main(int argc, char * const argv[])
         for (int i = 0; ; ++i) {
             char buf[3];
             sprintf(buf, "%02u", i);
-            name = path + i + ".arlx";
+            name = path + buf + ".arlx";
             if (remove(name.c_str()) != 0) {
                 break;
             }
