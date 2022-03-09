@@ -224,7 +224,9 @@ int main(int argc, char * const argv[])
         remove(name.c_str());
 
         for (int i = 0; ; ++i) {
-            name = path + std::to_string(i) + ".arlx";
+            char buf[3];
+            sprintf(buf, "%02u", i);
+            name = path + i + ".arlx";
             if (remove(name.c_str()) != 0) {
                 break;
             }
@@ -238,7 +240,9 @@ int main(int argc, char * const argv[])
         
         for (uint8_t i = 0; ; i++) {
             if (segmented) {
-                name = path + std::to_string(i) + ".arlx";
+                char buf[3];
+                sprintf(buf, "%02u", i);
+                name = path + buf + ".arlx";
             } else if (headerFile) {
                 name = path + ".h";
             } else {
