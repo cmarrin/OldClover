@@ -52,6 +52,17 @@ function showFloatResults(int testNo, float exp, float act)
     }
 }
 
+struct TestStruct
+{
+    int a;
+    float b;
+    int c;
+}
+
+//function int testFunction(int* p, float f)
+//{
+//}
+
 function test()
 {
     log("\nTest Struct, Pointers and Refs\n");
@@ -63,6 +74,31 @@ function test()
     x = 22;
 
     showIntResults(1, 22, x);
+    
+    log("\nTest Struct\n");
+    TestStruct s;
+    int i;
+    float f;
+    i = 22;
+    f = 3.5;
+    s.a = i;
+    s.b = f;
+    s.c = 5;
+
+    showIntResults(2, 22, s.a);
+    showFloatResults(3, 3.5, s.b);
+    showIntResults(4, 5, s.c);
+
+    log("\nTest Pointer to Struct\n");
+    TestStruct* ss;
+    ss = &s;
+    ss.a = 17;
+    ss.b = 17.5;
+    ss.c = 18;
+
+    showIntResults(5, 17, ss.a);
+    showFloatResults(6, 17.5, ss.b);
+    showIntResults(7, 18, ss.c);
 
     log("\nDone\n\n");
 }
