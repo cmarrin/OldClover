@@ -1075,10 +1075,19 @@ CloverCompileEngine::bakeExpr(ExprAction action, Type matchingType)
                     // Push the value
                     expect(findSymbol(entry, sym), Compiler::Error::UndefinedIdentifier);
                     addOpId(Op::Push, sym.addr());
+                    
+                    if (sym.isPointer() && matchingType != Type::Ptr) {
+                        addOp(Op::PushDeref);
+                        type = sym.type();
+                        break;
+                    }
+                    
                     type = sym.isPointer() ? Type::Ptr : sym.type();
                     break;
                 case ExprEntry::Type::Ref: {
-                    // If this a ptr then we want to leave the ref on TOS, not the value
+                    // FIXME: ???
+                    // If this is a ptr and the matchingType is not Ptr
+                    // then we want to leave the ref on TOS, not the value
                     const ExprEntry::Ref& ref = entry;
                     type = ref._type;
                     if (!ref._ptr) {
