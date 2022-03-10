@@ -657,7 +657,7 @@ CloverCompileEngine::arithmeticExpression(uint8_t minPrec, ArithType arithType)
         
         if (info.assign() != OpInfo::Assign::None) {
             // Turn TOS into Ref
-            leftType = bakeExpr(ExprAction::Left);
+            leftType = bakeExpr(ExprAction::Ref);
         } else {
             leftType = bakeExpr(ExprAction::Right);
         }
@@ -1074,15 +1074,8 @@ CloverCompileEngine::bakeExpr(ExprAction action, Type matchingType)
                 case ExprEntry::Type::Id:
                     // Push the value
                     expect(findSymbol(entry, sym), Compiler::Error::UndefinedIdentifier);
-                    
                     addOpId(Op::Push, sym.addr());
-                    
-                    // If this is a pointer, deref
-                    if (sym.isPointer()) {
-                        addOp(Op::PushDeref);
-                    }
-                    
-                    type = sym.type();
+                    type = sym.isPointer() ? Type::Ptr : sym.type();
                     break;
                 case ExprEntry::Type::Ref: {
                     // If this a ptr then we want to leave the ref on TOS, not the value
@@ -1165,8 +1158,9 @@ CloverCompileEngine::bakeExpr(ExprAction action, Type matchingType)
                         type = ref._ptr ? Type::Ptr : ref._type;
                     }
                     addOp(Op::PopDeref);
+                    break;
                 }
-                break;
+                return type;
             }
             
             expect(entry.type() == ExprEntry::Type::Id, Compiler::Error::ExpectedIdentifier);

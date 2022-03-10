@@ -69,13 +69,15 @@ function test()
     log("\nTest Animate\n");
 
     AnimEntry entry;
+    AnimEntry* entry2;
+    entry2 = &entry;
     
     entry.cur = 1.5;
     entry.inc = 0.5;
     entry.min = 1;
     entry.max = 3;
     
-    showIntResults(1, 0, Animate(&entry));
+    showIntResults(1, 0, Animate(entry2));
     showFloatResults(2, 2, entry.cur);
     showIntResults(3, 0, Animate(&entry));
     showFloatResults(4, 2.5, entry.cur);
