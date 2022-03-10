@@ -149,7 +149,7 @@ primaryExpression:
     
 formalParameterList:
       (* empty *)
-    | type identifier { ',' type identifier }
+    | type ['*'] identifier { ',' type identifier }
     ;
 
 argumentList:

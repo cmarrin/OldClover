@@ -241,7 +241,7 @@ protected:
         const uint8_t& args() const { return _args; }
         Type type() const { return _type; }
         uint8_t localSize() const { return _localHighWaterMark; }
-        Type localType(uint8_t i) const { return (i >= _locals.size()) ? Type::None : _locals[i].type(); }
+        const Symbol& local(uint8_t i) const { return _locals[i]; }
 
         uint32_t numLocals() const { return uint32_t(_locals.size()); }
         void pruneLocals(uint32_t n)
@@ -258,9 +258,9 @@ protected:
 
         // Args are always 1 word and will always come before locals. So the
         // addr is the current locals size.
-        void addArg(const std::string& name, Type type)
+        void addArg(const std::string& name, Type type, bool isPtr)
         {
-            _locals.emplace_back(name, _locals.size(), type, Symbol::Storage::Local);
+            _locals.emplace_back(name, _locals.size(), type, Symbol::Storage::Local, isPtr);
             _args++;
         }
         

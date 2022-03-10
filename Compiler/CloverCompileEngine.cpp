@@ -925,9 +925,14 @@ CloverCompileEngine::formalParameterList()
             return true;
         }
         
+        bool isPointer = false;
+        if (match(Token::Mul)) {
+            isPointer = true;
+        }
+    
         std::string id;
         expect(identifier(id), Compiler::Error::ExpectedIdentifier);
-        currentFunction().addArg(id, t);
+        currentFunction().addArg(id, t, isPointer);
         
         if (!match(Token::Comma)) {
             return true;
@@ -955,7 +960,8 @@ CloverCompileEngine::argumentList(const Function& fun)
     
         // Bake the arithmeticExpression, leaving the result in r0.
         // Make sure the type matches the formal argument and push
-        Type t = fun.localType(i - 1);
+        const Symbol& sym = fun.local(i - 1);
+        Type t = sym.isPointer() ? Type::Ptr : sym.type();
         expect(bakeExpr(ExprAction::Right, t) == t, Compiler::Error::MismatchedType);
 
         if (!match(Token::Comma)) {
