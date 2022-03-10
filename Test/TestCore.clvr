@@ -68,6 +68,7 @@ function test()
 
     log("\nTest Animate\n");
 
+    // Test both passing ref to struct and pointer to struct
     AnimEntry entry;
     AnimEntry* entry2;
     entry2 = &entry;
