@@ -189,7 +189,7 @@ Decompiler::colorString(uint8_t r)
 Op
 Decompiler::statement()
 {
-    uint16_t a = addr();
+    uint16_t a = addr() - _codeOffset;
     if (!_annotations.empty() && (_annotations[_annotationIndex].first == -1 || _annotations[_annotationIndex].first < a)) {
         for ( ; _annotationIndex < _annotations.size(); ) {
             _out->append("//    ");

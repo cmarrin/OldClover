@@ -103,7 +103,7 @@ private:
         _indent++;
     }
     
-    uint16_t addr() const { return (_it - _in->begin()) - _codeOffset; }
+    uint16_t addr() const { return (_it - _in->begin()); }
     
     void outputAddr()
     {
