@@ -144,9 +144,14 @@ CloverCompileEngine::varStatement()
         return false;
     }
     
+    bool isPointer = false;
+    if (match(Token::Mul)) {
+        isPointer = true;
+    }
+    
     bool haveOne = false;
     while (true) {
-        if (!var(t)) {
+        if (!var(t, isPointer)) {
             if (!haveOne) {
                 break;
             }
@@ -164,13 +169,8 @@ CloverCompileEngine::varStatement()
 }
 
 bool
-CloverCompileEngine::var(Type type)
+CloverCompileEngine::var(Type type, bool isPointer)
 {
-    bool isPointer = false;
-    if (match(Token::Mul)) {
-        isPointer = true;
-    }
-    
     std::string id;
     expect(identifier(id), Compiler::Error::ExpectedIdentifier);
     
@@ -657,7 +657,7 @@ CloverCompileEngine::arithmeticExpression(uint8_t minPrec, ArithType arithType)
         
         if (info.assign() != OpInfo::Assign::None) {
             // Turn TOS into Ref
-            leftType = bakeExpr(ExprAction::LeftRef);
+            leftType = bakeExpr(ExprAction::Left);
         } else {
             leftType = bakeExpr(ExprAction::Right);
         }
@@ -698,7 +698,7 @@ CloverCompileEngine::arithmeticExpression(uint8_t minPrec, ArithType arithType)
         }
         
         if (info.assign() != OpInfo::Assign::None) {
-            expect(bakeExpr(ExprAction::Left) == rightType, Compiler::Error::MismatchedType);
+            expect(bakeExpr(ExprAction::Left, rightType) == rightType, Compiler::Error::MismatchedType);
         }
     }
     
@@ -739,7 +739,11 @@ CloverCompileEngine::unaryExpression()
         default:
             break;
         case Token::And:
-            bakeExpr(ExprAction::Ptr);
+            // Bake this as a Ref. That means there will be a Ref to
+            // a var on the stack. Change the ref into a ref ptr
+            type = bakeExpr(ExprAction::Ref);
+            _exprStack.pop_back();
+            _exprStack.push_back(ExprEntry::Ref(type, true));
             break;
         case Token::Inc:
         case Token::Dec:
@@ -1070,8 +1074,15 @@ CloverCompileEngine::bakeExpr(ExprAction action, Type matchingType)
                 case ExprEntry::Type::Id:
                     // Push the value
                     expect(findSymbol(entry, sym), Compiler::Error::UndefinedIdentifier);
+                    
                     addOpId(Op::Push, sym.addr());
-                    type = sym.isPointer() ? Type::Ptr : sym.type();
+                    
+                    // If this is a pointer, deref
+                    if (sym.isPointer()) {
+                        addOp(Op::PushDeref);
+                    }
+                    
+                    type = sym.type();
                     break;
                 case ExprEntry::Type::Ref: {
                     // If this a ptr then we want to leave the ref on TOS, not the value
@@ -1092,14 +1103,6 @@ CloverCompileEngine::bakeExpr(ExprAction action, Type matchingType)
                 }
             }
             break;
-        case ExprAction::Left: {
-            // The stack contains a ref      
-            expect(entry.type() == ExprEntry::Type::Ref, Compiler::Error::InternalError);
-            const ExprEntry::Ref& ref = entry;
-            type = ref._ptr ? Type::Ptr : ref._type;
-            addOp(Op::PopDeref);
-            break;
-        }
         case ExprAction::Index: {
             // TOS has an index, get the sym for the var so 
             // we know the size of each element
@@ -1139,9 +1142,8 @@ CloverCompileEngine::bakeExpr(ExprAction action, Type matchingType)
             addOpSingleByteIndex(Op::Offset, index);
             return elementType;
         }
+        case ExprAction::Left:
         case ExprAction::Ref:
-        case ExprAction::LeftRef:
-        case ExprAction::Ptr:
             if (entry.type() == ExprEntry::Type::Ref) {
                 // Already have a ref
                 const ExprEntry::Ref& ref = entry;
@@ -1150,11 +1152,21 @@ CloverCompileEngine::bakeExpr(ExprAction action, Type matchingType)
                 // If this is a Ptr action, we want to say that we want the stack to have 
                 // a reference to a value rather than the value. So add the _ptr value
                 // to the Ref
-                if (action == ExprAction::Ptr) {
-                    _exprStack.pop_back();
-                    _exprStack.push_back(ExprEntry::Ref(type, true));
+                if (action == ExprAction::Left) {
+                    // If the matching type is a Ptr then we just assign as usual.
+                    // If the ref is a pointer, we need to get the value at the
+                    // ref and use that as the ref for the PopDeref.
+                    if (ref._ptr && matchingType != Type::Ptr) {
+                        addOp(Op::Swap);
+                        addOp(Op::PushDeref);
+                        addOp(Op::Swap);
+                        type = ref._type;
+                    } else {
+                        type = ref._ptr ? Type::Ptr : ref._type;
+                    }
+                    addOp(Op::PopDeref);
                 }
-                return type;
+                break;
             }
             
             expect(entry.type() == ExprEntry::Type::Id, Compiler::Error::ExpectedIdentifier);
@@ -1162,12 +1174,10 @@ CloverCompileEngine::bakeExpr(ExprAction action, Type matchingType)
             // Turn this into a Ref
             expect(findSymbol(entry, sym), Compiler::Error::UndefinedIdentifier);
             _exprStack.pop_back();
-            _exprStack.push_back(ExprEntry::Ref(sym.type(), action == ExprAction::Ptr || sym.isPointer()));
+            _exprStack.push_back(ExprEntry::Ref(sym.type(), sym.isPointer()));
             
             // If this is a pointer, just push it, otherwise push the ref
-            // But if this is a LeftRef action we are just going to store
-            // a value here, so still do the PushRef
-            addOpId((sym.isPointer() && action == ExprAction::Ref) ? Op::Push : Op::PushRef, sym.addr());
+            addOpId(Op::PushRef, sym.addr());
             return sym.isPointer() ? Type::Ptr : sym.type();
     }
     

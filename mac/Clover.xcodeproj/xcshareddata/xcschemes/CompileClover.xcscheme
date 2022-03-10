@@ -54,7 +54,7 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "-d"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-x"
@@ -73,7 +73,7 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "../Test/Test.clvr"
+            argument = "../Test/TestPtrStruct.clvr"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

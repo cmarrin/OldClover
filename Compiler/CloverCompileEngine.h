@@ -54,7 +54,7 @@ struct:
     'struct' <id> '{' { structEntry } '}' ;
     
 var:
-    [ '*' ] <id> [ <integer> ] ;
+    <id> [ <integer> ] ;
 
 function:
     'function' [ <type> ] <id> '( formalParameterList ')' '{' { statement } '}' ;
@@ -112,7 +112,7 @@ logStatement:
     'log' '(' <string> { ',' arithmeticExpression } ')' ';' ;
 
 varStatement:
-    type var { ',' var } ';' ;
+    type [ '*' ] var { ',' var } ';' ;
 
 expressionStatement:
     arithmeticExpression ';' ;
@@ -200,7 +200,7 @@ protected:
     virtual bool type(Type&) override;
   
     bool varStatement();
-    bool var(Type);
+    bool var(Type, bool isPointer);
 
 private:
     class OpInfo {
@@ -295,7 +295,7 @@ private:
     //                    a type. Struct id must be a member of the type of the ref.
     //                    pop the two 
     //
-    enum class ExprAction { Left, Right, Ref, LeftRef, Ptr, Index, Offset };
+    enum class ExprAction { Left, Right, Ref, Index, Offset };
     Type bakeExpr(ExprAction, Type matchingType = Type::None);
     bool isExprFunction();
     uint8_t elementSize(Type);
