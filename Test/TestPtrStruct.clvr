@@ -59,9 +59,10 @@ struct TestStruct
     int c;
 }
 
-//function int testFunction(int* p, float f)
-//{
-//}
+function int testFunction(int* p, float f)
+{
+    return p + Int(f);
+}
 
 function test()
 {
@@ -75,6 +76,9 @@ function test()
 
     showIntResults(1, 22, x);
     
+    log("\nTest Passing Pointer to Function\n");
+    showIntResults(2, 25, testFunction(x, 3.5));
+    
     log("\nTest Struct\n");
     TestStruct s;
     int i;
@@ -85,9 +89,9 @@ function test()
     s.b = f;
     s.c = 5;
 
-    showIntResults(2, 22, s.a);
-    showFloatResults(3, 3.5, s.b);
-    showIntResults(4, 5, s.c);
+    showIntResults(3, 22, s.a);
+    showFloatResults(4, 3.5, s.b);
+    showIntResults(5, 5, s.c);
 
     log("\nTest Pointer to Struct\n");
     TestStruct* ss;
@@ -96,9 +100,9 @@ function test()
     ss.b = 17.5;
     ss.c = 18;
 
-    showIntResults(5, 17, ss.a);
-    showFloatResults(6, 17.5, ss.b);
-    showIntResults(7, 18, ss.c);
+    showIntResults(6, 17, ss.a);
+    showFloatResults(7, 17.5, ss.b);
+    showIntResults(8, 18, ss.c);
 
     log("\nDone\n\n");
 }

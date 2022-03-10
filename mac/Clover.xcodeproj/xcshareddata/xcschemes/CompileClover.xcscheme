@@ -54,7 +54,7 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "-d"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-x"
@@ -70,11 +70,11 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "../Test/TestExpr.clvr ../Test/TestIfForeach.clvr ../Test/TestWhileLoop.clvr ../Test/TestFunction.clvr ../Test/TestPtrStruct.clvr ../Test/TestCore.clvr"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "../Test/TestPtrStruct.clvr"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>
