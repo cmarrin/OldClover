@@ -17,7 +17,7 @@ struct AnimEntry
     float max;
 }
 
-int globalArray 20;
+int globalArray[20];
 
 function space(int n)
 {
@@ -118,7 +118,7 @@ function test()
 
     log("\nTest InitArray\n");
 
-    int localArray 10;
+    int localArray[10];
     
     InitArray(&localArray, 200, 10);
     showIntResults(24, 200, localArray[5]);

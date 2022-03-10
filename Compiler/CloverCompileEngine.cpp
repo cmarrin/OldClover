@@ -174,9 +174,12 @@ CloverCompileEngine::var(Type type, bool isPointer)
     std::string id;
     expect(identifier(id), Compiler::Error::ExpectedIdentifier);
     
-    int32_t size;
-    if (!integerValue(size)) {
-        size = 1;
+    int32_t size = 1;
+
+    if (match(Token::OpenBracket)) {
+        expect(integerValue(size), Compiler::Error::ExpectedValue);
+        expect(Token::CloseBracket);
+
     }
     
     size *= elementSize(type);

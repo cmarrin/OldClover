@@ -54,7 +54,7 @@ struct:
     'struct' <id> '{' { structEntry } '}' ;
     
 var:
-    <id> [ <integer> ] ;
+    <id> [ '[' <integer> ']' ] ;
 
 function:
     'function' [ <type> ] <id> '( formalParameterList ')' '{' { statement } '}' ;
