@@ -1141,12 +1141,17 @@ CloverCompileEngine::bakeExpr(ExprAction action, Type matchingType)
             expect(prevEntry.type() == ExprEntry::Type::Ref, Compiler::Error::InternalError);
             const ExprEntry::Ref& ref = prevEntry;
             
+            // If the Ref is a Ptr then we need to deref
+            if (ref._ptr) {
+                addOp(Op::PushDeref);
+            }
             uint8_t index;
             Type elementType;
             findStructElement(ref._type, entry, index, elementType);
             _exprStack.pop_back();
             _exprStack.pop_back();
             _exprStack.push_back(ExprEntry::Ref(elementType));
+            
             addOpSingleByteIndex(Op::Offset, index);
             return elementType;
         }
@@ -1185,7 +1190,6 @@ CloverCompileEngine::bakeExpr(ExprAction action, Type matchingType)
             _exprStack.pop_back();
             _exprStack.push_back(ExprEntry::Ref(sym.type(), sym.isPointer()));
             
-            // If this is a pointer, just push it, otherwise push the ref
             addOpId(Op::PushRef, sym.addr());
             return sym.isPointer() ? Type::Ptr : sym.type();
     }

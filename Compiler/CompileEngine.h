@@ -40,7 +40,11 @@ public:
             , _ptr(ptr)
             , _storage(storage)
             , _size(size)
-        { }
+        {
+            if (type == Type::Ptr) {
+                _ptr = true;
+            }
+        }
         
         const std::string& name() const { return _name; }
         uint8_t addr() const;
