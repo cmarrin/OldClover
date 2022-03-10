@@ -13,6 +13,7 @@
 #include "TestIfForeach.h"
 #include "TestWhileLoop.h"
 #include "TestFunction.h"
+#include "TestPtrStruct.h"
 #include "TestCore.h"
 
 /*
@@ -151,6 +152,7 @@ public:
         RunTest(TestIfForeach);
         RunTest(TestWhileLoop);
         RunTest(TestFunction);
+        RunTest(TestPtrStruct);
         RunTest(TestCore);
     }
 
