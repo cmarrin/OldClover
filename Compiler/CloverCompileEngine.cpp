@@ -196,6 +196,19 @@ CloverCompileEngine::var(Type type, bool isPointer)
     }
     
     _nextMem += size;
+    
+    // Check for an initializer. We only allow initializers on Int and Float
+    if (match(Token::Equal)) {
+        expect(type == Type::Int || type == Type::Float, Compiler::Error::InitializerNotAllowed);
+
+        // Generate an assignment expression
+        _exprStack.emplace_back(id);
+        bakeExpr(ExprAction::Ref);
+        expect(arithmeticExpression(), Compiler::Error::ExpectedExpr);
+        expect(bakeExpr(ExprAction::Right, type) == type, Compiler::Error::WrongType);
+        expect(bakeExpr(ExprAction::Left, type) == type, Compiler::Error::MismatchedType);
+    }
+    
     return true;
 }
 

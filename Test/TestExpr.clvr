@@ -104,10 +104,8 @@ function test()
     showIntResults(17, 1, testIntConst >= testIntGlobal);
     showIntResults(18, 1, testIntConst > testIntGlobal);
     
-    int i, j;
+    int i = 20, j = i++;
 
-    i = 20;
-    j = i++;
     showIntResults(19, 21, i);
     showIntResults(20, 20, j);
     j = i--;

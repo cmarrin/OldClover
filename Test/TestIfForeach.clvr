@@ -58,10 +58,7 @@ function test()
 
     log("\nTest if\n");
 
-    int i, j;
-
-    i = 0;
-    j = 0;
+    int i = 0, j = 0;
 
     if (0) {
         showIntResults(1, 0, 1);
@@ -106,10 +103,9 @@ function test()
 
     log("\nTest Float foreach\n"); 
 
-    float f;
+    float f = 0;
 
     i = 0;
-    f = 0;
     foreach(i : 10) {
         f += Float(i);
     }

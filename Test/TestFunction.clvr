@@ -68,15 +68,13 @@ function function1()
 
 function int function2(int a, int b)
 {
-    int c;
-    c = 7;
+    int c = 7;
     return a + b + c + TestSizeDef + testIntConst + testIntGlobal;
 }
 
 function float function3(float a, float b)
 {
-    float c;
-    c = 123;
+    float c = 123;
     return a + b + c + TestSizeDef + testFloatConst + testFloatGlobal;
 }
 

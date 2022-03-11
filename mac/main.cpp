@@ -123,6 +123,7 @@ static void showError(clvr::Compiler::Error error, clvr::Token token, const std:
         case clvr::Compiler::Error::OnlyAllowedInLoop: err = "break/continue only allowed in loop"; break;
         case clvr::Compiler::Error::DuplicateIdentifier: err = "duplicate identifier"; break;
         case clvr::Compiler::Error::ExecutableTooBig: err = "executable too big"; break;
+        case clvr::Compiler::Error::InitializerNotAllowed: err = "initializer not allowed for this type"; break;
     }
     
     if (token == clvr::Token::EndOfFile) {

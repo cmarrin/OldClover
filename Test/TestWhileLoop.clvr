@@ -58,10 +58,8 @@ function test()
 
     log("\nTest Int while\n"); 
 
-    int i, j;
+    int i = 0, j = 0;
 
-    i = 0;
-    j = 0;
     while(i < 10) {
         j += i++;
     }
@@ -90,10 +88,9 @@ function test()
 
     log("\nTest Float while\n"); 
 
-    float f;
+    float f = 0;
 
     i = 0;
-    f = 0;
     while(i < 10) {
         f += Float(i++);
     }

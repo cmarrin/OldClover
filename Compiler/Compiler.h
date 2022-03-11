@@ -71,6 +71,7 @@ public:
         OnlyAllowedInLoop,
         DuplicateIdentifier,
         ExecutableTooBig,
+        InitializerNotAllowed,
     };
     
     Compiler() { }

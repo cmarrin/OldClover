@@ -81,10 +81,8 @@ function test()
     
     log("\nTest Struct\n");
     TestStruct s;
-    int i;
-    float f;
-    i = 22;
-    f = 3.5;
+    int i = 22;
+    float f = 3.5;
     s.a = i;
     s.b = f;
     s.c = 5;
