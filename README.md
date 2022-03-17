@@ -43,7 +43,15 @@ Functions must start with a SetFrame opcode. This has a 4 bit param value and an
 
 The target for a function call is an absolute byte address in RAM. The Call instruction is extended and takes a subsequent byte allowing for an address 4KB in size. A long Call could be created which would allow for a 64KB address range.
 
-Clover also supports native functions. They are kept in modules added to the runtime to add function calls for specific applications. There is a Core set included with Clover which does things like converting float to int, generating random numbers, etc.
+### Native Functions
+
+Clover also supports native functions. They are kept in modules added to the runtime to add function calls for specific applications. There is a Core set included with Clover which does things like converting float to int, generating random numbers, etc. Modules can be written by subclassing the NativeModule base class. These are passed to the compiler and interpreter to add functionality. ifdefs are used to compile only the runtime parts for Arduino to reduce space. The functions in each module have a byte id. Each module can have up to 16 functions, so each module has a prefix of 0x?0. The first two prefixes (0x00 and 0x10) are reserved for the Core module. The prefix for other modules must be managed by the developer to avoid conflicts.
+
+A long version of CallNative could be created with a 2 byte function id to extend the number of functions to 64K.
+
+### Log
+
+Clover has a Log statement. It is structured like printf, taking a format string followed by up to 16 params. These are used whenever a '%' format command is encountered. Currently only '%i' and '%f' are handled. And no type checking is done currently. So passing an integer where a float is expected will result in the wrong value being printed. The format string is preceded by a sz byte. So the format string is limited to 256 characters.
 
 ## Future Work
 
