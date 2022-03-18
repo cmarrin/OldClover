@@ -27,6 +27,12 @@ The 'struct' element allows the definition of a structure of named int and float
 
 ### Variables
 
+The 'var' element introduces variables which can be int, float, pointer, struct or array. Putting this element outside any function makes it global. Inside a function the 'var' element has block scope. Each variable can only be used in the block in which it was defined and its child blocks.
+
+### Functions
+
+The 'function' element introduces a function. The function name can be preceded by an optional type which is its return type. It can have 0 or more formal parameters, which can have the type int, float or pointer to int, float or struct. As mentioned above the block of a function can have 'var' elements which define local variables.
+
 ## Runtime
 
 The runtime is a stack oriented virtual machine. There are opcodes for pushing and popping, function calls keep the return pc and base pointer on the stack, and all operations are performed on the top one or two stack elements. In addition to ints and floats, the stack can also contain a pointer. To store the result of an operation you first PushRef to push a pointer to where you want the result, then Push the two operands, do the operation which leaves the result on the stack, then PopDeref to store the result at the pushed address.
