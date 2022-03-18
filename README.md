@@ -7,7 +7,52 @@ Clover grew out my need to upload code to an Arduino (Nano in this case) without
 
 ## Overview
 
-Clover is a standalone package with a Compiler and Runtime. There is a Mac project to run the compiler, which takes Clover source an turns it into Arly, the interpreted bytecodes which are executed by the Runtime. The runtime works both on Mac and Arduino. You can test your compiled code on the Mac then transfer it to the Arduino to execute in the live hardware environment.
+Clover is a strongly typed, C-like language designed to run in a small microcontroller environment. It is a standalone package with a separate compiler and runtime. There is a Mac project to run the compiler, which takes Clover source an turns it into Arly, the interpreted bytecodes which are executed by the Runtime. The runtime works both on Mac and Arduino. You can test your compiled code on the Mac then transfer it to the Arduino to execute in the live hardware environment.
+
+The Interpreter is an abstract base class. You subclass it and implement 2 methods: rom(), which returns the byte at the passed ROM address, and log() which prints the passed string to the console. When instantiating the Interpreter, you can pass a list of NativeModules. These are subclasses of NativeModule which add functionality to the interpreter in the form of native function calls. Parameters are passed to a native function on the stack, so when the NativeModule call virtual method is called, a pointer to the Interpreter is passed. This allows you to read stack values, set errors that the interpreter can return, etc.
+
+## Language Features
+
+### Defs and Constants
+
+The 'def' element sets a compile time named integer value for use at any point where an integer is expected.
+
+The 'const' element defines an integer or float named constant, which occupies a word of constant (EEPROM) memory and can be used wherever an identifier can be used. One set at compile time its value can never be changed. 
+
+The 'table' element is like a const, except that each named table is an array of integer, float or struct values. If it is an array of structs then the values for each struct element are listed sequentially followed by the values for the next element, etc. The number of values must be a multiple of the struct size.
+
+### Structs
+
+The 'struct' element allows the definition of a structure of named int and float values. These can be used as types for tables, global and local variables. You can also define a pointer to a table and then assign the address of a struct (or an element in a struct array) and pass that to a function.
+
+### Variables
+
+## Runtime
+
+The runtime is a stack oriented virtual machine. There are opcodes for pushing and popping, function calls keep the return pc and base pointer on the stack, and all operations are performed on the top one or two stack elements. In addition to ints and floats, the stack can also contain a pointer. To store the result of an operation you first PushRef to push a pointer to where you want the result, then Push the two operands, do the operation which leaves the result on the stack, then PopDeref to store the result at the pushed address.
+
+### Strong Typing
+The runtime is strongly typed. Every value on the stack is an int, float or pointer. The operation performed assuming the value is of the correct type. There is no runtime type checking. For instance, there are AddInt and AddFloat operations, which assume the two operands are both int or float. It's up to the compiler to keep track of the types and perform type conversion or generate type clash errors.
+
+### Pointers
+
+There are a number of operations that work with pointers. PushRef pushes a pointer to a value in memory (ROM or RAM). PushDeref loads the value at the address on top of stack and pushes it. PopDeref stores the value on the top of stack at the address in TOS-1. Offset adds the value in the opcode to the address on the top of stack. It's used to access structure members. Index takes the top of stack as an array index, multiplies it by the element size value in the opcode and the adds that to the address on the stack. It's used to index into arrays.
+
+### Flow Control
+
+Clover has an if/then/else construct. The If opcode looks at the value on TOS and if zero it jumps the number of bytes in the sz field of the opcode. If that jump takes you to an Else opcode then that clause is executed if the if was skipped, or skips that clause if the if clause was executed.
+
+Clover also contains looping statements. These are represented in the runtime by the Jump and Loop opcodes. The former jumps forward and the latter jumps backward. Currently Clover has a 'foreach' which increments a variable until it equals a limit value. Tests are generated and Jump and Loop are used to implement the iteration. There are also 'while' and 'loop' statements using the same opcodes. And finally 'break' and 'continue' statements can be used in any looping clause to just out of or to the end of the clause. All of these are built on top of Jump and Loop.
+
+### Function calls
+
+Function arguments and local variables are kept on the stack. The bp pointer defines the start of the stack frame for the current function. The first n words of the frame are passed arguments, followed by local variable storage, followed by the return pc and previous bp value. The sp points past the all this and is used to push values onto the stack. The SetFrame opcode is used to establish the number of arguments and local variables. This adjusts the sp and bp for the current function and makes room for local variables. After SetFrame the return pc and previous bp (pushed by the Call opcode) are on top of the stack. The Return opcode pops these, adjusts sp, restores bp jumps to the return pc address.
+
+## Native Modules
+
+Developers can add functionality to the runtime by subclassing NativeModule and implementing the pure virtual functions. Each module has a compile side, which has a table of all functions, their id and the number and type of arguments they expect. There is also an interpreter side which decides if the module implements a given id, how many arguments that function has and implements the actual call. The compile side can be omitted on Arduino with an ifdef to save space. Clover has a NativeCore module which has general purpose methods for converting types, generating random numbers, etc.
+
+The NativeCall opcode is the same as Call, in that it pushes pc and bp, but the target is an id of a native function (installed as a NativeModule). The call() virtual method of the NativeModule is called to execute the added functionality.
 
 ## Limitations
 
@@ -58,4 +103,157 @@ Clover has a Log statement. It is structured like printf, taking a format string
 - Make base of each value type (constant, global, local) set at runtime to allow more or less of each type depending on needs.
 - Rearrange the opcode values to make more space for extended opcodes
 - Make opcodes taking an id into extended opcodes, allowing for 12 bit ids for access to 16KB of memory
-- 
+- Why do defs exist? Why not just use const? Maybe get rid of defs and do an optimization where if a const is a small integer which can be represented by PushIntConst or PushIntConstS then don't add it to the constants.
+- Why can't you have a struct const? Maybe get rid of table and allow const to have multiple values (inside braces). Maybe require const arrays to be defined as such?
+- Make a proper 'for' loop statement
+
+## BNF for Clover
+
+program:
+    { element } ;
+
+element:
+    def | constant | table | struct | varStatement | function | command ;
+    
+def:
+    'def' <id> <integer> ';'
+
+constant:
+    'const' type <id> value ';' ;
+    
+table:
+    'table' type <id> '{' values '}' ;
+
+struct:
+    'struct' <id> '{' { structEntry } '}' ;
+    
+var:
+    <id> [ '[' <integer> ']' ] [ '=' arithmeticExpression ] ;
+
+function:
+    'function' [ <type> ] <id> '( formalParameterList ')' '{' { statement } '}' ;
+
+command:
+    'command' <id> <integer> <id> <id> ';' ;
+
+structEntry:
+    type <id> ';' ;
+
+// <id> is a struct name
+type:
+    'float' | 'int' | <id> 
+
+value:
+    ['-'] <float> | ['-'] <integer>
+
+statement:
+      compoundStatement
+    | ifStatement
+    | forStatement
+    | whileStatement
+    | loopStatement
+    | returnStatement
+    | jumpStatement
+    | logStatement
+    | varStatement
+    | expressionStatement
+    ;
+  
+compoundStatement:
+    '{' { statement } '}' ;
+
+ifStatement:
+    'if' '(' arithmeticExpression ')' statement ['else' statement ] ;
+
+forStatement:
+    'foreach' '(' identifier ':' arithmeticExpression ')' statement ;
+    
+whileStatement:
+    'while' '(' arithmeticExpression ')' statement ;
+
+loopStatement:
+    'loop' statement ;
+
+returnStatement:
+      'return' [ arithmeticExpression ] ';' ;
+      
+jumpStatement:
+      'break' ';'
+    | 'continue' ';'
+    ;
+
+logStatement:
+    'log' '(' <string> { ',' arithmeticExpression } ')' ';' ;
+
+varStatement:
+    type [ '*' ] var { ',' var } ';' ;
+
+expressionStatement:
+    arithmeticExpression ';' ;
+    
+arithmeticExpression:
+      unaryExpression
+    | unaryExpression operator arithmeticExpression
+
+unaryExpression:
+      postfixExpression
+    | '-' unaryExpression
+    | '~' unaryExpression
+    | '!' unaryExpression
+    | '++' unaryExpression
+    | '--' unaryExpression
+    | '&' unaryExpression
+    ;
+
+postfixExpression:
+      primaryExpression
+    | postfixExpression '(' argumentList ')'
+    | postfixExpression '[' arithmeticExpression ']'
+    | postfixExpression '.' identifier
+    | postfixExpression '++'
+    | postfixExpression '--'
+    ;
+
+primaryExpression:
+      '(' arithmeticExpression ')'
+    | <id>
+    | <float>
+    | <integer>
+    ;
+    
+formalParameterList:
+      (* empty *)
+    | type ['*'] identifier { ',' type identifier }
+    ;
+
+argumentList:
+        (* empty *)
+      | arithmeticExpression { ',' arithmeticExpression }
+      ;
+
+operator: (* operator   precedence   association *)
+               '='     (*   1          Right    *)
+    |          '+='    (*   1          Right    *)
+    |          '-='    (*   1          Right    *)
+    |          '*='    (*   1          Right    *)
+    |          '/='    (*   1          Right    *)
+    |          '&='    (*   1          Right    *)
+    |          '|='    (*   1          Right    *)
+    |          '^='    (*   1          Right    *)
+    |          '||'    (*   2          Left     *)
+    |          '&&'    (*   3          Left     *)
+    |          '|'     (*   4          Left     *)
+    |          '^'     (*   5          Left     *)
+    |          '&'     (*   6          Left     *)
+    |          '=='    (*   7          Left     *)
+    |          '!='    (*   7          Left     *)
+    |          '<'     (*   8          Left     *)
+    |          '>'     (*   8          Left     *)
+    |          '>='    (*   8          Left     *)
+    |          '<='    (*   8          Left     *)
+    |          '+'     (*   10         Left     *)
+    |          '-'     (*   10         Left     *)
+    |          '*'     (*   11         Left     *)
+    |          '/'     (*   11         Left     *)
+    ;
+
