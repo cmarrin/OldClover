@@ -115,150 +115,151 @@ Clover has a Log statement. It is structured like printf, taking a format string
 
 ## BNF for Clover
 
->program:
->    { element } ;
->
->element:
->    def | constant | table | struct | varStatement | function | command ;
->    
->def:
->    'def' <id> <integer> ';'
->
->constant:
->    'const' type <id> value ';' ;
->    
->table:
->    'table' type <id> '{' values '}' ;
->
->struct:
->    'struct' <id> '{' { structEntry } '}' ;
->    
->var:
->    <id> [ '[' <integer> ']' ] [ '=' arithmeticExpression ] ;
->
->function:
->    'function' [ <type> ] <id> '( formalParameterList ')' '{' { statement } '}' ;
->
->command:
->    'command' <id> <integer> <id> <id> ';' ;
->
->structEntry:
->    type <id> ';' ;
->
->// <id> is a struct name
->type:
->    'float' | 'int' | <id> 
->
->value:
->    ['-'] <float> | ['-'] <integer>
->
->statement:
->      compoundStatement
->    | ifStatement
->    | forStatement
->    | whileStatement
->    | loopStatement
->    | returnStatement
->    | jumpStatement
->    | logStatement
->    | varStatement
->    | expressionStatement
->    ;
->  
->compoundStatement:
->    '{' { statement } '}' ;
->
->ifStatement:
->    'if' '(' arithmeticExpression ')' statement ['else' statement ] ;
->
->forStatement:
->    'foreach' '(' identifier ':' arithmeticExpression ')' statement ;
->    
->whileStatement:
->    'while' '(' arithmeticExpression ')' statement ;
->
->loopStatement:
->    'loop' statement ;
->
->returnStatement:
->      'return' [ arithmeticExpression ] ';' ;
->      
->jumpStatement:
->      'break' ';'
->    | 'continue' ';'
->    ;
->
->logStatement:
->    'log' '(' <string> { ',' arithmeticExpression } ')' ';' ;
->
->varStatement:
->    type [ '*' ] var { ',' var } ';' ;
->
->expressionStatement:
->    arithmeticExpression ';' ;
->    
->arithmeticExpression:
->      unaryExpression
->    | unaryExpression operator arithmeticExpression
->
->unaryExpression:
->      postfixExpression
->    | '-' unaryExpression
->    | '~' unaryExpression
->    | '!' unaryExpression
->    | '++' unaryExpression
->    | '--' unaryExpression
->    | '&' unaryExpression
->    ;
->
->postfixExpression:
->      primaryExpression
->    | postfixExpression '(' argumentList ')'
->    | postfixExpression '[' arithmeticExpression ']'
->    | postfixExpression '.' identifier
->    | postfixExpression '++'
->    | postfixExpression '--'
->    ;
->
->primaryExpression:
->      '(' arithmeticExpression ')'
->    | <id>
->    | <float>
->    | <integer>
->    ;
->    
->formalParameterList:
->      (* empty *)
->    | type ['*'] identifier { ',' type identifier }
->    ;
->
->argumentList:
->        (* empty *)
->      | arithmeticExpression { ',' arithmeticExpression }
->      ;
->
->operator: (* operator   precedence   association *)
->               '='     (*   1          Right    *)
->    |          '+='    (*   1          Right    *)
->    |          '-='    (*   1          Right    *)
->    |          '*='    (*   1          Right    *)
->    |          '/='    (*   1          Right    *)
->    |          '&='    (*   1          Right    *)
->    |          '|='    (*   1          Right    *)
->    |          '^='    (*   1          Right    *)
->    |          '||'    (*   2          Left     *)
->    |          '&&'    (*   3          Left     *)
->    |          '|'     (*   4          Left     *)
->    |          '^'     (*   5          Left     *)
->    |          '&'     (*   6          Left     *)
->    |          '=='    (*   7          Left     *)
->    |          '!='    (*   7          Left     *)
->    |          '<'     (*   8          Left     *)
->    |          '>'     (*   8          Left     *)
->    |          '>='    (*   8          Left     *)
->    |          '<='    (*   8          Left     *)
->    |          '+'     (*   10         Left     *)
->    |          '-'     (*   10         Left     *)
->    |          '*'     (*   11         Left     *)
->    |          '/'     (*   11         Left     *)
->    ;
+    program:
+        { element } ;
+    
+    element:
+        def | constant | table | struct | varStatement | function | command ;
+        
+    def:
+        'def' <id> <integer> ';'
+    
+    constant:
+        'const' type <id> value ';' ;
+        
+    table:
+        'table' type <id> '{' values '}' ;
+    
+    struct:
+        'struct' <id> '{' { structEntry } '}' ;
+        
+    var:
+        <id> [ '[' <integer> ']' ] [ '=' arithmeticExpression ] ;
+    
+    function:
+        'function' [ <type> ] <id> '( formalParameterList ')' '{' { statement } '}' ;
+    
+    command:
+        'command' <id> <integer> <id> <id> ';' ;
+    
+    structEntry:
+        type <id> ';' ;
+    
+    // <id> is a struct name
+    type:
+        'float' | 'int' | <id> 
+    
+    value:
+        ['-'] <float> | ['-'] <integer>
+    
+    statement:
+          compoundStatement
+        | ifStatement
+        | forStatement
+        | whileStatement
+        | loopStatement
+        | returnStatement
+        | jumpStatement
+        | logStatement
+        | varStatement
+        | expressionStatement
+        ;
+      
+    compoundStatement:
+        '{' { statement } '}' ;
+    
+    ifStatement:
+        'if' '(' arithmeticExpression ')' statement ['else' statement ] ;
+    
+    forStatement:
+        'foreach' '(' identifier ':' arithmeticExpression ')' statement ;
+        
+    whileStatement:
+        'while' '(' arithmeticExpression ')' statement ;
+    
+    loopStatement:
+        'loop' statement ;
+    
+    returnStatement:
+          'return' [ arithmeticExpression ] ';' ;
+          
+    jumpStatement:
+          'break' ';'
+        | 'continue' ';'
+        ;
+    
+    logStatement:
+        'log' '(' <string> { ',' arithmeticExpression } ')' ';' ;
+    
+    varStatement:
+        type [ '*' ] var { ',' var } ';' ;
+    
+    expressionStatement:
+        arithmeticExpression ';' ;
+        
+    arithmeticExpression:
+          unaryExpression
+        | unaryExpression operator arithmeticExpression
+    
+    unaryExpression:
+          postfixExpression
+        | '-' unaryExpression
+        | '~' unaryExpression
+        | '!' unaryExpression
+        | '++' unaryExpression
+        | '--' unaryExpression
+        | '&' unaryExpression
+        ;
+    
+    postfixExpression:
+          primaryExpression
+        | postfixExpression '(' argumentList ')'
+        | postfixExpression '[' arithmeticExpression ']'
+        | postfixExpression '.' identifier
+        | postfixExpression '++'
+        | postfixExpression '--'
+        ;
+    
+    primaryExpression:
+          '(' arithmeticExpression ')'
+        | <id>
+        | <float>
+        | <integer>
+        ;
+        
+    formalParameterList:
+          (* empty *)
+        | type ['*'] identifier { ',' type identifier }
+        ;
+    
+    argumentList:
+            (* empty *)
+          | arithmeticExpression { ',' arithmeticExpression }
+          ;
+    
+    operator: (* operator   precedence   association *)
+                   '='     (*   1          Right    *)
+        |          '+='    (*   1          Right    *)
+        |          '-='    (*   1          Right    *)
+        |          '*='    (*   1          Right    *)
+        |          '/='    (*   1          Right    *)
+        |          '&='    (*   1          Right    *)
+        |          '|='    (*   1          Right    *)
+        |          '^='    (*   1          Right    *)
+        |          '||'    (*   2          Left     *)
+        |          '&&'    (*   3          Left     *)
+        |          '|'     (*   4          Left     *)
+        |          '^'     (*   5          Left     *)
+        |          '&'     (*   6          Left     *)
+        |          '=='    (*   7          Left     *)
+        |          '!='    (*   7          Left     *)
+        |          '<'     (*   8          Left     *)
+        |          '>'     (*   8          Left     *)
+        |          '>='    (*   8          Left     *)
+        |          '<='    (*   8          Left     *)
+        |          '+'     (*   10         Left     *)
+        |          '-'     (*   10         Left     *)
+        |          '*'     (*   11         Left     *)
+        |          '/'     (*   11         Left     *)
+        ;
+    
