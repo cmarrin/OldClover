@@ -183,7 +183,7 @@ Interpreter::execute(uint16_t addr)
         
         uint8_t cmd = getUInt8ROM(_pc++);
         uint8_t index = 0;
-        if (cmd >= 0x80) {
+        if (cmd >= ExtOpcodeStart) {
             index = cmd & 0x0f;
             cmd &= 0xf0;
         }

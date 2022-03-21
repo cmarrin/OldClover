@@ -180,7 +180,7 @@ Decompiler::statement()
     
     uint8_t index = 0;
     
-    if (opInt >= 0x80) {
+    if (opInt >= ExtOpcodeStart) {
         // Get index from lowest 4 bits
         index = opInt & 0x0f;
         opInt &= 0xf0;
