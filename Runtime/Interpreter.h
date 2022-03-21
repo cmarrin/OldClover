@@ -142,15 +142,14 @@ public:
 		int32_t r = ::random(min, max);
 		return r;
 	}
- 
-     uint32_t stackLocal(uint16_t addr) { return _stack.local(addr); }
-     void stackPush(uint32_t v) { _stack.push(v); }
+
+    uint32_t stackLocal(uint16_t addr) const { return _stack.local(addr); }
 
     int32_t animate(uint32_t index);
     uint8_t param(uint32_t i) const { return (i >= ParamsSize) ? 0 : _params[i]; }
-    int16_t pc() const { return _pc; }
-    void setError(Error error) { _error = error; }
     void initArray(uint32_t addr, uint32_t value, uint32_t count);
+
+    void setError(Error error) { _error = error; }
 
     virtual uint8_t rom(uint16_t i) const = 0;
     virtual void log(const char* s) const = 0;
