@@ -33,6 +33,10 @@ The 'var' element introduces variables which can be int, float, pointer, struct 
 
 The 'function' element introduces a function. The function name can be preceded by an optional type which is its return type. It can have 0 or more formal parameters, which can have the type int, float or pointer to int, float or struct. As mentioned above the block of a function can have 'var' elements which define local variables.
 
+### Commands
+
+The 'command' element defines named commands to be called from outside the interpreter. You provide a command name identifier, number of params expected to be passed in and the name of an init and loop function. The command name can be any length, but only the first 7 characters are used, so the name much be unique in the first 7 characters. The number of params passed to Interpreter::init() must match the number of params expected. The init function have a return value, but it is ignored. The loop function must have a return type of int. The return value is expected to be the number of milliseconds to delay before the next call to loop.
+
 ## Runtime
 
 The runtime is a stack oriented virtual machine. There are opcodes for pushing and popping, function calls keep the return pc and base pointer on the stack, and all operations are performed on the top one or two stack elements. In addition to ints and floats, the stack can also contain a pointer. To store the result of an operation you first PushRef to push a pointer to where you want the result, then Push the two operands, do the operation which leaves the result on the stack, then PopDeref to store the result at the pushed address.
@@ -86,7 +90,7 @@ A long Index and Offset opcode could be added to extend this to 12 bit entries, 
 
 The Clover runtime uses the Arduino mechanism of init and loop functions. Furthermore, a Clover compilation unit can contain multiple "commands". The command statement defines the command name (a string), number of params passed in and the name of an init and loop function. The interpreter init function is called with the command name and an array of up to 16 param bytes. The interpreter finds the command and then performs initialization to execute. Then it calls the init function specified in the command. A Param native function in the Core module is used to access command bytes as ints from 0 to 255. These params are available to both the init and loop functions. The init function can be void. It's return value is not used. But the loop functions should return an int, which is the number of milliseconds to wait before calling loop again.
 
-The param limit of 16 bytes is arbitrary. It could be increased by simply increasing the buffer size in the interpreter. And an accessor method could be added to the Core module to access params as floats or 32 bit ints.
+A command name is arbitrary length in Clover, but the executable only store 7 characters, so the command must be unique in the first 7 characters. Changing this would require increasing the amount of space used to store the command name in the executable. The param limit of 16 bytes is arbitrary. It could be increased by simply increasing the buffer size in the interpreter. And an accessor method could be added to the Core module to access params as floats or 32 bit ints.
 
 ### Functions
 
