@@ -41,9 +41,7 @@ public:
 private:
     void constants();
     void commands();
-    void init();
-    void loop();
-    Op statement();
+    void statement();
     
     uint32_t getUInt32()
     {

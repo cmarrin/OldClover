@@ -108,9 +108,7 @@ Decompiler::commands()
     incIndent();
 
     while(_it != _in->end()) {
-        if (statement() == Op::End) {
-            break;
-        }
+        statement();
     }
     _out->append("\n");
 
@@ -128,38 +126,6 @@ Decompiler::commands()
         _out->append("\n");
         decIndent();
     }
-}
-
-void
-Decompiler::init()
-{
-    doIndent();
-    incIndent();
-    _out->append("init\n");
-    
-    while(1) {
-        if (statement() == Op::End) {
-            break;
-        }
-    }
-    _out->append("\n");
-    decIndent();
-}
-
-void
-Decompiler::loop()
-{
-    doIndent();
-    incIndent();
-    _out->append("loop\n");
-    
-    while(1) {
-        if (statement() == Op::End) {
-            break;
-        }
-    }
-    _out->append("\n");
-    decIndent();
 }
 
 std::string
@@ -186,7 +152,7 @@ Decompiler::colorString(uint8_t r)
     }
 }
 
-Op
+void
 Decompiler::statement()
 {
     uint16_t a = addr() - _codeOffset;
@@ -201,18 +167,15 @@ Decompiler::statement()
     }
     
     uint8_t opInt = getUInt8();
-    if (Op(opInt) == Op::End) {
-        return Op::End;
-    }
-    
-    // There is an end statement at the end of an if statement
+
+    // There is an endif statement at the end of an if statement
     // Handle them separately
     if (Op(opInt) == Op::EndIf) {
         decIndent();
         doIndent();
         outputAddr();
         _out->append("end\n\n");
-        return Op(opInt);
+        return;
     }
     
     uint8_t index = 0;
@@ -317,5 +280,4 @@ Decompiler::statement()
     if (opData._op == Op::If || opData._op == Op::Else) {
         incIndent();
     }
-    return Op(opInt);
 }
