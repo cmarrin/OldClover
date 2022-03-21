@@ -62,7 +62,9 @@ Function arguments and local variables are kept on the stack. The bp pointer def
 
 Developers can add functionality to the runtime by subclassing NativeModule and implementing the pure virtual functions. Each module has a compile side, which has a table of all functions, their id and the number and type of arguments they expect. There is also an interpreter side which decides if the module implements a given id, how many arguments that function has and implements the actual call. The compile side can be omitted on Arduino with an ifdef to save space. Clover has a NativeCore module which has general purpose methods for converting types, generating random numbers, etc.
 
-The NativeCall opcode is the same as Call, in that it pushes pc and bp, but the target is an id of a native function (installed as a NativeModule). The call() virtual method of the NativeModule is called to execute the added functionality.
+The NativeCall opcode is the same as Call, in that it pushes pc and bp, but the target is an id of a native function (installed as a NativeModule). The call() virtual method of the NativeModule is called to execute the added functionality. There are 256 ids possible. Each module has 16 possible ids, from 0x?0 to 0x?f. So there are 16 modules possible. The first two modules (0x0? and 0x1?) are reserved for core functions. There is no attempt to manage the module ids. If you add more than one you need to make sure their ids don't clash.
+
+An executable compiled with a given set of NativeModules much be executed by an Interpreter with those same NativeModules or unexpected results will occur.
 
 ## Limitations
 
