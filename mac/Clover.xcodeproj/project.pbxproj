@@ -39,6 +39,7 @@
 		4963436527A4BCC000ABF09F /* CloverCompileEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CloverCompileEngine.cpp; path = ../Compiler/CloverCompileEngine.cpp; sourceTree = "<group>"; };
 		4963436A27A81DA200ABF09F /* CompileEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CompileEngine.h; path = ../Compiler/CompileEngine.h; sourceTree = "<group>"; };
 		4963436B27A81DA200ABF09F /* CompileEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CompileEngine.cpp; path = ../Compiler/CompileEngine.cpp; sourceTree = "<group>"; };
+		496B499B27E6222C000AFA15 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		498A150E27D90EDE005460EE /* Test.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; name = Test.clvr; path = ../Test/Test.clvr; sourceTree = "<group>"; };
 		49BB16B827D3F07E0054C59F /* TestExpr.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; name = TestExpr.clvr; path = ../Test/TestExpr.clvr; sourceTree = "<group>"; };
 		49BB16B927D428CE0054C59F /* TestIfForeach.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; name = TestIfForeach.clvr; path = ../Test/TestIfForeach.clvr; sourceTree = "<group>"; };
@@ -96,6 +97,7 @@
 		49DAA63A278B212E00F67EEB = {
 			isa = PBXGroup;
 			children = (
+				496B499B27E6222C000AFA15 /* README.md */,
 				49BDF4E327CEA4CE00325407 /* Test */,
 				49BDF4D227C5B56200325407 /* Arduino */,
 				49DAA652278B3B5B00F67EEB /* src */,
