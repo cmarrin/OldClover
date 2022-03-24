@@ -93,8 +93,8 @@ function test()
     function1();
     
     showIntResults(2, 82, function2( 5, 6));
-    showFloatResults(2, 195.5, function3( 20, 30.5));
-    showIntResults(2, 110, function4( 50, 60.5));
+    showFloatResults(3, 195.5, function3( 20, 30.5));
+    showIntResults(4, 110, function4( 50, 60.5));
 
     log("\nDone\n\n");
 }
