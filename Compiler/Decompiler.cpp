@@ -50,8 +50,16 @@ Decompiler::constants()
     incIndent();
     _out->append("const\n");
     
-    uint8_t size = *_it++;
-    _it += 3;
+    uint8_t size = getUInt16();
+    _it += 4;
+    
+    if (size == 0) {
+        return;
+    }
+        
+    doIndent();
+    incIndent();
+    _out->append("const\n");
     
     for (uint8_t i = 0; i < size; ++i) {
         doIndent();
@@ -218,7 +226,7 @@ Decompiler::statement()
             break;
         case OpParams::Id:
             _out->append("[");
-            _out->append(std::to_string(getUInt8()));
+            _out->append(std::to_string((uint16_t(index) << 8) | uint16_t(getUInt8())));
             _out->append("]");
             break;
         case OpParams::I:

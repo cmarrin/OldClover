@@ -159,10 +159,9 @@ ref which is either incremented or decremented.
     Executable format
     
     Format Id           - 4 bytes: 'arly'
-    Constants size      - 1 byte: size in 4 byte units of Constants area
-    Global size         - 1 byte: size in 4 byte units needed for global vars
-    Stack size          - 1 byte: size in 4 byte units needed for the stack
-    Unused              - 1 bytes: for alignment
+    Constants size      - 2 bytes: size in 4 byte units of Constants area
+    Global size         - 2 bytes: size in 4 byte units needed for global vars
+    Stack size          - 2 bytes: size in 4 byte units needed for the stack
     Constants area      - n 4 byte entries: ends after size 4 byte units
     Command entries     - Each entry has:
                             7 byte command (Unused trailing bytes are set to '\0')
@@ -175,12 +174,13 @@ ref which is either incremented or decremented.
     Commands            - List of init and loop instructions for each command
 */
 
-static constexpr uint8_t ConstStart = 0x00;
-static constexpr uint8_t GlobalStart = 0x80;
-static constexpr uint8_t LocalStart = 0xc0;
-static constexpr uint8_t ConstSize = GlobalStart - ConstStart;
-static constexpr uint8_t GlobalSize = LocalStart - GlobalStart;
-static constexpr uint8_t LocalSize = 0xff - LocalStart + 1;
+static constexpr uint16_t MaxIdSize = 4096;
+static constexpr uint16_t ConstStart = 0x00;
+static constexpr uint16_t ConstSize = 2048; // Max possible size
+static constexpr uint16_t GlobalStart = ConstStart + ConstSize;
+static constexpr uint16_t GlobalSize = 1024;
+static constexpr uint16_t LocalStart = GlobalStart + GlobalSize;
+static constexpr uint16_t LocalSize = MaxIdSize - LocalStart;
 static constexpr uint8_t ExtOpcodeStart = 0x40;
 
 enum class Op: uint8_t {

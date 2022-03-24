@@ -33,7 +33,7 @@ public:
         
         Symbol() { }
         
-        Symbol(const std::string& name, uint8_t addr, Type type, Storage storage = Storage::Local, bool ptr = false, uint8_t size = 1)
+        Symbol(const std::string& name, uint16_t addr, Type type, Storage storage = Storage::Local, bool ptr = false, uint8_t size = 1)
             : _name(name)
             , _addr(addr)
             , _type(type)
@@ -47,7 +47,7 @@ public:
         }
         
         const std::string& name() const { return _name; }
-        uint8_t addr() const;
+        uint16_t addr() const;
         Type type() const { return _type; }
         bool isPointer() const { return _ptr; }
         Storage storage() const { return _storage; }
@@ -55,7 +55,7 @@ public:
         
     private:
         std::string _name;
-        uint8_t _addr = 0;
+        uint16_t _addr = 0;
         Type _type = Type::None;
         bool _ptr = false;
         Storage _storage = Storage::None;
@@ -180,12 +180,17 @@ protected:
     void addInt(uint8_t i) { _rom8.push_back(i); }
     
     void addOpI(Op op, uint8_t i) { addOpInt(op, i); }
-    void addOpId(Op op, uint8_t id) { addOpInt(op, id); }
     void addOpConst(Op op, uint8_t c) { addOpInt(op, c); }
     void addOpPL(Op op, uint8_t p, uint8_t l)
     {
         addOpSingleByteIndex(op, p);
         _rom8.push_back(l);
+    }
+
+    void addOpId(Op op, uint16_t id)
+    {
+        addOpSingleByteIndex(op, uint8_t(id >> 8));
+        _rom8.push_back(uint8_t(id));
     }
     
     virtual bool isReserved(Token token, const std::string str, Reserved& r);

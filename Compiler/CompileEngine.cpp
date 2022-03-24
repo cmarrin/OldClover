@@ -88,6 +88,12 @@ CompileEngine::CompileEngine(std::istream* stream, std::vector<std::pair<int32_t
 {
 }
 
+static void emitUInt16(std::vector<uint8_t>& executable, uint16_t v)
+{
+    executable.push_back(uint8_t(v));
+    executable.push_back(uint8_t(v >> 8));
+}
+
 void
 CompileEngine::emit(std::vector<uint8_t>& executable)
 {
@@ -102,10 +108,9 @@ CompileEngine::emit(std::vector<uint8_t>& executable)
     executable.push_back('r');
     executable.push_back('l');
     executable.push_back('y');
-    executable.push_back(uint8_t(_rom32.size()));
-    executable.push_back(uint8_t(_globalSize));
-    executable.push_back(uint8_t(stackSize));
-    executable.push_back(0);
+    emitUInt16(executable, _rom32.size());
+    emitUInt16(executable, _globalSize);
+    emitUInt16(executable, stackSize);
     
     char* buf = reinterpret_cast<char*>(&(_rom32[0]));
     executable.insert(executable.end(), buf, buf + _rom32.size() * 4);
@@ -117,10 +122,8 @@ CompileEngine::emit(std::vector<uint8_t>& executable)
         }
         
         executable.push_back(_commands[i]._count);
-        executable.push_back(uint8_t(_commands[i]._initAddr));
-        executable.push_back(uint8_t(_commands[i]._initAddr >> 8));
-        executable.push_back(uint8_t(_commands[i]._loopAddr));
-        executable.push_back(uint8_t(_commands[i]._loopAddr >> 8));
+        emitUInt16(executable, _commands[i]._initAddr);
+        emitUInt16(executable, _commands[i]._loopAddr);
     }
     executable.push_back(0);
     
@@ -525,7 +528,7 @@ CompileEngine::findFunction(const std::string& s, Function& fun)
     return false;
 }
 
-uint8_t
+uint16_t
 CompileEngine::Symbol::addr() const
 {
     switch(_storage) {

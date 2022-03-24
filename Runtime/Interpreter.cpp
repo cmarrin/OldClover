@@ -80,19 +80,19 @@ Interpreter::init(const char* cmd, const uint8_t* buf, uint8_t size)
         _globalSize = 0;
     }
     
-    uint32_t constSize = uint32_t(getUInt8ROM(4)) * 4;
+    uint32_t constSize = uint32_t(getUInt16ROM(4)) * 4;
     bool found = false;
     _codeOffset = ConstOffset + constSize;
     
     // Alloc globals
-    _globalSize = getUInt8ROM(5);
+    _globalSize = getUInt16ROM(6);
     
     if (_globalSize) {
         _global = new uint32_t[_globalSize];
     }
     
     // Alloc stack
-    _stack.alloc(getUInt8ROM(6));
+    _stack.alloc(getUInt16ROM(8));
 
     // Find command
     while (1) {
@@ -188,7 +188,7 @@ Interpreter::execute(uint16_t addr)
             cmd &= 0xf0;
         }
 
-        uint8_t id;
+        uint8_t sz;
         uint16_t targ;
         uint8_t numParams;
         uint8_t numLocals;
@@ -200,12 +200,15 @@ Interpreter::execute(uint16_t addr)
 				_error = Error::InvalidOp;
 				return -1;
             case Op::Push:
-                id = getId();
-                _stack.push(loadInt(Address::fromId(id)));
+                _stack.push(loadInt(Address::fromId(getId(index))));
                 break;
             case Op::Pop:
-                id = getId();
-                storeInt(Address::fromId(id), _stack.pop());
+                storeInt(Address::fromId(getId(index)), _stack.pop());
+                break;
+            case Op::PushRef:
+                // If this is a stack address we need to convert
+                // it to absolute from relative
+                _stack.push(_stack.toAbsAddress(getId(index)));
                 break;
             case Op::PushIntConst:
                 _stack.push(getConst());
@@ -214,11 +217,6 @@ Interpreter::execute(uint16_t addr)
                 _stack.push(index);
                 break;
             }    
-            case Op::PushRef:
-                // If this is a stack address we need to convert
-                // it to absolute from relative
-                _stack.push(_stack.toAbsAddress(getId()));
-                break;
             case Op::PushDeref:
                 addr = _stack.popAddr();
                 _stack.push(loadInt(addr));
@@ -248,10 +246,10 @@ Interpreter::execute(uint16_t addr)
                 break;
 
             case Op::If:
-                id = getSz();
+                sz = getSz();
                 if (_stack.pop() == 0) {
                     // Skip if
-                    _pc += id;
+                    _pc += sz;
                     
                     // Next instruction must be EndIf or Else
                     cmd = getUInt8ROM(_pc++);
@@ -298,7 +296,7 @@ Interpreter::execute(uint16_t addr)
             }
             
             case Op::Call:
-                targ = uint16_t(getId()) | (uint16_t(index)  << 8);
+                targ = getId(index);
                 _stack.push(_pc);
                 _pc = targ + _codeOffset;
                 
@@ -308,22 +306,22 @@ Interpreter::execute(uint16_t addr)
                 }
                 break;
             case Op::CallNative: {
-                id = getConst();
+                sz = getConst();
                 
                 // Find the function
                 bool found = false;
                 for (int i = 0; i < _nativeModulesSize; ++i) {
-                    if (_nativeModules[i]->hasId(id)) {
+                    if (_nativeModules[i]->hasId(sz)) {
                         found = true;
                         
                         // Save the _pc just to make setFrame work
                         _stack.push(_pc);
                         
-                        if (!_stack.setFrame(_nativeModules[i]->numParams(id), 0)) {
+                        if (!_stack.setFrame(_nativeModules[i]->numParams(sz), 0)) {
                             return -1;
                         }
 
-                        int32_t returnVal = _nativeModules[i]->call(this, id);
+                        int32_t returnVal = _nativeModules[i]->call(this, sz);
  
                         _pc = _stack.restoreFrame(returnVal);
                         break;

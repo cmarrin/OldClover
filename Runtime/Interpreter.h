@@ -59,7 +59,7 @@ static constexpr uint8_t StackOverhead = 64;    // Amount added to var mem high 
 static constexpr uint8_t MaxTempSize = 32;      // Allocator uses a uint32_t map. That would 
                                                 // need to be changed to increase this.
 static constexpr uint8_t ParamsSize = 16;       // Constrained by the 4 bit field with the index
-static constexpr uint16_t ConstOffset = 8;
+static constexpr uint16_t ConstOffset = 10;
 
 static inline float intToFloat(uint32_t i)
 {
@@ -175,7 +175,7 @@ private:
 
         Address() { }
 
-        static Address fromId(uint8_t id)
+        static Address fromId(uint16_t id)
         {
             Address addr;
             if (id < GlobalStart) {
@@ -252,7 +252,7 @@ private:
         const uint32_t& absolute(uint16_t addr) const { ensureCount(addr); return get(addr); }
         uint32_t& absolute(uint16_t addr) { ensureCount(addr); return get(addr); }
 
-        Address toAbsAddress(uint8_t id) const
+        Address toAbsAddress(uint16_t id) const
         {
             Address addr = Address::fromId(id);
             if (addr.type() == Address::Type::LocalRel) {
@@ -355,7 +355,11 @@ private:
                (uint32_t(getUInt8ROM(index + 1)) << 8);
     }
 
-    uint8_t getId() { return getUInt8ROM(_pc++); }
+    uint16_t getId(uint8_t i)
+    {
+        return uint16_t(getUInt8ROM(_pc++)) | (uint16_t(i) << 8);
+    }
+    
     uint8_t getConst() { return getUInt8ROM(_pc++); }
     uint8_t getSz() { return getUInt8ROM(_pc++); }
 
