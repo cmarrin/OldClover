@@ -132,26 +132,6 @@ CompileEngine::emit(std::vector<uint8_t>& executable)
 }
 
 bool
-CompileEngine::def()
-{
-     if (!match(Reserved::Def)) {
-        return false;
-    }
-    
-    std::string id;
-    int32_t val;
-    
-    expect(identifier(id), Compiler::Error::ExpectedIdentifier);
-    expect(integerValue(val), Compiler::Error::ExpectedValue);
-    
-    // A def is always a positive integer less than 256
-    expect(val >= 0 && val < 256, Compiler::Error::DefOutOfRange);
-    
-    _defs.emplace_back(id, val);
-    return true;
-}
-
-bool
 CompileEngine::constant()
 {
     if (!match(Reserved::Const)) {
@@ -166,13 +146,18 @@ CompileEngine::constant()
     expect(identifier(id), Compiler::Error::ExpectedIdentifier);
     expect(value(val, t), Compiler::Error::ExpectedValue);
     
-    // There is only enough room for 128 constant values
-    expect(_rom32.size() < 128, Compiler::Error::TooManyConstants);
+    // There is only enough room for ConstSize constant values
+    expect(_rom32.size() < ConstSize, Compiler::Error::TooManyConstants);
 
-    // Save constant
-    expect(addGlobal(id, _rom32.size(), t, Symbol::Storage::Const), Compiler::Error::DuplicateIdentifier)
-    ;
-    _rom32.push_back(val);
+    // If the constant is an int between -127 and 128, then put it in the
+    // Def list. It will be emitted as a PushConst or PushConstS to avoid
+    // taking up constant space
+    if (t == Type::Int && val >= -128 && val <= 127) {
+        _defs.emplace_back(id, val);
+    } else {
+        expect(addGlobal(id, _rom32.size(), t, Symbol::Storage::Const), Compiler::Error::DuplicateIdentifier);
+        _rom32.push_back(val);
+    }
     
     return true;
 }
@@ -463,7 +448,6 @@ bool
 CompileEngine::isReserved(Token token, const std::string str, Reserved& r)
 {
     static std::map<std::string, Reserved> reserved = {
-        { "def",        Reserved::Def },
         { "const",      Reserved::Const },
         { "table",      Reserved::Table },
         { "function",   Reserved::Function },

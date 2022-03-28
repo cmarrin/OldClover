@@ -39,11 +39,8 @@ program:
     { element } ;
 
 element:
-    def | constant | table | struct | varStatement | function | command ;
+    constant | table | struct | varStatement | function | command ;
     
-def:
-    'def' <id> <integer> ';'
-
 constant:
     'const' type <id> value ';' ;
     

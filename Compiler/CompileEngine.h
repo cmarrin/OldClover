@@ -88,7 +88,6 @@ public:
 protected:
     enum class Reserved {
         None,
-        Def,
         Struct,
         Const,
         Table,
@@ -115,7 +114,6 @@ protected:
     virtual bool table() = 0;
     virtual bool type(Type& t);
     
-    bool def();
     bool constant();
     bool command();
 

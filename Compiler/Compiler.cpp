@@ -9,7 +9,6 @@
 
 #include "Compiler.h"
 
-#include "ArlyCompileEngine.h"
 #include "CloverCompileEngine.h"
 #include "NativeCore.h"
 
@@ -26,8 +25,7 @@ bool Compiler::compile(std::istream* istream, Language lang,
     CompileEngine* engine = nullptr;
     
     switch(lang) {
-        case Language::Arly:
-            engine = new ArlyCompileEngine(istream);
+        default:
             break;
         case Language::Clover:
             engine = new CloverCompileEngine(istream, annotations);

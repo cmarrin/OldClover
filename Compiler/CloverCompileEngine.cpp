@@ -71,11 +71,6 @@ CloverCompileEngine::program()
 bool
 CloverCompileEngine::element()
 {
-    if (def()) {
-        expect(Token::Semicolon);
-        return true;
-    }
-    
     if (constant()) {
         expect(Token::Semicolon);
         return true;

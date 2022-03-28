@@ -9,8 +9,7 @@
 
 // Test functions
 
-def TestSizeDef   12;
-
+const int TestSizeDef   12;
 const int testIntConst 10;
 const float testFloatConst 3.5;
 

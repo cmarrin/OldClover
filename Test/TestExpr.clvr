@@ -9,8 +9,7 @@
 
 // Test constants, vars, operands and expressions
 
-def TestSizeDef   12;
-
+const int TestSizeDef   12;
 const int testIntConst 0xfc;
 const float testFloatConst 3.5;
 
