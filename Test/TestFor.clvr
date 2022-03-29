@@ -115,6 +115,13 @@ function test()
     }
     showIntResults(8, 45, j);
 
+    j = 0;
+    
+    for (int ii = 0; ii < 10; ii++) {
+        j += ii;
+    }
+    showIntResults(9, 45, j);
+    
     log("\nTest break and continue\n");
 
     i = 0;
@@ -125,7 +132,7 @@ function test()
             break;
         }
     }
-    showIntResults(9, 15, j);
+    showIntResults(10, 15, j);
 
     i = 0;
     j = 0;
@@ -136,7 +143,7 @@ function test()
         }
         ++j;
     }
-    showIntResults(10, 50, j);
+    showIntResults(11, 50, j);
 
     log("\nDone\n\n");
 }

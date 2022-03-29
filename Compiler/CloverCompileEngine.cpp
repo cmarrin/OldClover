@@ -425,13 +425,17 @@ CloverCompileEngine::forStatement()
         // If we have a type this is a var declaration and must be an assignment
         // expression. Otherwise it can be a general arithmeticExpression
         if (t != Type::None) {
-            std::string id;
-            expect(identifier(id), Compiler::Error::ExpectedIdentifier);
-        
-            expect(Token::Equal);
             expect(t == Type::Int || t == Type::Float, Compiler::Error::WrongType);
 
+            std::string id;
+            expect(identifier(id), Compiler::Error::ExpectedIdentifier);
+            expect(Token::Equal);
+
             // Generate an assignment expression
+            expect(_inFunction, Compiler::Error::InternalError);
+            expect(currentFunction().addLocal(id, t, false, 1), Compiler::Error::DuplicateIdentifier);
+            _nextMem += 1;
+
             _exprStack.emplace_back(id);
             bakeExpr(ExprAction::Ref);
             expect(arithmeticExpression(), Compiler::Error::ExpectedExpr);
@@ -439,8 +443,8 @@ CloverCompileEngine::forStatement()
             expect(bakeExpr(ExprAction::Left, t) == t, Compiler::Error::MismatchedType);
         } else {
             expect(assignmentExpression(), Compiler::Error::ExpectedExpr);
-            expect(Token::Semicolon);
         }
+        expect(Token::Semicolon);
     }
     
     enterJumpContext();
