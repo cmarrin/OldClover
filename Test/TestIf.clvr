@@ -7,7 +7,7 @@
     found in the LICENSE file.
 -------------------------------------------------------------------------*/
 
-// Test foreach, break, continue
+// Test if
 
 function space(int n)
 {
@@ -54,8 +54,6 @@ function showFloatResults(int testNo, float exp, float act)
 
 function test()
 {    
-    log("\nTest if, foreach, break, continue\n");
-
     log("\nTest if\n");
 
     int i = 0, j = 0;
@@ -72,66 +70,6 @@ function test()
         showIntResults(2, 0, 1);
     }
     
-    log("\nTest Int foreach\n"); 
-    i = 0;
-    j = 0;
-    foreach(i : 10) {
-        j += i;
-    }
-    showIntResults(3, 45, j);
-
-    i = 0;
-    j = 0;
-    foreach(i : 10) {
-        j += i;
-        if (i == 5) {
-            break;
-        }
-    }
-    showIntResults(4, 15, j);
-
-    i = 0;
-    j = 0;
-    foreach(i : 10) {
-        j += i;
-        if (i >= 5) {
-            continue;
-        }
-        ++j;
-    }
-    showIntResults(5, 50, j);
-
-    log("\nTest Float foreach\n"); 
-
-    float f = 0;
-
-    i = 0;
-    foreach(i : 10) {
-        f += Float(i);
-    }
-    showFloatResults(6, 45, f);
-
-    i = 0;
-    f = 0;
-    foreach(i : 10) {
-        f += Float(i);
-        if (i == 5) {
-            break;
-        }
-    }
-    showFloatResults(7, 15, f);
-
-    i = 0;
-    f = 0;
-    foreach(i : 10) {
-        f += Float(i);
-        if (i >= 5) {
-            continue;
-        }
-        ++f;
-    }
-    showFloatResults(8, 50, f);
-
     log("\nDone\n\n");
 }
 

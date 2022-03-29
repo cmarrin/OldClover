@@ -1,0 +1,144 @@
+/*-------------------------------------------------------------------------
+    This source file is a part of Clover
+    For the latest info, see https://github.com/cmarrin/Clover
+    Copyright (c) 2021-2022, Chris Marrin
+    All rights reserved.
+    Use of this source code is governed by the MIT license that can be
+    found in the LICENSE file.
+-------------------------------------------------------------------------*/
+
+// Test for, break, continue
+
+function space(int n)
+{
+    while (n--) {
+        log(" ");
+    }
+}
+
+function showIntResults(int testNo, int exp, int act)
+{
+    int n;
+    if (testNo > 9) {
+        n = 19;
+    } else {
+        n = 20;
+    }
+   
+    log("    Test %i: ", testNo);
+    space(n);
+    if (exp != act) {
+        log("FAIL: exp %i, got %i\n", exp, act);
+    } else {
+        log("Pass\n");
+    }
+}
+
+function showFloatResults(int testNo, float exp, float act)
+{
+    int n;
+    if (testNo > 9) {
+        n = 19;
+    } else {
+        n = 20;
+    }
+   
+    log("    Test %i: ", testNo);
+    space(n);
+    if (exp != act) {
+        log("FAIL: exp %f, got %f\n", exp, act);
+    } else {
+        log("Pass\n");
+    }
+}
+
+function test()
+{    
+    int i = 0, j = 0;
+
+    log("\nTest for, break, continue\n");
+
+    log("\nTest all combinations of for (init; test; iter)\n");
+    i = 0;
+    j = 0;
+    for ( ; ; ) {
+        if (i >= 10) break;
+        j += i++;
+    }
+    showIntResults(1, 45, j);
+
+    i = 0;
+    j = 0;
+    for ( ; ; i++) {
+        if (i >= 10) break;
+        j += i;
+    }
+    showIntResults(2, 45, j);
+
+    i = 0;
+    j = 0;
+    for ( ; i < 10; ) {
+        j += i++;
+    }
+    showIntResults(3, 45, j);
+
+    i = 0;
+    j = 0;
+    for ( ; i < 10; i++) {
+        j += i;
+    }
+    showIntResults(4, 45, j);
+
+    j = 0;
+    for (i = 0; ; ) {
+        if (i >= 10) break;
+        j += i++;
+    }
+    showIntResults(5, 45, j);
+
+    j = 0;
+    for (i = 0; ; i++) {
+        if (i >= 10) break;
+        j += i;
+    }
+    showIntResults(6, 45, j);
+
+    j = 0;
+    for (i = 0; i < 10; ) {
+        j += i++;
+    }
+    showIntResults(7, 45, j);
+
+    j = 0;
+    for (i = 0; i < 10; i++) {
+        j += i;
+    }
+    showIntResults(8, 45, j);
+
+    log("\nTest break and continue\n");
+
+    i = 0;
+    j = 0;
+    for(; i < 10; ++i) {
+        j += i;
+        if (i == 5) {
+            break;
+        }
+    }
+    showIntResults(9, 15, j);
+
+    i = 0;
+    j = 0;
+    for(; i < 10; i++) {
+        j += i;
+        if (i >= 5) {
+            continue;
+        }
+        ++j;
+    }
+    showIntResults(10, 50, j);
+
+    log("\nDone\n\n");
+}
+
+command test 3 test test;

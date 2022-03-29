@@ -360,6 +360,17 @@ private:
         return uint16_t(getUInt8ROM(_pc++)) | (uint16_t(i) << 8);
     }
     
+    uint16_t getAbsTarg(uint8_t i) { return getId(i); }
+    
+    int16_t getRelTarg(uint8_t i)
+    {
+        uint16_t targ = getId(i);
+        if (targ & 0x800) {
+            targ |= 0xf000;
+        }
+        return int16_t(targ);
+    }
+    
     uint8_t getConst() { return getUInt8ROM(_pc++); }
     uint8_t getSz() { return getUInt8ROM(_pc++); }
 

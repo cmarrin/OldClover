@@ -219,7 +219,6 @@ Decompiler::statement()
     // Get params
     uint8_t id;
     uint8_t rdrsi;
-    uint16_t targ;
     
     switch(opData._par) {
         case OpParams::None:
@@ -239,29 +238,35 @@ Decompiler::statement()
         case OpParams::Const:
             _out->append(std::to_string(getUInt8()));
             break;
-        case OpParams::Target:
-            targ = (uint16_t(index) << 8) | getUInt8();
+        case OpParams::AbsTarg: {
+            uint16_t targ = (uint16_t(index) << 8) | uint16_t(getUInt8());
             _out->append("[");
             _out->append(std::to_string(targ + _codeOffset));
             _out->append("]");
             break;
+        }
+        case OpParams::RelTarg: {
+            int16_t targ = (int16_t(index) << 8) | int16_t(getUInt8());
+            if (targ & 0x800) {
+                targ |= 0xf000;
+            }
+            _out->append("[");
+            _out->append(std::to_string(targ));
+            _out->append("]");
+            break;
+        }
         case OpParams::P_L:
             id = getUInt8();
             _out->append(std::to_string(index));
             _out->append(" ");
             _out->append(std::to_string(id));
             break;
-        case OpParams::Sz:
-            _out->append("[");
-            _out->append(std::to_string(getUInt8()));
-            _out->append("]");
-            break;
-        case OpParams::Index_Sz_S: {
+        case OpParams::Idx_Len_S: {
             _out->append(std::to_string(index));
             _out->append(" \"");
             
-            uint8_t sz = getUInt8();
-            while(sz-- > 0) {
+            uint8_t len = getUInt8();
+            while(len-- > 0) {
                 uint8_t c = getUInt8();
                 if (c >= 0x20) {
                     (*_out) += char(c);

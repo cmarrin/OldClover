@@ -10,7 +10,8 @@
 #include <Clover.h>
 #include <EEPROM.h>
 #include "TestExpr.h"
-#include "TestIfForeach.h"
+#include "TestIf.h"
+#include "TestFor.h"
 #include "TestWhileLoop.h"
 #include "TestFunction.h"
 #include "TestPtrStruct.h"
@@ -149,7 +150,8 @@ public:
 		Serial.println(F("Test v0.1"));
   
         RunTest(TestExpr);
-        RunTest(TestIfForeach);
+        RunTest(TestIf);
+        RunTest(TestFor);
         RunTest(TestWhileLoop);
         RunTest(TestFunction);
         RunTest(TestPtrStruct);

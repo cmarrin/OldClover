@@ -28,17 +28,16 @@ static std::vector<OpData> _opcodes = {
     { "Drop",           Op::Drop            , OpParams::None },
     { "Swap",           Op::Swap            , OpParams::None },
     
-    { "if",             Op::If              , OpParams::Sz },
-    { "else",           Op::Else            , OpParams::Sz },
+    { "if",             Op::If              , OpParams::RelTarg },
+    { "else",           Op::Else            , OpParams::RelTarg },
 
-    { "Call",           Op::Call            , OpParams::Target },
+    { "Call",           Op::Call            , OpParams::AbsTarg },
     { "CallNative",     Op::CallNative      , OpParams::Const },
     { "Return",         Op::Return          , OpParams::None },
     { "SetFrame",       Op::SetFrame        , OpParams::P_L },
 
-    { "Jump",           Op::Jump            , OpParams::Sz },
-    { "Loop",           Op::Loop            , OpParams::Sz },
-    { "log",            Op::Log             , OpParams::Index_Sz_S },
+    { "Jump",           Op::Jump            , OpParams::RelTarg },
+    { "log",            Op::Log             , OpParams::Idx_Len_S },
     
     { "Or",             Op::Or              , OpParams::None },
     { "Xor",            Op::Xor             , OpParams::None },
@@ -452,7 +451,7 @@ CompileEngine::isReserved(Token token, const std::string str, Reserved& r)
         { "table",      Reserved::Table },
         { "function",   Reserved::Function },
         { "command",    Reserved::Command },
-        { "foreach",    Reserved::ForEach },
+        { "for",        Reserved::For },
         { "if",         Reserved::If },
         { "else",       Reserved::Else },
         { "float",      Reserved::Float },

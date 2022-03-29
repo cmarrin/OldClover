@@ -7,19 +7,16 @@
     found in the LICENSE file.
 -------------------------------------------------------------------------*/
 
-// Test constants, vars, operands and expressions
-
-function testFunction(int a, float b)
-{
-    int c;
-    int* x;
-    x = &c;
-    x = 22;
-}
-
 function test()
-{
-    testFunction(1, 2.5);
+{    
+    int i = 0;
+    int j = 0;
+    for(; i < 10; ++i) {
+        j += i;
+        if (i == 5) {
+            break;
+        }
+    }
 }
 
 command test 3 test test;

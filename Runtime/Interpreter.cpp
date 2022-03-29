@@ -189,7 +189,6 @@ Interpreter::execute(uint16_t addr)
         }
 
         uint8_t sz;
-        uint16_t targ;
         uint8_t numParams;
         uint8_t numLocals;
         uint32_t value;
@@ -245,40 +244,38 @@ Interpreter::execute(uint16_t addr)
                 _stack.swap();
                 break;
 
-            case Op::If:
-                sz = getSz();
+            case Op::If: {
+                int16_t relTarg = getRelTarg(index);
                 if (_stack.pop() == 0) {
                     // Skip if
-                    _pc += sz;
+                    _pc += relTarg;
                     
                     // Next instruction must be EndIf or Else
                     cmd = getUInt8ROM(_pc++);
                     if (Op(cmd) == Op::EndIf) {
                         // We hit the end of the if, just continue
-                    } else if (Op(cmd) == Op::Else) {
+                    } else if (Op(cmd & 0xf0) == Op::Else) {
                         // We have an Else, execute it
-                        getSz(); // Ignore Sz
+                        getConst(); // Ignore targ
                     } else {
                         _error = Error::UnexpectedOpInIf;
                         return -1;
                     }
                 }
                 break;
+            }
             case Op::Else:
                 // If we get here the corresponding If succeeded so ignore this
-                _pc += getSz();
+                _pc += getRelTarg(index);
                 break;
             case Op::EndIf:
                 // This is the end of an if, always ignore it
                 break;
 
             case Op::Jump:
-                _pc += getSz();
+                _pc += getRelTarg(index);
                 break;
-            case Op::Loop:
-                _pc -= getSz();
-                break;
-
+            
             case Op::Log: {
                 if (_stringBuf) {
                     delete [ ] _stringBuf;
@@ -295,8 +292,8 @@ Interpreter::execute(uint16_t addr)
                 break;
             }
             
-            case Op::Call:
-                targ = getId(index);
+            case Op::Call: {
+                uint16_t targ = getAbsTarg(index);
                 _stack.push(_pc);
                 _pc = targ + _codeOffset;
                 
@@ -305,6 +302,7 @@ Interpreter::execute(uint16_t addr)
                     return -1;
                 }
                 break;
+            }
             case Op::CallNative: {
                 sz = getConst();
                 

@@ -411,60 +411,103 @@ CloverCompileEngine::ifStatement()
 bool
 CloverCompileEngine::forStatement()
 {
-    if (!match(Reserved::ForEach)) {
+    if (!match(Reserved::For)) {
         return false;
     }
 
+    expect(Token::OpenParen);
+    
+    // Handle iterator init
+    if (!match(Token::Semicolon)) {
+        Type t = Type::None;
+        type(t);
+        
+        // If we have a type this is a var declaration and must be an assignment
+        // expression. Otherwise it can be a general arithmeticExpression
+        if (t != Type::None) {
+            std::string id;
+            expect(identifier(id), Compiler::Error::ExpectedIdentifier);
+        
+            expect(Token::Equal);
+            expect(t == Type::Int || t == Type::Float, Compiler::Error::WrongType);
+
+            // Generate an assignment expression
+            _exprStack.emplace_back(id);
+            bakeExpr(ExprAction::Ref);
+            expect(arithmeticExpression(), Compiler::Error::ExpectedExpr);
+            expect(bakeExpr(ExprAction::Right, t) == t, Compiler::Error::WrongType);
+            expect(bakeExpr(ExprAction::Left, t) == t, Compiler::Error::MismatchedType);
+        } else {
+            expect(assignmentExpression(), Compiler::Error::ExpectedExpr);
+            expect(Token::Semicolon);
+        }
+    }
+    
     enterJumpContext();
     
-    expect(Token::OpenParen);
-
-    std::string id;
-    expect(identifier(id), Compiler::Error::ExpectedIdentifier);
-
-    expect(Token::Colon);
-
-    // Loop starts with an if test of id < expr
+    // The for loop has a loop test and an iteration expression. The loop expression
+    // appears first, followed by an if test which breaks out of the loop if
+    // false. The next instruction is a jump to the first intruction of the for
+    // loop contents. This is followed by the iteration expression and then a Loop
+    // instruction back to the first instruction of the loop expression. This is
+    // followed by the first instruction of the for loop contents then a Loop back 
+    // to the first instruction of the iteration expression. This tangled web looks
+    // like this:
+    //
+    //                  <init expression>
+    //      startAddr:  <loop expression>
+    //                  If breakAddr:
+    //                  Jump stmtAddr:
+    //                  Endif
+    //      contAddr:   <iteration expression>
+    //                  Loop startAddr:
+    //      stmtAddr:   <for loop contents>
+    //                  Loop startAddr:
+    //      breakAddr:
+    //
     uint16_t startAddr = _rom8.size();
+
+    if (!match(Token::Semicolon)) {
+        arithmeticExpression();
+        expect(bakeExpr(ExprAction::Right) == Type::Int, Compiler::Error::WrongType);
+
+        // At this point the expresssion has been executed and the result is on TOS
     
-    Symbol sym;
-    expect(findSymbol(id, sym), Compiler::Error::UndefinedIdentifier);
-    expect(sym.storage() == Symbol::Storage::Local || 
-           sym.storage() == Symbol::Storage::Global, Compiler::Error::ExpectedVar);
+        addJumpEntry(Op::If, JumpEntry::Type::Break);
+        expect(Token::Semicolon);
+    }
     
-    addOpId(Op::Push, sym.addr());
+    addJumpEntry(Op::Jump, JumpEntry::Type::Statement);
+
+    // If we don't have an iteration, contAddr is just the startAddr
+    uint16_t contAddr = startAddr;
     
-    arithmeticExpression();
-    expect(bakeExpr(ExprAction::Right) == Type::Int, Compiler::Error::WrongType);
+    // Handle iteration
+    if (!match(Token::CloseParen)) {
+        contAddr = _rom8.size();
+        arithmeticExpression();
+        
+        // This must not be an assignment expression, so it must have
+        // a leftover expr on the stack that we need to get rid of
+        expect(_exprStack.size() == 1, Compiler::Error::InternalError);
+        _exprStack.pop_back();
+        addOp(Op::Drop);
+        expect(Token::CloseParen);
+        addOpTarg(Op::Jump, startAddr - _rom8.size() - 2);
+    }
     
-    // We do the inverse test and break if true
-    addOp(Op::GEInt);
-    addOpInt(Op::If, 2);
-    
-    addJumpEntry(JumpEntry::Type::Break);
-    
-    addOp(Op::EndIf);
-    
-    expect(Token::CloseParen);
+    uint16_t stmtAddr = _rom8.size();
     
     statement();
 
-    // Add the increment of the iterator
-    uint16_t loopAddr = _rom8.size();
-    addOpId(Op::PushRef, sym.addr());
-    addOp(Op::PreIncInt);
-    addOp(Op::Drop);
-    
-    // Loop back to the beginning
-    addOp(Op::Loop);
+    // Loop back to the iterator
+    addJumpEntry(Op::Jump, JumpEntry::Type::Continue);
 
-    uint16_t offset = uint16_t(_rom8.size()) - startAddr + 1;
-    expect(offset < 256, Compiler::Error::JumpTooBig);
-    addInt(uint8_t(offset));
-    
+    uint16_t breakAddr = _rom8.size();
+    addOp(Op::EndIf);
+
     // Now resolve all the jumps
-    exitJumpContext(loopAddr);
-
+    exitJumpContext(contAddr, stmtAddr, breakAddr);
     return true;
 }
 
@@ -480,34 +523,24 @@ CloverCompileEngine::whileStatement()
     expect(Token::OpenParen);
 
     // Loop starts with an if test of expr
-    uint16_t startAddr = _rom8.size();
-
+    uint16_t loopAddr = _rom8.size();
+    
     arithmeticExpression();
     expect(bakeExpr(ExprAction::Right) == Type::Int, Compiler::Error::WrongType);
 
-    // Invert the result so we can break if the result is false
-    addOp(Op::LNot);
-    addOpInt(Op::If, 2);
+    addJumpEntry(Op::If, JumpEntry::Type::Break);
 
-    addJumpEntry(JumpEntry::Type::Break);
-
-    addOp(Op::EndIf);
-    
     expect(Token::CloseParen);
     
     statement();
 
-    uint16_t loopAddr = _rom8.size();
-    
     // Loop back to the beginning
-    addOp(Op::Loop);
+    addJumpEntry(Op::Jump, JumpEntry::Type::Continue);
+        
+    // Now resolve all the jumps (stmtAddr will never be used so just reuse loopAddr)
+    exitJumpContext(loopAddr, loopAddr, _rom8.size());
 
-    uint16_t offset = uint16_t(_rom8.size()) - startAddr + 1;
-    expect(offset < 256, Compiler::Error::JumpTooBig);
-    addInt(uint8_t(offset));
-    
-    // Now resolve all the jumps
-    exitJumpContext(loopAddr);
+    addOp(Op::EndIf);
 
     return true;
 }
@@ -521,21 +554,15 @@ CloverCompileEngine::loopStatement()
 
     enterJumpContext();
 
-    uint16_t startAddr = _rom8.size();
-
-    statement();
-
     uint16_t loopAddr = _rom8.size();
     
-    // Loop back to the beginning
-    addOp(Op::Loop);
+    statement();
 
-    uint16_t offset = uint16_t(_rom8.size()) - startAddr + 1;
-    expect(offset < 256, Compiler::Error::JumpTooBig);
-    addInt(uint8_t(offset));
+    // Loop back to the beginning
+    addJumpEntry(Op::Jump, JumpEntry::Type::Continue);
     
-    // Now resolve all the jumps
-    exitJumpContext(loopAddr);
+    // Now resolve all the jumps (stmtAddr will never be used so just reuse loopAddr)
+    exitJumpContext(loopAddr, loopAddr, _rom8.size());
 
     return true;
 }
@@ -579,7 +606,7 @@ CloverCompileEngine::jumpStatement()
     // Make sure we're in a loop
     expect(!_jumpList.empty(), Compiler::Error::OnlyAllowedInLoop);
     
-    addJumpEntry(type);
+    addJumpEntry(Op::Jump, type);
 
     expect(Token::Semicolon);
     return true;
@@ -1261,33 +1288,40 @@ CloverCompileEngine::elementSize(Type type)
 }
 
 void
-CloverCompileEngine::exitJumpContext(uint16_t loopAddr)
+CloverCompileEngine::exitJumpContext(uint16_t loopAddr, uint16_t stmtAddr, uint16_t breakAddr)
 {
     expect(!_jumpList.empty(), Compiler::Error::InternalError);
 
     // Go through all the entries in the last _jumpList entry and fill in
-    // the addresses. The current address (_rom8.size()) is used if this
-    // is a break and the passed loopAddr is used if this is a continue
-    uint16_t breakAddr = _rom8.size();
+    // the addresses.
     for (const auto& it : _jumpList.back()) {
         expect(it._addr < breakAddr, Compiler::Error::InternalError);
         
-        uint16_t offset = ((it._type == JumpEntry::Type::Break) ? breakAddr : loopAddr) - it._addr - 1;
-        expect(offset < 256, Compiler::Error::JumpTooBig);
-        expect(_rom8[it._addr] == 0, Compiler::Error::InternalError);
-        _rom8[it._addr] = offset;
+        uint16_t addr;
+        
+        switch(it._type) {
+            case JumpEntry::Type::Continue: addr = loopAddr; break;
+            case JumpEntry::Type::Statement: addr = stmtAddr; break;
+            case JumpEntry::Type::Break: addr = breakAddr; break;
+        }         
+         
+        int16_t offset = int16_t(addr) - int16_t(it._addr) - 2;
+         
+        expect(_rom8[it._addr + 1] == 0, Compiler::Error::InternalError);
+        
+        _rom8[it._addr] |= (offset >> 8) & 0x0f;
+        _rom8[it._addr + 1] = uint8_t(offset);
     }
     
     _jumpList.pop_back();
 }
 
 void
-CloverCompileEngine::addJumpEntry(JumpEntry::Type type)
+CloverCompileEngine::addJumpEntry(Op op, JumpEntry::Type type)
 {
     expect(!_jumpList.empty(), Compiler::Error::InternalError);
     
-    addOp(Op::Jump);
     uint16_t addr = _rom8.size();
-    addInt(0);
+    addOpTarg(op, 0);
     _jumpList.back().emplace_back(type, addr);
 }

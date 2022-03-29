@@ -52,7 +52,7 @@ There are a number of operations that work with pointers. PushRef pushes a point
 
 Clover has an if/then/else construct. The If opcode looks at the value on TOS and if zero it jumps the number of bytes in the sz field of the opcode. If that jump takes you to an Else opcode then that clause is executed if the if was skipped, or skips that clause if the if clause was executed.
 
-Clover also contains looping statements. These are represented in the runtime by the Jump and Loop opcodes. The former jumps forward and the latter jumps backward. Currently Clover has a 'foreach' which increments a variable until it equals a limit value. Tests are generated and Jump and Loop are used to implement the iteration. There are also 'while' and 'loop' statements using the same opcodes. And finally 'break' and 'continue' statements can be used in any looping clause to just out of or to the end of the clause. All of these are built on top of Jump and Loop.
+Clover also contains looping statements. These are represented in the runtime by the Jump and Loop opcodes. The former jumps forward and the latter jumps backward. Currently Clover has a 'for' which increments a variable until it equals a limit value. Tests are generated and Jump and Loop are used to implement the iteration. There are also 'while' and 'loop' statements using the same opcodes. And finally 'break' and 'continue' statements can be used in any looping clause to just out of or to the end of the clause. All of these are built on top of Jump and Loop.
 
 ### Function calls
 
@@ -178,7 +178,9 @@ Clover has a Log statement. It is structured like printf, taking a format string
         'if' '(' arithmeticExpression ')' statement ['else' statement ] ;
     
     forStatement:
-        'foreach' '(' identifier ':' arithmeticExpression ')' statement ;
+        'for' '(' [ [ <type> ] identifier '=' arithmeticExpression ] ';'
+                  [ arithmeticExpression ] ';' 
+                  [ arithmeticExpression ] ')' statement ;
         
     whileStatement:
         'while' '(' arithmeticExpression ')' statement ;

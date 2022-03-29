@@ -38,10 +38,11 @@
 		4963436527A4BCC000ABF09F /* CloverCompileEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CloverCompileEngine.cpp; path = ../Compiler/CloverCompileEngine.cpp; sourceTree = "<group>"; };
 		4963436A27A81DA200ABF09F /* CompileEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CompileEngine.h; path = ../Compiler/CompileEngine.h; sourceTree = "<group>"; };
 		4963436B27A81DA200ABF09F /* CompileEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CompileEngine.cpp; path = ../Compiler/CompileEngine.cpp; sourceTree = "<group>"; };
+		49667EFB27F36E700035252E /* TestIf.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; name = TestIf.clvr; path = ../Test/TestIf.clvr; sourceTree = "<group>"; };
+		49667EFC27F36E700035252E /* TestFor.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; name = TestFor.clvr; path = ../Test/TestFor.clvr; sourceTree = "<group>"; };
 		496B499B27E6222C000AFA15 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		498A150E27D90EDE005460EE /* Test.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; name = Test.clvr; path = ../Test/Test.clvr; sourceTree = "<group>"; };
 		49BB16B827D3F07E0054C59F /* TestExpr.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; name = TestExpr.clvr; path = ../Test/TestExpr.clvr; sourceTree = "<group>"; };
-		49BB16B927D428CE0054C59F /* TestIfForeach.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; name = TestIfForeach.clvr; path = ../Test/TestIfForeach.clvr; sourceTree = "<group>"; };
 		49BB16BB27D54EE00054C59F /* TestWhileLoop.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; name = TestWhileLoop.clvr; path = ../Test/TestWhileLoop.clvr; sourceTree = "<group>"; };
 		49BB16BC27D687D50054C59F /* TestFunction.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; name = TestFunction.clvr; path = ../Test/TestFunction.clvr; sourceTree = "<group>"; };
 		49BB16BD27D687D50054C59F /* TestPtrStruct.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; name = TestPtrStruct.clvr; path = ../Test/TestPtrStruct.clvr; sourceTree = "<group>"; };
@@ -84,7 +85,8 @@
 			children = (
 				498A150E27D90EDE005460EE /* Test.clvr */,
 				49BB16B827D3F07E0054C59F /* TestExpr.clvr */,
-				49BB16B927D428CE0054C59F /* TestIfForeach.clvr */,
+				49667EFB27F36E700035252E /* TestIf.clvr */,
+				49667EFC27F36E700035252E /* TestFor.clvr */,
 				49BB16BB27D54EE00054C59F /* TestWhileLoop.clvr */,
 				49BB16BC27D687D50054C59F /* TestFunction.clvr */,
 				49BB16BD27D687D50054C59F /* TestPtrStruct.clvr */,

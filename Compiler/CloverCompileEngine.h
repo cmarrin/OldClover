@@ -89,7 +89,7 @@ ifStatement:
     'if' '(' arithmeticExpression ')' statement ['else' statement ] ;
 
 forStatement:
-    'foreach' '(' identifier ':' arithmeticExpression ')' statement ;
+    'for' '(' [ [ <type> ] identifier '=' arithmeticExpression ] ';' [ arithmeticExpression ] ';' [ arithmeticExpression ] ')' statement ;
     
 whileStatement:
     'while' '(' arithmeticExpression ')' statement ;
@@ -413,7 +413,7 @@ private:
 
     struct JumpEntry
     {
-        enum class Type { Break, Continue };
+        enum class Type { Break, Continue, Statement };
         
         JumpEntry(Type type, uint16_t addr) : _type(type), _addr(addr) { }
         
@@ -422,8 +422,8 @@ private:
     };
 
     void enterJumpContext() { _jumpList.emplace_back(); }
-    void exitJumpContext(uint16_t loopAddr);
-    void addJumpEntry(JumpEntry::Type);
+    void exitJumpContext(uint16_t loopAddr, uint16_t loopStmt, uint16_t loopBreak);
+    void addJumpEntry(Op, JumpEntry::Type);
     
     std::vector<Struct> _structs;
     std::vector<ExprEntry> _exprStack;

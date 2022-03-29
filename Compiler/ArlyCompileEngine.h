@@ -33,7 +33,7 @@ loop            ::= 'loop' <n> statements 'end' <n>
 statements      ::= { statement <n> }
 statement       ::= opStatement | forStatement | ifStatement
 opStatement     ::= op opParams
-forStatement    ::= 'foreach' <id> <n> statements 'end'
+forStatement    ::= 'for' <id> <n> statements 'end'
 ifStatement     ::= 'if' <n> statements { 'else' <n> statements } 'end'
 
 type            ::= 'float' | 'int'

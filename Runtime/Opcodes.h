@@ -34,9 +34,10 @@ Opcodes:
         x           - Lower 4 bits of opcode. Size of each member of an array
         const       - Byte after opcode. Int constant (-128 to 127)
         constS      - Lower 4 bits of opcode. Int constant (0 to 15)
-        sz          - Byte after opcode. Bytes in code to skip (forward or backward).
-        target      - Lower 4 bits of opcode (bits 11:8) | byte after opcode
-                      (bits 7:0). 12 bit address of function call.
+        absTarg     - Lower 4 bits of opcode (bits 11:8) | byte after opcode
+                      (bits 7:0). 12 bit absolute address (0 to 4095).
+        relTarg     - Lower 4 bits of opcode (bits 11:8) | byte after opcode
+                      (bits 7:0). 12 bit relative address (-2048 to 2047).
         nativeId    - Byte after opcode. Id of function in NativeModule.
         p           - Lower 4 bits of opcode. Num params passed to function.
         l           - Byte after opcode. Num locals in function.
@@ -76,19 +77,18 @@ Opcodes:
     Drop                    - --sp
     Swap                    - t = stack[sp]; stack[sp] = stack[sp-1]; stack[sp-1[ = t;
 
-    If sz                   - If stack[--sp] is non-zero execute statements in first clause. 
+    If relTarg              - If stack[--sp] is non-zero execute statements in first clause. 
                               If zero skip the statements. Number of bytes to skip is 
                               in sz.
-    Else sz                 - If the previously executed statement was a failed if
+    Else relTarg            - If the previously executed statement was a failed if
                               execute the following statements. Otherwise skip the
                               following statements up to the matching endif. The
                               number of instructions to skip is in sz.
     Endif                   - Signals the end of an if or else statement
     
-    Jump sz                 - Jump forward size bytes
-    Loop sz                 - Jump back size bytes
+    Jump relTarg            - Jump size bytes (target is -2048 to 2047)
     
-    Call target             - Call function [target], params on stack
+    Call absTarg            - Call function [target], params on stack
     CallNative nativeId     - Call native function
     Return                  - Return from function, return value on TOS
     SetFrame p l            - Set the local frame with number of formal
@@ -195,17 +195,12 @@ enum class Op: uint8_t {
     Drop            = 0x05,
     Swap            = 0x06,
     
-    If              = 0x07,
-    Else            = 0x08,
     EndIf           = 0x09,
 
     CallNative      = 0x0a,
     Return          = 0x0b,
     
-    Jump            = 0x0c,
-    Loop            = 0x0d,
-
-// 0x0e, 0x0f unused
+// 0x0c to 0x0f unused
 
     Or              = 0x10,
     Xor             = 0x11,
@@ -263,6 +258,9 @@ enum class Op: uint8_t {
     PushIntConstS   = ExtOpcodeStart + 0x60,
     Log             = ExtOpcodeStart + 0x70,
     SetFrame        = ExtOpcodeStart + 0x80,
+    Jump            = ExtOpcodeStart + 0x90,
+    If              = ExtOpcodeStart + 0xa0,
+    Else            = ExtOpcodeStart + 0xb0,
 };
 
 enum class OpParams : uint8_t {
@@ -271,10 +269,12 @@ enum class OpParams : uint8_t {
     I,          // b+1[3:0] = <int> (0-3)
     Index,      // b[3:0] = <int> (0-15)
     Const,      // b+1 = 0-255
-    Target,     // b+1 = call target bits 7:2, b[2:0] = call target bits 1:0};
+    AbsTarg,    // Lower 4 bits of opcode (bits 11:8) | byte after opcode
+                // (bits 7:0). 12 bit absolute address (0 to 4095).
+    RelTarg,    // Lower 4 bits of opcode (bits 11:8) | byte after opcode
+                // (bits 7:0). 12 bit relative address (-2048 to 2047).
     P_L,        // b[3:0] = num params (0-15), b+1 = num locals (0-255)
-    Sz,         // b+1 = <int>
-    Index_Sz_S, // b[3:0] = <int> (0-15), b+1 = <int>, followed by Sz string bytes
+    Idx_Len_S, // b[3:0] = <int> (0-15), b+1 = <int>, followed by Sz string bytes
 };
 
 }

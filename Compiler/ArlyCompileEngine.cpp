@@ -380,9 +380,9 @@ ArlyCompileEngine::opStatement()
 bool
 ArlyCompileEngine::forStatement()
 {
-    // FIXME: foreach is completely broken in arly.
-    // No more foreach op. It's handled with Loop now
-    if (!match(Reserved::ForEach)) {
+    // FIXME: for is completely broken in arly.
+    // No more for op. It's handled with Loop now
+    if (!match(Reserved::For)) {
         return false;
     }
     
