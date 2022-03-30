@@ -363,9 +363,20 @@ Interpreter::execute(uint16_t addr)
             case Op::Xor:   _stack.top() ^= _stack.pop(); break;
             case Op::And:   _stack.top() &= _stack.pop(); break;
             case Op::Not:   _stack.top() = ~_stack.top(); break;
-            case Op::LOr:   _stack.push(_stack.pop() || _stack.pop()); break;
-            case Op::LAnd:   _stack.push(_stack.pop() && _stack.pop()); break;
             case Op::LNot:   _stack.top() = !_stack.top(); break;
+
+            case Op::LOr: {
+                bool l = _stack.pop() != 0;
+                bool r = _stack.pop() != 0;
+                _stack.push(l || r);
+                break;
+            }
+            case Op::LAnd: {
+                bool l = _stack.pop() != 0;
+                bool r = _stack.pop() != 0;
+                _stack.push(l && r);
+                break;
+            }
 
             case Op::LTInt:
                 value = _stack.pop();
