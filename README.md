@@ -116,6 +116,7 @@ Clover has a Log statement. It is structured like printf, taking a format string
 - [x] Make opcodes taking an id into extended opcodes, allowing for 12 bit ids for access to 16KB of memory
 - [x] Why do defs exist? Why not just use const? Maybe get rid of defs and do an optimization where if a const is a small integer which can be represented by PushIntConst or PushIntConstS then don't add it to the constants.
 - [x] Make a proper 'for' loop statement
+- [ ] Get rid of Op::Else and OpEndIf. Have Op::If just to else clause and at the end of if clause do an Op::Jump past else clause
 - [ ] Clean up for loop to not have so many jumps. Save iterator code to the side and insert it at the end of the for loop
 - [ ] Why can't you have a struct const? Maybe get rid of table and allow const to have multiple values (inside braces). Maybe require const arrays to be defined as such?
 - [ ] A var can be in any block, but has function scope. Add block scope support.
