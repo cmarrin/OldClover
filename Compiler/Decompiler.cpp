@@ -176,16 +176,6 @@ Decompiler::statement()
     
     uint8_t opInt = getUInt8();
 
-    // There is an endif statement at the end of an if statement
-    // Handle them separately
-    if (Op(opInt) == Op::EndIf) {
-        decIndent();
-        doIndent();
-        outputAddr();
-        _out->append("end\n\n");
-        return;
-    }
-    
     uint8_t index = 0;
     
     if (opInt >= ExtOpcodeStart) {
@@ -198,11 +188,6 @@ Decompiler::statement()
     if (!CompileEngine::opDataFromOp(Op(opInt), opData)) {
         _error = Error::InvalidOp;
         throw true;
-    }
-
-    // outdent Else one
-    if (opData._op == Op::Else) {
-        decIndent();
     }
 
     // Add blank like before if
@@ -290,7 +275,7 @@ Decompiler::statement()
     
     _out->append("\n");
     
-    if (opData._op == Op::If || opData._op == Op::Else) {
+    if (opData._op == Op::If) {
         incIndent();
     }
 }

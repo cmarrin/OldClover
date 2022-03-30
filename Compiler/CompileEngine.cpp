@@ -29,7 +29,6 @@ static std::vector<OpData> _opcodes = {
     { "Swap",           Op::Swap            , OpParams::None },
     
     { "if",             Op::If              , OpParams::RelTarg },
-    { "else",           Op::Else            , OpParams::RelTarg },
 
     { "Call",           Op::Call            , OpParams::AbsTarg },
     { "CallNative",     Op::CallNative      , OpParams::Const },

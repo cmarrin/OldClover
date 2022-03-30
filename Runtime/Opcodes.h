@@ -80,11 +80,6 @@ Opcodes:
     If relTarg              - If stack[--sp] is non-zero execute statements in first clause. 
                               If zero skip the statements. Number of bytes to skip is 
                               in sz.
-    Else relTarg            - If the previously executed statement was a failed if
-                              execute the following statements. Otherwise skip the
-                              following statements up to the matching endif. The
-                              number of instructions to skip is in sz.
-    Endif                   - Signals the end of an if or else statement
     
     Jump relTarg            - Jump size bytes (target is -2048 to 2047)
     
@@ -195,8 +190,6 @@ enum class Op: uint8_t {
     Drop            = 0x05,
     Swap            = 0x06,
     
-    EndIf           = 0x09,
-
     CallNative      = 0x0a,
     Return          = 0x0b,
     
@@ -260,7 +253,6 @@ enum class Op: uint8_t {
     SetFrame        = ExtOpcodeStart + 0x80,
     Jump            = ExtOpcodeStart + 0x90,
     If              = ExtOpcodeStart + 0xa0,
-    Else            = ExtOpcodeStart + 0xb0,
 };
 
 enum class OpParams : uint8_t {

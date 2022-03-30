@@ -249,29 +249,9 @@ Interpreter::execute(uint16_t addr)
                 if (_stack.pop() == 0) {
                     // Skip if
                     _pc += relTarg;
-                    
-                    // Next instruction must be EndIf or Else
-                    cmd = getUInt8ROM(_pc++);
-                    if (Op(cmd) == Op::EndIf) {
-                        // We hit the end of the if, just continue
-                    } else if (Op(cmd & 0xf0) == Op::Else) {
-                        // We have an Else, execute it
-                        getConst(); // Ignore targ
-                    } else {
-                        _error = Error::UnexpectedOpInIf;
-                        return -1;
-                    }
                 }
                 break;
             }
-            case Op::Else:
-                // If we get here the corresponding If succeeded so ignore this
-                _pc += getRelTarg(index);
-                break;
-            case Op::EndIf:
-                // This is the end of an if, always ignore it
-                break;
-
             case Op::Jump:
                 _pc += getRelTarg(index);
                 break;

@@ -364,46 +364,24 @@ CloverCompileEngine::ifStatement()
     expect(Token::CloseParen);
 
     // At this point the expresssion has been executed and the result is on TOS
+    enterJumpContext();
     
     // Emit the if test
-    addOp(Op::If);
+    addJumpEntry(Op::If, JumpEntry::Type::Continue);
 
-    // Output a placeholder for sz and rember where it is
-    auto szIndex = _rom8.size();
-    addInt(0);
-    
     statement();
 
-    // Update sz
-    auto offset = _rom8.size() - szIndex - 1;
-    expect(offset < 256, Compiler::Error::JumpTooBig);
-    _rom8[szIndex] = uint8_t(offset);
+    auto contAddr = _rom8.size();
     
     if (match(Reserved::Else)) {
-        addOp(Op::Else);
-
-        // Output a placeholder for sz and rember where it is
-        auto szIndex = _rom8.size();
-        addInt(0);
-
+        addJumpEntry(Op::Jump, JumpEntry::Type::Break);
+        contAddr = _rom8.size();
         statement();
-
-        // Update sz
-        // rom is pointing at inst past 'end', we want to point at end
-        auto offset = _rom8.size() - szIndex - 1;
-        expect(offset < 256, Compiler::Error::JumpTooBig);
-        _rom8[szIndex] = uint8_t(offset);
     }
+
+    auto breakAddr = _rom8.size();
     
-    // Finally output and EndIf. This lets us distinguish
-    // Between an if and an if-else. If we skip an If we
-    // will either see an Else of an EndIf instruction.
-    // If we see anything else it's an error. If we see
-    // an Else, it means this is the else clause of an
-    // if statement we've skipped, so we execute its
-    // statements. If we see an EndIf it means this If
-    // doesn't have an Else.
-    addOp(Op::EndIf);
+    exitJumpContext(contAddr, contAddr, breakAddr);
 
     return true;
 }
@@ -462,7 +440,6 @@ CloverCompileEngine::forStatement()
     //      startAddr:  <loop expression>
     //                  If breakAddr:
     //                  Jump stmtAddr:
-    //                  Endif
     //      contAddr:   <iteration expression>
     //                  Loop startAddr:
     //      stmtAddr:   <for loop contents>
@@ -508,7 +485,6 @@ CloverCompileEngine::forStatement()
     addJumpEntry(Op::Jump, JumpEntry::Type::Continue);
 
     uint16_t breakAddr = _rom8.size();
-    addOp(Op::EndIf);
 
     // Now resolve all the jumps
     exitJumpContext(contAddr, stmtAddr, breakAddr);
@@ -543,8 +519,6 @@ CloverCompileEngine::whileStatement()
         
     // Now resolve all the jumps (stmtAddr will never be used so just reuse loopAddr)
     exitJumpContext(loopAddr, loopAddr, _rom8.size());
-
-    addOp(Op::EndIf);
 
     return true;
 }

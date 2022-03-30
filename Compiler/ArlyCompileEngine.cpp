@@ -341,11 +341,6 @@ ArlyCompileEngine::opStatement()
         return false;
     }
     
-    // Don't handle Else here
-    if (op == Op::Else) {
-        return false;
-    }
-    
     _scanner.retireToken();
     
     // Get the params in the sequence specified in OpParams
@@ -430,8 +425,6 @@ ArlyCompileEngine::ifStatement()
     if (match(Reserved::Else)) {
         expect(Token::NewLine);
 
-        _rom8.push_back(uint8_t(Op::Else));
-    
         // Output a placeholder for sz and rember where it is
         auto szIndex = _rom8.size();
         _rom8.push_back(0);
@@ -446,16 +439,6 @@ ArlyCompileEngine::ifStatement()
     }
     
     expect(match(Reserved::End), Compiler::Error::ExpectedEnd);
-
-    // Finally output and EndIf. This lets us distinguish
-    // Between an if and an if-else. If we skip an If we
-    // will either see an Else of an EndIf instruction.
-    // If we see anything else it's an error. If we see
-    // an Else, it means this is the else clause of an
-    // if statement we've skipped, so we execute its
-    // statements. If we see an EndIf it means this If
-    // doesn't have an Else.
-    _rom8.push_back(uint8_t(Op::EndIf));
 
     return true;
 }
