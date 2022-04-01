@@ -114,7 +114,7 @@ private:
     const std::vector<uint8_t>* _in;
     std::vector<uint8_t>::const_iterator _it;
     std::string* _out;
-    int32_t _indent = 0;
+    int32_t _indent = 4;
     uint16_t _codeOffset = 0; // Used by Call
     const std::vector<std::pair<int32_t, std::string>>& _annotations;
     int _annotationIndex = 0;
