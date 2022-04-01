@@ -445,12 +445,10 @@ CloverCompileEngine::forStatement()
     //
     //                  <init expression>
     //      startAddr:  <loop expression>
-    //                  If breakAddr:
-    //                  Jump stmtAddr:
+    //                  If breakAddr
+    //      stmtAddr:   <statement> (break jumps to breakAddr, continue jumps to contAddr)
     //      contAddr:   <iteration expression>
-    //                  Loop startAddr:
-    //      stmtAddr:   <for loop contents>
-    //                  Loop startAddr:
+    //                  Jump startAddr
     //      breakAddr:
     //
     uint16_t startAddr = _rom8.size();
@@ -460,19 +458,20 @@ CloverCompileEngine::forStatement()
         expect(bakeExpr(ExprAction::Right) == Type::Int, Compiler::Error::WrongType);
 
         // At this point the expresssion has been executed and the result is on TOS
-    
         addJumpEntry(Op::If, JumpEntry::Type::Break);
         expect(Token::Semicolon);
     }
     
-    addJumpEntry(Op::Jump, JumpEntry::Type::Statement);
-
     // If we don't have an iteration, contAddr is just the startAddr
     uint16_t contAddr = startAddr;
     
     // Handle iteration
+    uint8_t* iterBuf = nullptr;
+    uint16_t iterSize = 0;
+    
     if (!match(Token::CloseParen)) {
-        contAddr = _rom8.size();
+        uint16_t iterAddr = _rom8.size();
+
         arithmeticExpression();
         
         // This must not be an assignment expression, so it must have
@@ -481,20 +480,32 @@ CloverCompileEngine::forStatement()
         _exprStack.pop_back();
         addOp(Op::Drop);
         expect(Token::CloseParen);
-        addOpTarg(Op::Jump, startAddr - _rom8.size() - 2);
+        
+        // Move the iteration code into the iterBuf.
+        iterSize = _rom8.size() - iterAddr;
+        if (iterSize > 0) {
+            iterBuf = new uint8_t[iterSize];
+            memcpy(iterBuf, &(_rom8[iterAddr]), iterSize);
+            _rom8.resize(iterAddr);
+        }
     }
-    
-    uint16_t stmtAddr = _rom8.size();
-    
-    statement();
 
-    // Loop back to the iterator
-    addJumpEntry(Op::Jump, JumpEntry::Type::Continue);
+    statement();
+    
+    // Retore the iteration code, if any
+    if (iterSize > 0) {
+        contAddr = _rom8.size();
+        _rom8.resize(_rom8.size() + iterSize);
+        memcpy(&_rom8[contAddr], iterBuf, iterSize);
+        delete [ ] iterBuf;
+    }
+
+    addJumpEntry(Op::Jump, JumpEntry::Type::Start);
 
     uint16_t breakAddr = _rom8.size();
 
     // Now resolve all the jumps
-    exitJumpContext(contAddr, stmtAddr, breakAddr);
+    exitJumpContext(startAddr, contAddr, breakAddr);
     return true;
 }
 
@@ -1273,7 +1284,7 @@ CloverCompileEngine::elementSize(Type type)
 }
 
 void
-CloverCompileEngine::exitJumpContext(uint16_t loopAddr, uint16_t stmtAddr, uint16_t breakAddr)
+CloverCompileEngine::exitJumpContext(uint16_t startAddr, uint16_t contAddr, uint16_t breakAddr)
 {
     expect(!_jumpList.empty(), Compiler::Error::InternalError);
 
@@ -1285,8 +1296,8 @@ CloverCompileEngine::exitJumpContext(uint16_t loopAddr, uint16_t stmtAddr, uint1
         uint16_t addr;
         
         switch(it._type) {
-            case JumpEntry::Type::Continue: addr = loopAddr; break;
-            case JumpEntry::Type::Statement: addr = stmtAddr; break;
+            case JumpEntry::Type::Start: addr = startAddr; break;
+            case JumpEntry::Type::Continue: addr = contAddr; break;
             case JumpEntry::Type::Break: addr = breakAddr; break;
         }         
          

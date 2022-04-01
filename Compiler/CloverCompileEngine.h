@@ -413,7 +413,7 @@ private:
 
     struct JumpEntry
     {
-        enum class Type { Break, Continue, Statement };
+        enum class Type { Start, Continue, Break };
         
         JumpEntry(Type type, uint16_t addr) : _type(type), _addr(addr) { }
         
@@ -422,7 +422,7 @@ private:
     };
 
     void enterJumpContext() { _jumpList.emplace_back(); }
-    void exitJumpContext(uint16_t loopAddr, uint16_t loopStmt, uint16_t loopBreak);
+    void exitJumpContext(uint16_t startAddr, uint16_t contAddr, uint16_t breakAddr);
     void addJumpEntry(Op, JumpEntry::Type);
     
     std::vector<Struct> _structs;
