@@ -275,6 +275,11 @@ private:
                 _error = Error::NotEnoughArgs;
                 return false;
             }
+            
+            if (newBP > _sp) {
+                _error = Error::StackOutOfRange;
+                return false;
+            }
             _bp = newBP;
             return true;
         }
@@ -284,6 +289,11 @@ private:
             int16_t savedBP = pop();
             int16_t pc = pop();
             _sp = _bp;
+
+            if (savedBP > _sp) {
+                _error = Error::StackOutOfRange;
+                return false;
+            }
             _bp = savedBP;
             push(returnValue);
             return pc;
