@@ -73,7 +73,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "../Test/TestFor.clvr"
+            argument = "../Test/TestIf.clvr"
             isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
