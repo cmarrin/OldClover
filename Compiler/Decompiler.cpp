@@ -274,8 +274,4 @@ Decompiler::statement()
     }
     
     _out->append("\n");
-    
-    if (opData._op == Op::If) {
-        incIndent();
-    }
 }

@@ -363,25 +363,32 @@ CloverCompileEngine::ifStatement()
     expect(bakeExpr(ExprAction::Right) == Type::Int, Compiler::Error::WrongType);
     expect(Token::CloseParen);
 
-    // At this point the expresssion has been executed and the result is on TOS
-    enterJumpContext();
-    
-    // Emit the if test
-    addJumpEntry(Op::If, JumpEntry::Type::Continue);
+    auto ifJumpAddr = _rom8.size();
+    addOpTarg(Op::If, 0);
 
     statement();
-
-    auto contAddr = _rom8.size();
+    
+    // This ifTargetAddr will be used if there is no else
+    uint16_t ifTargetAddr = _rom8.size();
     
     if (match(Reserved::Else)) {
-        addJumpEntry(Op::Jump, JumpEntry::Type::Break);
-        contAddr = _rom8.size();
+        auto elseJumpAddr = _rom8.size();
+        addOpTarg(Op::Jump, 0);
+        
+        // Set ifTargetAddr to jump to else clause
+        ifTargetAddr = _rom8.size();
         statement();
-    }
 
-    auto breakAddr = _rom8.size();
+        // Resolve the else address
+        uint16_t offset = _rom8.size() - elseJumpAddr - 2;
+        _rom8[elseJumpAddr] |= uint8_t((offset >> 8) & 0x0f);
+        _rom8[elseJumpAddr + 1] = uint8_t(offset);
+    }
     
-    exitJumpContext(contAddr, contAddr, breakAddr);
+    // Resolve the if address
+    uint16_t offset = ifTargetAddr - ifJumpAddr - 2;
+    _rom8[ifJumpAddr] |= uint8_t((offset >> 8) & 0x0f);
+    _rom8[ifJumpAddr + 1] = uint8_t(offset);
 
     return true;
 }

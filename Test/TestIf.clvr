@@ -9,57 +9,145 @@
 
 // Test if
 
-//function space(int n)
-//{
-//    while (n--) {
-//        log(" ");
-//    }
-//}
-//
-//function showIntResults(int testNo, int exp, int act)
-//{
-//    int n;
-//    if (testNo > 9) {
-//        n = 19;
-//    } else {
-//        n = 20;
-//    }
-//   
-//    log("    Test %i: ", testNo);
-//    space(n);
-//    if (exp != act) {
-//        log("FAIL: exp %i, got %i\n", exp, act);
-//    } else {
-//        log("Pass\n");
-//    }
-//}
-//
-//function showFloatResults(int testNo, float exp, float act)
-//{
-//    int n;
-//    if (testNo > 9) {
-//        n = 19;
-//    } else {
-//        n = 20;
-//    }
-//   
-//    log("    Test %i: ", testNo);
-//    space(n);
-//    if (exp != act) {
-//        log("FAIL: exp %f, got %f\n", exp, act);
-//    } else {
-//        log("Pass\n");
-//    }
-//}
+function space(int n)
+{
+    while (n--) {
+        log(" ");
+    }
+}
+
+function showIntResults(int testNo, int exp, int act)
+{
+    int n;
+    if (testNo > 9) {
+        n = 19;
+    } else {
+        n = 20;
+    }
+   
+    log("    Test %i: ", testNo);
+    space(n);
+    if (exp != act) {
+        log("FAIL: exp %i, got %i\n", exp, act);
+    } else {
+        log("Pass\n");
+    }
+}
 
 function test()
 {    
-    if (1 > 2 && 2 > 3) {
-        log("a\n\n");
-        //showIntResults(15, 0, 1);
+    log("\nTest if\n");
+
+    int i = 0, j = 0;
+
+    if (0) {
+        showIntResults(1, 0, 1);
     } else {
-        log("b\n\n");
-        //showIntResults(15, 1, 1);
+        showIntResults(1, 1, 1);
+    }
+    
+    if (1) {
+        showIntResults(2, 1, 1);
+    } else {
+        showIntResults(2, 0, 1);
+    }
+    
+    log("\nTest logical operators\n");
+    if (14 < 5) {
+        showIntResults(3, 0, 1);
+    } else {
+        showIntResults(3, 1, 1);
+    }
+
+    if (14 <= 5) {
+        showIntResults(4, 0, 1);
+    } else {
+        showIntResults(4, 1, 1);
+    }
+
+    if (14 == 5) {
+        showIntResults(5, 0, 1);
+    } else {
+        showIntResults(5, 1, 1);
+    }
+
+    if (14 != 5) {
+        showIntResults(6, 1, 1);
+    } else {
+        showIntResults(6, 0, 1);
+    }
+
+    if (14 >= 5) {
+        showIntResults(7, 1, 1);
+    } else {
+        showIntResults(7, 0, 1);
+    }
+
+    if (14 > 5) {
+        showIntResults(8, 1, 1);
+    } else {
+        showIntResults(8, 0, 1);
+    }
+
+    log("\nTest logical or/and/not\n");
+    if (1 > 2 || 2 > 3) {
+        showIntResults(9, 0, 1);
+    } else {
+        showIntResults(9, 1, 1);
+    }
+    
+    if (1 > 2 || 2 < 3) {
+        showIntResults(10, 1, 1);
+    } else {
+        showIntResults(10, 0, 1);
+    }
+    
+    if (1 < 2 || 2 > 3) {
+        showIntResults(11, 1, 1);
+    } else {
+        showIntResults(11, 0, 1);
+    }
+    
+    if (1 < 2 || 2 < 3) {
+        showIntResults(12, 1, 1);
+    } else {
+        showIntResults(12, 0, 1);
+    }
+    
+    if (1 > 2 && 2 > 3) {
+        showIntResults(13, 0, 1);
+    } else {
+        showIntResults(13, 1, 1);
+    }
+    
+    if (1 > 2 && 2 < 3) {
+        showIntResults(14, 0, 1);
+    } else {
+        showIntResults(14, 1, 1);
+    }
+    
+    if (1 < 2 && 2 > 3) {
+        showIntResults(15, 0, 1);
+    } else {
+        showIntResults(15, 1, 1);
+    }
+    
+    if (1 < 2 && 2 < 3) {
+        showIntResults(16, 1, 1);
+    } else {
+        showIntResults(16, 0, 1);
+    }
+    
+    if (!(1 < 2)) {
+        showIntResults(17, 0, 1);
+    } else {
+        showIntResults(17, 1, 1);
+    }
+    
+    if (!(1 > 2)) {
+        showIntResults(18, 1, 1);
+    } else {
+        showIntResults(18, 0, 1);
     }
     
     log("\nDone\n\n");
