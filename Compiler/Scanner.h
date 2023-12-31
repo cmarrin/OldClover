@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include <cassert>
 #include <cstdint>
 #include <istream>
 #include <vector>
