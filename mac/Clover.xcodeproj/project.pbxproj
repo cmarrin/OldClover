@@ -41,6 +41,13 @@
 		49667EFB27F36E700035252E /* TestIf.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; name = TestIf.clvr; path = ../Test/TestIf.clvr; sourceTree = "<group>"; };
 		49667EFC27F36E700035252E /* TestFor.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; name = TestFor.clvr; path = ../Test/TestFor.clvr; sourceTree = "<group>"; };
 		496B499B27E6222C000AFA15 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		497C425F2BB3A0B80040A2DD /* TestExpr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TestExpr.h; path = ../Test/TestExpr.h; sourceTree = "<group>"; };
+		497C42602BB3A0B80040A2DD /* TestWhileLoop.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TestWhileLoop.h; path = ../Test/TestWhileLoop.h; sourceTree = "<group>"; };
+		497C42622BB3A0B80040A2DD /* TestPtrStruct.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TestPtrStruct.h; path = ../Test/TestPtrStruct.h; sourceTree = "<group>"; };
+		497C42632BB3A0B80040A2DD /* TestFor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TestFor.h; path = ../Test/TestFor.h; sourceTree = "<group>"; };
+		497C42642BB3A0B80040A2DD /* TestFunction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TestFunction.h; path = ../Test/TestFunction.h; sourceTree = "<group>"; };
+		497C42652BB3A0B80040A2DD /* TestIf.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TestIf.h; path = ../Test/TestIf.h; sourceTree = "<group>"; };
+		497C42662BB3A0B80040A2DD /* TestCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = TestCore.h; path = ../Test/TestCore.h; sourceTree = "<group>"; };
 		498A150E27D90EDE005460EE /* Test.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; name = Test.clvr; path = ../Test/Test.clvr; sourceTree = "<group>"; };
 		49BB16B827D3F07E0054C59F /* TestExpr.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; name = TestExpr.clvr; path = ../Test/TestExpr.clvr; sourceTree = "<group>"; };
 		49BB16BB27D54EE00054C59F /* TestWhileLoop.clvr */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; name = TestWhileLoop.clvr; path = ../Test/TestWhileLoop.clvr; sourceTree = "<group>"; };
@@ -84,13 +91,20 @@
 			isa = PBXGroup;
 			children = (
 				498A150E27D90EDE005460EE /* Test.clvr */,
-				49BB16B827D3F07E0054C59F /* TestExpr.clvr */,
-				49667EFB27F36E700035252E /* TestIf.clvr */,
-				49667EFC27F36E700035252E /* TestFor.clvr */,
-				49BB16BB27D54EE00054C59F /* TestWhileLoop.clvr */,
-				49BB16BC27D687D50054C59F /* TestFunction.clvr */,
-				49BB16BD27D687D50054C59F /* TestPtrStruct.clvr */,
 				49BB16BE27D68C0D0054C59F /* TestCore.clvr */,
+				49BB16B827D3F07E0054C59F /* TestExpr.clvr */,
+				49667EFC27F36E700035252E /* TestFor.clvr */,
+				49BB16BC27D687D50054C59F /* TestFunction.clvr */,
+				49667EFB27F36E700035252E /* TestIf.clvr */,
+				49BB16BD27D687D50054C59F /* TestPtrStruct.clvr */,
+				49BB16BB27D54EE00054C59F /* TestWhileLoop.clvr */,
+				497C42662BB3A0B80040A2DD /* TestCore.h */,
+				497C425F2BB3A0B80040A2DD /* TestExpr.h */,
+				497C42632BB3A0B80040A2DD /* TestFor.h */,
+				497C42642BB3A0B80040A2DD /* TestFunction.h */,
+				497C42652BB3A0B80040A2DD /* TestIf.h */,
+				497C42622BB3A0B80040A2DD /* TestPtrStruct.h */,
+				497C42602BB3A0B80040A2DD /* TestWhileLoop.h */,
 			);
 			name = Test;
 			sourceTree = "<group>";
