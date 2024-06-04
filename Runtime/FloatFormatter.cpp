@@ -73,9 +73,9 @@ static void truncateNumber(char* buf, int32_t numDigits, int32_t digitsToTruncat
     }
 }
 
-uint32_t Formatter::printString(Generator& gen, Float v, int32_t precision, Capital cap, uint8_t flags)
+uint32_t Formatter::printString(Generator& gen, flt::Float v, int32_t precision, Capital cap, uint8_t flags)
 {
-    if (v == Float()) {
+    if (v == flt::Float()) {
         gen.append('0');
         gen.append('\0');
         return 1;
@@ -88,19 +88,19 @@ uint32_t Formatter::printString(Generator& gen, Float v, int32_t precision, Capi
         precision = 16;
     }
     
-    Float multiplier = 1;
+    flt::Float multiplier(1);
     for (int32_t i = 0; i < precision; ++i) {
-        multiplier *= 10;
+        multiplier *= flt::Float(10);
     }
     
-    v += Float(0.5) / multiplier;
+    v += flt::Float(0.5) / multiplier;
     
     uint32_t size = 0;
     int16_t exponent = 0;
     char buf[20];
     v.toString(buf, exponent);
 
-    if (v < Float()) {
+    if (v < flt::Float()) {
         gen.append('-');
         size++;
     }

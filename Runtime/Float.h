@@ -40,12 +40,15 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <stdint.h>
 #include <limits.h>
 
-#define DOUBLE_SUPPORT
-#ifdef DOUBLE_SUPPORT
+//#define FLOAT_SUPPORT
+#ifdef FLOAT_SUPPORT
 #include "fpconv.h"
 #endif
 
-namespace fmt {
+#undef min
+#undef max
+
+namespace flt {
 
 inline void mult64to128(uint64_t op1, uint64_t op2, uint64_t& hi, uint64_t& lo)
 {
@@ -103,6 +106,14 @@ public:
     explicit _Float(int64_t value) { _value = static_cast<value_type>(value) * BinaryMultiplier; }
     explicit _Float(uint64_t value) { _value = static_cast<value_type>(value) * BinaryMultiplier; }
 
+    explicit _Float(uint16_t i, uint16_t f)
+    {
+        value_type ii = static_cast<value_type>(i) * BinaryMultiplier;
+        value_type ff = static_cast<value_type>(f) * BinaryMultiplier;
+        ff /= DecimalMultiplier;
+        _value = ii + ff;
+    }
+
     _Float(double d)
     {
         union {
@@ -141,7 +152,7 @@ public:
             _value = -_value;
         }
     }
-    
+
     // Convert Float to arg_type for passing to printf
     arg_type toArg() const { return static_cast<arg_type>(_value); }
     
@@ -230,6 +241,9 @@ public:
     bool operator>=(const _Float& other) const { return _value >= other._value; }
 
     _Float operator-() const { _Float r; r._value = -_value; return r; }
+    
+    static _Float min(_Float a, _Float b) { return (a < b) ? a : b; }
+    static _Float max(_Float a, _Float b) { return (a < b) ? b : a; }
 
 private:    
     value_type _value;
@@ -243,6 +257,7 @@ private:
 
 // float specializations
 
+#ifdef FLOAT_SUPPORT
 template<>
 inline _Float<float, int32_t, double>::_Float(bool value) { _value = value ? 1 : 0; }
 
@@ -318,6 +333,7 @@ inline _Float<double, int64_t, double> _Float<double, int64_t, double>::floor() 
     r._value = static_cast<double>(static_cast<int64_t>(_value));
     return r;
 }
+#endif
 
 // int64_t specializations
 template<>
@@ -386,8 +402,14 @@ inline _Float<int64_t, int64_t, int64_t, 30, 7> _Float<int64_t, int64_t, int64_t
 // precision. That safely gives us 8 decimal digits of precision.
 using Float64 = _Float<int64_t, int64_t, int64_t, 30, 7>;
 using Float32 = _Float<int32_t, int32_t, int32_t, 10, 3>;
+
+#ifdef FLOAT_SUPPORT
 using FloatFloat = _Float<float, int32_t, double>;
 using FloatDouble = _Float<double, int64_t, double>;
+#endif
+
 using FloatNone = _Float<int, int, int>;
+
+using Float = Float32;
 
 }

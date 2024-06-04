@@ -192,7 +192,7 @@ static int32_t outInteger(Formatter::Generator& gen, uintmax_t value, Signed sig
 }
 
 #if !defined(FLOATNONE)
-static int32_t outFloat(Formatter::Generator& gen, Float value, int32_t width, int32_t precision, uint8_t flags, Formatter::Capital cap, FloatType type)
+static int32_t outFloat(Formatter::Generator& gen, flt::Float value, int32_t width, int32_t precision, uint8_t flags, Formatter::Capital cap, FloatType type)
 {
     // FIXME: Handle flags.leftJustify
     // FIXME: Handle flags.plus
@@ -289,7 +289,7 @@ int32_t Formatter::vformat(Formatter::Generator& gen, const char *format, va_lis
             case 'G': cap = Formatter::Capital::Yes; type = FloatType::Shortest; break;
             }
 
-            size += outFloat(gen, Float::fromArg(va_arg(va.value, Float::arg_type)), width, precision, flags, cap, type);
+            size += outFloat(gen, flt::Float::fromArg(va_arg(va.value, flt::Float::arg_type)), width, precision, flags, cap, type);
             break;
         }
 #endif

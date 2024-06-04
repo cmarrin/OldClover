@@ -20,8 +20,6 @@
 
 namespace fmt {
     
-using Float = Float32;
-
     // Formatter - Formatted printer
 
     class Formatter {
@@ -75,7 +73,7 @@ using Float = Float32;
         
         static int32_t vformat(Generator&, const char *format, va_list);
 
-        static uint32_t printString(Generator&, Float v, int32_t precision = -1, Capital = Capital::No, uint8_t flags = 0);
+        static uint32_t printString(Generator&, flt::Float v, int32_t precision = -1, Capital = Capital::No, uint8_t flags = 0);
         static uint32_t printString(Generator&, uint64_t v, uint8_t base = 10, Capital = Capital::No, uint8_t flags = 0);
         
         static uint32_t printString(Generator& gen, int32_t v) { emitSign(gen, v); return printString(gen, static_cast<uint32_t>(v)); }
@@ -86,7 +84,7 @@ using Float = Float32;
         static uint32_t printString(Generator& gen, int16_t v) { return printString(gen, static_cast<int32_t>(v)); }
         static uint32_t printString(Generator& gen, uint16_t v, uint8_t base = 10, Capital cap = Capital::No) { return printString(gen, static_cast<uint32_t>(v), base, cap); }
 
-        static uint32_t toString(char* buf, uint16_t size, Float v)
+        static uint32_t toString(char* buf, uint16_t size, flt::Float v)
         {
             Generator g(buf, size);
             return printString(g, v);
